@@ -5,15 +5,16 @@ ExtractPDF is an script that get data page by page in order to consolidate the i
 - author name
 - objective
 - metholodogy (design, approach, level)
-- sample
+- samples
 - tools
-- conslusions
+- conclusions
 - background
 
-## Instalation
+## Installation
 Place 'process.py' in the current working directory
 
 ## Usage
+'python3 split.py'
 'python3 process.py'
 
 ## License
