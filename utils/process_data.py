@@ -9,12 +9,14 @@ patterns_es = [
         cfg.LIST.BLOCK_WORDS_ES,
         cfg.LIST.PATTERN_OBJE_ES,
         cfg.LIST.PATTERN_METH_ES,
-        # cfg.LIST.PATTERN_TYPE_ES,
+        cfg.LIST.PATTERN_TYPE_ES,
         cfg.LIST.PATTERN_DESI_ES,
         cfg.LIST.PATTERN_APPR_ES,
         cfg.LIST.PATTERN_LEVE_ES,
-        cfg.LIST.PATTERN_SAMP_ES
-        # cfg.LIST.PATTERN_TOOL_ES
+        cfg.LIST.PATTERN_SAMP_ES,
+        cfg.LIST.PATTERN_TOOL_ES,
+        cfg.LIST.PATTERN_RESU_ES,
+        cfg.LIST.PATTERN_CONC_ES
     ]
 # level pattern
 patterns_level_es = [
@@ -37,12 +39,14 @@ patterns_en = [
         cfg.LIST.BLOCK_WORDS_EN,
         cfg.LIST.PATTERN_OBJE_EN,
         cfg.LIST.PATTERN_METH_EN,
-        # cfg.LIST.PATTERN_TYPE_EN,
+        cfg.LIST.PATTERN_TYPE_EN,
         cfg.LIST.PATTERN_DESI_EN,
         cfg.LIST.PATTERN_APPR_EN,
         cfg.LIST.PATTERN_LEVE_EN,
-        cfg.LIST.PATTERN_SAMP_EN
-        # cfg.LIST.PATTERN_TOOL_EN
+        cfg.LIST.PATTERN_SAMP_EN,
+        cfg.LIST.PATTERN_TOOL_EN,
+        cfg.LIST.PATTERN_RESU_EN,
+        cfg.LIST.PATTERN_CONC_EN
     ]
 # level pattern
 patterns_level_en = [
@@ -61,34 +65,67 @@ patterns_approach_en = [
 
 
 # GETTING DATA FROM PATTERN (patt)
-def patt_getData_Long(text_page, PATTERN):
+# getting long data
+def getData_ResultText(text_page, PATTERN):
+    result = False
+    pos = 0
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            # print("patt text: "+str(text_page[patt.start(0):].split('. ')[0]))
+            pos = patt.start(0)
+            result = True
+
+    return result, pos
+
+def getData_LongText(text_page, PATTERN, limit_start, limit_end):
+    # limit_start = S or E
+    # limit_end   = '. '
+    text = ""
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}", text_page, re.IGNORECASE)
+        # print("pattern: "+str(patt))
+        if patt != None :
+            if limit_start == 'S' : obj = text_page[patt.start(0):].split(limit_end)[0]
+            if limit_start == 'E' : obj = text_page[patt.end(0)+1:].split(limit_end)[0]
+            # obj = text_page[limit_start:-1].split(limit_end)[0]
+            text = obj.replace("\n", "")
+            # text = obj
+            if len(text)>0 :
+                break
+    return text
+
+def getData_Long(text_page, PATTERN):
     # find the text from patterns
     text = ""
     for pattern in PATTERN :
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
-        print("pattern: "+str(patt))
+        # print("pattern: "+str(patt))
         if patt != None :
-            obj = text_page[patt.end(0)+1:-1].split('.')[0]
-            # print(obj)
-            # if obj_0 and len(obj_0)<300 : obj = obj_0
-            # else : obj = text_page[patt.end(0)+1:-1].split('.   ')[0]
-            # # re.split(r';|,|\.', str)
-            # obj = re.split('.',text_page[patt.end(0)+1:-1)[0]
+            obj = text_page[patt.start(0):-1].split('.')[0]
             text = obj.replace("\n", "")
             if len(text)>0 :
                 break
     return text
 
-def patt_getLevel_Short(text_page, PATTERN):
+# getting short data
+def getLevel_Result(text_page, PATTERN):
     # find the text from patterns
     result = False
     for pattern in PATTERN :
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
-            # print("pattern: "+str(pattern)+ " ..."+str(patt))
             result = True
             break
     return result
+
+def getTools_ResultCount(text_page, PATTERN):
+    list = []
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            list.append(patt.group(0))
+    return list
 
 # GETTING THE LANGUAGE (lang)
 def lang_getLanguage(text_page):

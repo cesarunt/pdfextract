@@ -16,8 +16,8 @@ def convert_pdf_to_text(path):
 
     for page in PDFPage.get_pages(filepath, check_extractable=True):
         interpreter.process_page(page)
+        text = retstr.getvalue()
     
-    text = retstr.getvalue()
     filepath.close()
     device.close()
     retstr.close()

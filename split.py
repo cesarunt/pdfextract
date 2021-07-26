@@ -19,10 +19,10 @@ def pdf_splitter(path):
         print('Created: {}'.format(output_filename))
 
 if __name__ == '__main__':
-    path = "input/1._Arias-Munoz(2019).pdf"
+    # path = "input/1._Arias-Munoz(2019).pdf"
     # path = "input/2._Zarraga-Cano-Molina-Morejon(2018).pdf"  # FILE IMAGE TITLE
     # path = "input/3._Salazar-Yepez-Cabrera-Vallejo(2016).pdf"
-    # path = "input/4._Morillo-Moreno-(2016).pdf"
+    path = "input/4._Morillo-Moreno-(2016).pdf"
     # path = 'input/5._Mejias-Acosta-(2018).pdf'          # Falta condicion UNIVERSIDAD
     # path = "input/6._Villalobos-Fernandez(2016).pdf"
     # path = "input/7._BurgosChavez-Morocho(2020).pdf"  # FILE NOT DECRYPTED
