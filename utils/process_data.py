@@ -72,9 +72,11 @@ def getData_ResultText(text_page, PATTERN):
     for pattern in PATTERN :
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
+            # print("Result pattern: "+pattern+" found:"+str(patt))
             # print("patt text: "+str(text_page[patt.start(0):].split('. ')[0]))
             pos = patt.start(0)
             result = True
+            break
 
     return result, pos
 
@@ -83,15 +85,50 @@ def getData_LongText(text_page, PATTERN, limit_start, limit_end):
     # limit_end   = '. '
     text = ""
     for pattern in PATTERN :
-        patt = re.search(rf"\b{pattern}", text_page, re.IGNORECASE)
-        # print("pattern: "+str(patt))
+        obj = ""
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
-            if limit_start == 'S' : obj = text_page[patt.start(0):].split(limit_end)[0]
-            if limit_start == 'E' : obj = text_page[patt.end(0)+1:].split(limit_end)[0]
+            print("\nLong pattern: "+pattern+" found:"+str(patt))
+            if limit_end == ''  : obj = text_page[patt.end(0)+1:]
+            else :
+                if limit_start == 'S':
+                    if len(text_page[patt.start(0):].split(limit_end)[0]) < len(pattern) :
+                        obj = text_page[patt.start(0):].split(".\n")[0]
+                    else :
+                        obj = text_page[patt.start(0):].split(limit_end)[0]
+                if limit_start == 'E':
+                    if len(text_page[patt.end(0)+1:].split(limit_end)[0]) < len(pattern) :
+                        obj = text_page[patt.end(0)+1:].split(".\n")[0]
+                    else:
+                        obj = text_page[patt.end(0)+1:].split(limit_end)[0]
             # obj = text_page[limit_start:-1].split(limit_end)[0]
-            text = obj.replace("\n", "")
-            # text = obj
-            if len(text)>0 :
+            obj = obj.replace("\n", "")
+            if len(obj)>0:  
+                text = obj
+                break
+    return text
+
+def getData_LongText_Result(text_page, PATTERN, limit_start='E', limit_end='. \n'):
+    # limit_start = S or E
+    # limit_end   = '. '
+    text = ""
+    for pattern in PATTERN :
+        obj = ""
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            # print("\nLong pattern: "+pattern+" found:"+str(patt))
+            if limit_end == ''  : obj = text_page[patt.end(0)+1:]
+            else :
+                # if limit_start == 'E':
+                if len(text_page[patt.end(0)+1:].split(limit_end)[0]) < len(pattern) :
+                    obj = text_page[patt.end(0)+1:].split(".\n")[0]
+                    obj = obj.replace("\n", "")
+                else:
+                    obj = text_page[patt.end(0)+1:].split(limit_end)
+                    # obj = text_page[limit_start:-1].split(limit_end)[0]
+                    # obj = obj.replace("\n", "")
+            if len(obj)>0:  
+                text = obj
                 break
     return text
 
@@ -103,8 +140,10 @@ def getData_Long(text_page, PATTERN):
         # print("pattern: "+str(patt))
         if patt != None :
             obj = text_page[patt.start(0):-1].split('.')[0]
-            text = obj.replace("\n", "")
-            if len(text)>0 :
+            obj = obj.replace("\n", "")
+            if obj[0]=='.': obj=obj[1:]
+            if len(obj)>0:  
+                text = obj
                 break
     return text
 

@@ -1,0 +1,29 @@
+3.
+Salazar Yépez , Cabrera Vallejo , (2016) en su estudio titulado " Diagnóstico de la calidad de servicio, en la atención al cliente, en la Universidad Nacional de Chimborazo - Ecuador"  (Artículo científico).
+
+El objetivo ... general  medir  la  percepción  de  la  calidad  de servicio  en  los  procesos  administrativos  por  parte de  los  estudiantes  de  la  Universidad  Nacional  de Chimborazo.A través de esta investigación se pretende realizar un  aporte  al  sistema  educativo  en  lo  referente  al campo administrativo y especí(cid:191)camente al proceso de  matrícula,  construyendo  un  instrumento  de recolección de datos que permita evaluar la calidad de servicio percibido y a la vez develar los atributos que para el estudiante es importante con el (cid:191)n de lograr un mejoramiento.2
+
+La metodología ...
+['El  presente  estudio  es  una  investigación  de  tipo descriptivo, en ella se describe la calidad de servicio que presta la Universidad Nacional de Chimborazo a  sus  clientes  y  se  contrasta  con  la  expectativa del mismo']
+
+ - Enfoque detallado:  Cuantitativo,  Cualitativo 
+ - Nivel detallado:  Aplicado,  Relacional,  Exploratorio 
+
+La muestra ... 
+estudiantil de la población, aplicando  la  ecuación  1,  obteniendo    un  valor  de  347 estudiantes,  no obstante se procedió a encuestar 
+Técnica(s) de recolección de datos empleada(s):
+   ['cuestionario', 'escala', 'Cuestionario', 'Escala', 'encuesta']
+   ['preguntas']
+
+Los resultados ... 
+- muestran  que  la  calidad  de  servicio  es  regular  de acuerdo a la actitud de los clientes
+- En la matriz (Tabla 3) se encuentra los estadísticos, los  mismos  que  son  analizados  en  su  conjunto. La actitud de la calidad de servicio es buena para las preguntas 2-3-13, pues el número que más se repite en estas preguntas es el 4 (moda), mientras que  para  las  otras  preguntas  la  actitud  hacia  la calidad  de  servicio  es  indiferente,  pues  el  número que más se repite es 3 (moda). El promedio general está en 3,3 siendo indiferente.  Para las preguntas 2-3-13 el 50% de los datos está por arriba de 4 y el otro 50% está por debajo de este valor (mediana), para  el  resto  de  preguntas  el  50%  está  por  arriba de  3  y  el  otro  50%  está  por  debajo  de  este  valor (mediana). el promedio tiene una desviación de 0,9. Los  datos  disponen  de  cierta  variabilidad,  puesto que hay cali(cid:191)caciones de 1 y 5. Para  disponer  de  un  mejor  entendimiento,  los datos  de  intervalo,  los  transformamos  a  categorías (Tabla 4 - Figura 1).  Se observa que el 33,6% se muestran indiferentes al servicio recibido. El 52,5% consideran  que  la  calidad  de  servicio  recibido  es buena  y  tan  solo  el  13,9%  se  sienten  satisfechos con el servicio
+- revelaron que existen importantes diferencias  entre  el  nivel  de  percepciones  y expectativas que el cliente tiene sobre la calidad  del servicio, es decir, El promedio general de la calidad de servicio es regular (3,3/5) de acuerdo a las actitudes de los clientes
+
+Las conclusiones ... 
+- Conclusiones1. Los resultados revelaron que existen importantes diferencias  entre  el  nivel  de  percepciones  y expectativas que el cliente tiene sobre la calidad  del servicio, es decir, El promedio general de la calidad de servicio es regular (3,3/5) de acuerdo a las actitudes de los clientes
+
+
+
+REFERENCIAS
+Salazar Yépez , Cabrera Vallejo , (2016).  Diagnóstico de la calidad de servicio, en la atención al cliente, en la universidad nacional de chimborazo - ecuador . Obtenido de ... https:// 

@@ -1,27 +1,16 @@
+# Extract PDF
 import os
-from PyPDF2 import PdfFileReader, PdfFileWriter
-
-def pdf_remove (length):
-    for i in range(length): 
-        os.remove("split/{}".format(fname[i])) #Remove existed pdf documents in folder.
-        print("Deleted: ../split/{}".format(fname[i]))
-
-def pdf_splitter(path):
-    fname = os.path.splitext(os.path.basename(path))[0]
-    pdf = PdfFileReader(path)
-    for page in range(pdf.getNumPages()):
-        pdf_writer = PdfFileWriter()
-        pdf_writer.addPage(pdf.getPage(page))
-        output_filename = 'split/'+path.split("/")[-1].split(".pdf")[0]+'_{}.pdf'.format(page+1)
-
-        with open(output_filename, 'wb') as out:
-            pdf_writer.write(out)
-        print('Created: {}'.format(output_filename))
+from scripts.split import pdf_remove, pdf_splitter
+from scripts.process import pdf_process
 
 if __name__ == '__main__':
-    path = "input/1._Arias-Munoz(2019).pdf"
+
+    # 1. Split PDF
+    # ============
+    # list of 20 PDFs files
+    # path = "input/1._Arias-Munoz(2019).pdf"
     # path = "input/2._Zarraga-Cano-Molina-Morejon(2018).pdf"  # FILE IMAGE TITLE
-    # path = "input/3._Salazar-Yepez-Cabrera-Vallejo(2016).pdf"
+    path = "input/3._Salazar-Yepez-Cabrera-Vallejo(2016).pdf"
     # path = "input/4._Morillo-Moreno-(2016).pdf"
     # path = 'input/5._Mejias-Acosta-(2018).pdf'          # Falta condicion UNIVERSIDAD
     # path = "input/6._Villalobos-Fernandez(2016).pdf"
@@ -41,9 +30,11 @@ if __name__ == '__main__':
     # path = "input/10._Thanh.pdf"
 
     fname = os.listdir('split/') #fname: List contain pdf documents names in folder
-    length = len(fname) #Retrieve List fname Length.
+    print("\n------------------- START SPLIT PROCESS -------------------")
+    pdf_remove(fname)       # Call pdf remove function
+    pdf_splitter(path)      # Call pdf splitter function
 
-    #call pdf remove function
-    pdf_remove(length) 
-    #call pdf splitter function
-    pdf_splitter(path)
+    # 2. Process PDF
+    # ==============
+    print("\n------------------ START EXTRACT PROCESS ------------------")
+    pdf_process()           # Call pdf process function

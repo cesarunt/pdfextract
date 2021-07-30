@@ -1,21 +1,18 @@
-# Main parameteres and variables
 from easydict import EasyDict as edict
 
-# GLOBAL VARIABLES
-# ----------------
+# BLOCK AND ALLOW WORDS
 BLOCK_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-ALLOW_WORDS = ['contreras', 'alarcón', 'anak', 'moinuddin', 'ok']
-BLOCK_WORDS_ES = ['resumen', 'author', 'recibido', 'universidad', 'Dirección', 'Electrónica', 'Facultad']
+BLOCK_WORDS_ES = ['resumen', 'author', 'recibido', 'universidad', 'Dirección', 'Electrónica', 'Ingeniería', 'Facultad']
 BLOCK_WORDS_EN = ['abstract', 'author', 'jurnal', 'Article ', 'university', 'College ']
+ALLOW_WORDS = ['contreras', 'alarcón', 'anak', 'moinuddin', 'ok']
 
 # PATTERN OBJECTIVE (OBJE)
-PATTERN_OBJE_ES = ['objetivo general', 'objetivo principal', 'propósito central', 'propósito', 'objetivo fue', 'por lo expuesto', 'objetivo']
+PATTERN_OBJE_ES = ['objetivo general', 'objetivo principal', 'propósito central', 'objetivo fue', 'por lo expuesto', 'objetivo']
 PATTERN_OBJE_EN = ['aims', 'aimed', 'study', 'Purpose', 'purpose', 'objective']
 
 # METHODOLOGY
-# ----------------------------------------------------------------------------------
 # PATTERN METHODOLOGY (METH) long
-PATTERN_METH_ES = ['metodología', 'métodos', 'método.']
+PATTERN_METH_ES = ['metodología', 'diseño y métodos', 'métodos.', 'métodos']
 PATTERN_METH_EN = ['methodology', 'methods', 'methods.', 'research methods', 'research method']
 
 # PATTERN TYPE (TYPE) NOT USE
@@ -23,7 +20,7 @@ PATTERN_TYPE_ES = ['tipo']
 PATTERN_TYPE_EN = ['type']
 
 # PATTERN DESIGN (DESI) long
-PATTERN_DESI_ES = ['diseño']
+PATTERN_DESI_ES = ['diseño', 'diseñar']
 PATTERN_DESI_EN = ['design']
 
 # PATTERN APPROACH (APPR) short (3)
@@ -47,13 +44,13 @@ PATTERN_LEVE_EXPO_ES = ['entrevistas', 'discusiones', 'entrevista', 'discusión'
 PATTERN_LEVE_EXPO_EN = ['interviews', 'discussions', 'interview', 'discussion']
 
 # PATTERN APPROACH (APPR) long (3)
-PATTERN_APPR_QUAN_ES = ['encuesta', 'cuestionario', 'baterías', 'escalograma', 'escala', 'inventario', 'pruebas', 'cotejo', 'rúbrica', 'signatura', 'diferencial']
+PATTERN_APPR_QUAN_ES = ['encuesta', 'cuestionario', 'baterías', 'escalograma', 'escala', 'inventario', 'pruebas', 'técnicas estadísticas', 'correlación', 'cotejo', 'rúbrica', 'signatura', 'diferencial']
 PATTERN_APPR_QUAN_EN = ['survey', 'questionary', 'questionnaire', 'batteries', 'scalogram', 'scale', 'inventory', 'tests', 'test', 'collation', 'comparison', 'contrast', 'rubric', 'signature' 'differential']
-PATTERN_APPR_QUAL_ES = ['entrevistas', 'entrevista', 'guía de observación', 'diario', 'fichas', 'ficha', 'bibliográficas', 'bibliográfica', 'plan de trabajo', 'grabadoras', 'grabadora', 'análisis de contenidos', 'anécdotas', 'autobiografías', 'cuaderno de notas', 'libretas', 'libreta', 'apuntes', 'notas', 'preguntas', 'relatos', 'técnicas proyectivas']
-PATTERN_APPR_QUAL_EN = ['interviews', ' interview',' observation guide', 'guide', ' diary ', 'records', ' files', 'file', 'bibliographic', 'focus group', 'recorders',' recorder ',' analysis of contents', 'anecdotes',' autobiographies', 'notebooks', 'notebook',' notes', 'note',' questions', 'stories',' projective techniques' ]
+PATTERN_APPR_QUAL_ES = ['entrevistas', 'entrevista', 'guía de observación', 'diario', 'fichas', 'ficha', 'plan de trabajo', 'grabadoras', 'grabadora', 'análisis de contenidos', 'anécdotas', 'autobiografías', 'cuaderno de notas', 'libretas', 'libreta', 'apuntes', 'notas', 'preguntas', 'relatos', 'técnicas proyectivas']
+PATTERN_APPR_QUAL_EN = ['interviews', ' interview',' observation guide', 'guide', ' diary ', 'records', ' files', 'file', 'focus group', 'recorders',' recorder ',' analysis of contents', 'anecdotes',' autobiographies', 'notebooks', 'notebook',' notes', 'note',' questions', 'stories',' projective techniques' ]
 
 # PATTERN SAMPLE (SAMP)
-PATTERN_SAMP_ES = ['muestra']
+PATTERN_SAMP_ES = ['la muestra','muestra']
 PATTERN_SAMP_EN = ['sample']
 
 # PATTERN TOOLS (TOOL)
@@ -61,12 +58,12 @@ PATTERN_TOOL_ES = ['instrumentos', 'instrumento']
 PATTERN_TOOL_EN = ['tools', 'tool']
 
 # PATTERN RESULT (RESU)
-PATTERN_RESU_ES = ['resultados y análisis', 'resultados y discusión', 'siguientes resultados:', 'resultados:', 'resultados', 'resultado.']
-PATTERN_RESU_EN = ['results and discussion', 'result and discussion', 'results discussion', 'findings', 'results', 'limitations and suggestions']
+PATTERN_RESU_ES = ['resultados y análisis', 'resultados y discusión', 'siguientes resultados:', 'resultados:', 'resultados obtenidos', 'resultados']
+PATTERN_RESU_EN = ['results and discussion', 'result and discussion', 'results discussion', 'results obtained', 'findings', 'results']
 
 # PATTERN CONCLUSIONS (CONC)
-PATTERN_CONC_ES = ['conclusiones y recomendaciones', 'conclusiones.', 'conclusiones:', 'conclusiones']
-PATTERN_CONC_EN = ['conclusions.', 'conclusions:', 'conclusions']
+PATTERN_CONC_ES = ['conclusiones y recomendaciones', 'conclusiones:', 'conclusiones', 'se concluye', 'conclusión']
+PATTERN_CONC_EN = ['conclusions:', 'conclusions', 'conclusion']
 
 __C = edict()
 cfg = __C
