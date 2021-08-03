@@ -1,4 +1,5 @@
 from easydict import EasyDict as edict
+import os
 
 # BLOCK AND ALLOW WORDS
 BLOCK_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
@@ -67,6 +68,36 @@ PATTERN_CONC_EN = ['conclusions:', 'conclusions', 'conclusion']
 
 __C = edict()
 cfg = __C
+
+# PROCESS 
+__C.PROCESS = edict()
+__C.PROCESS.USE_GPU = False
+
+# Percentage to change if posible to process service
+__C.PROCESS.LIMIT_CPU = 90
+
+# PATH LOCAL
+GLOBAL_PATH = os.path.abspath(os.getcwd())
+# PATH SERVER
+# GLOBAL_PATH = '/var/www/webApp/webApp'
+
+# FILES
+__C.FILES = edict()
+__C.FILES.GLOBAL_PATH = GLOBAL_PATH
+# HANDLE IMAGES / VIDEOS
+__C.FILES.MAX_CONTENT_LENGTH = 20 * 1024 * 1024
+__C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
+
+__C.FILES.SINGLE_UPLOAD      = GLOBAL_PATH + '/files/single/upload'
+__C.FILES.SINGLE_SPLIT       = GLOBAL_PATH + '/files/single/split'
+__C.FILES.SINGLE_OUTPUT      = GLOBAL_PATH + '/files/single/output'
+__C.FILES.SINGLE_FORWEB      = 'files/single/output'
+
+__C.FILES.MULTIPLE_UPLOAD    = GLOBAL_PATH + '/files/multiple/upload'
+__C.FILES.MULTIPLE_SPLIT     = GLOBAL_PATH + '/files/multiple/split'
+__C.FILES.MULTIPLE_OUTPUT    = GLOBAL_PATH + '/files/multiple/output'
+__C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
+
 
 # List
 __C.LIST = edict()

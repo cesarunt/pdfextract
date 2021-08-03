@@ -1,0 +1,70 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PDF Extract - ES Consultores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/solid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/brands.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/flagiconcss/css/flag-icon.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-dir.png') }}" type="image/gif" />
+</head>
+
+<body>
+    <!-- SECTION BODY, START -->
+    <div class="wrapper">
+        <nav id="sidebar" class="">
+            <div class="sidebar-header">
+                <img src="../static/img/esca-logo.png" alt="bootraper logo" class="app-logo">
+            </div>
+            <ul class="list-unstyled components text-secondary">
+                <li>
+                    <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> INICIO</a>
+                </li>
+                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i> EXTRAER DATA</a>
+                </li>
+                  <li style="padding:5px 0 0 10px;">
+                    <a href="{{ url_for('extract_one') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf"></i>ÚNICO PDF</a>
+                  </li>
+                  <li style="padding:5px 0 0 10px;">
+                    <a href="{{ url_for('extract_mul') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> MULTIPLES PDFs</a>
+                  </li>
+                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
+                <li>
+                    <a href="{{ url_for('report') }}"><i class="fas fa-chart-bar disabled"></i> REPORTES</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <nav class="navbar navbar-expand-lg navbar-white bg-white">
+                <button type="button" id="sidebarCollapse" class="btn btn-light" style="border-color: gray;">
+                    <i class="fas fa-bars"></i><span></span>
+                </button>
+                <span style="margin: 0 auto; padding: 10px 20px 0 0;"><h4><b> PDF EXTRACT </b></h4></span>
+            </nav>
+            <!-- end of navbar navigation -->
+            
+            {% block content %}
+
+            {% endblock %}
+            
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Uploads files -->
+    <script src="{{ url_for('static', filename='js/form-pdf.js') }}"></script>
+</body>
+
+</html>

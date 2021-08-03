@@ -1,14 +1,37 @@
 import os, re
 import datetime
 import spacy
+# import docx
+import pandas as pd
 from bs4 import BeautifulSoup
 from utils.process_pdf import *
 from utils.process_data import *
+from utils.config import cfg
+from docx import Document
 
+def build_document(title, text_pdf):
+    document = Document() 
+
+    # add a header
+    document.add_heading(title)
+
+    # add a paragraphs
+    for item in text_pdf:
+        print("type: "+str(type(item)))
+        document.add_paragraph(str(item))
+
+    # add a paragraph within an italic text then go on with a break.
+    # paragraph = document.add_paragraph()
+    # run = paragraph.add_run()
+    # run.italic = True
+    # run.add_text("text will have italic style")
+    # run.add_break()
+    
+    return document
 
 def clear_report():
-    open("output/report.html", "w").close()
-    open("output/background.txt", "w").close()
+    # open("output/report.html", "w").close()
+    open(cfg.FILES.SINGLE_OUTPUT+"/background.txt", "w").close()
 
 def addText_background(line):
     if line != "":
@@ -22,7 +45,7 @@ def addText_background_(line, limit=""):
 
 def pdf_process():
     clear_report()
-    fname = os.listdir('split/')
+    fname = os.listdir(cfg.FILES.SINGLE_SPLIT+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
     length = len(fname)
 
@@ -36,7 +59,7 @@ def pdf_process():
     band_title = False
     title_text = ""         # 01. FIND THE TITLE TEXT
     authors_name = []       # 02. FIND THE AUTHORS NAME
-    year = 0               # 03. FIND THE PUBLISHING YEAR
+    year = 0                # 03. FIND THE PUBLISHING YEAR
     objective = ""          # 04. FIND THE PATTERN OBJECTIVE
     text_methodology = []   # 05. FIND THE METHODOLOGY 
     type_level = ""         #  -. FIND THE PATTERN TYPE 
@@ -55,25 +78,21 @@ def pdf_process():
     methods0     = ""
     results0     = ""
     conclusions0 = ""
+
+    result_process = False
     PATTERN_OBJE = []
     level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
-    
+
     for page in range(length): #Repeat each operation for each document.
         print("Page 0"+str(int(page+1)) +": "+fname[page])
 
         # 1. FIND THE TITLE TEXT
         # ============================================================================================
         # - Extract text with functions PDFminer
-        text_page = convert_pdf_to_text(('split/{}').format(fname[page])) #Extract text with PDF_to_text Function call
-        text_html = convert_pdf_to_html(('split/{}').format(fname[page])) #Extract text with PDF_to_html Function call
+        text_page = convert_pdf_to_text((cfg.FILES.SINGLE_SPLIT+'/{}').format(fname[page])) #Extract text with PDF_to_text Function call
+        text_html = convert_pdf_to_html((cfg.FILES.SINGLE_SPLIT+'/{}').format(fname[page])) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
         # print(text_html)
-
-        #Save extracted html text to file.html
-        text_html_out = text_html.decode("utf-8")
-        with open("output/report.html", "a", encoding="utf-8") as html_file:
-            html_file.writelines("Page_0" + str(int(page+1)) + "\n")
-            html_file.writelines(text_html_out)
 
         if text_page != "" and band_title == False:
             # - Using BeautifulSoup to parse the text
@@ -170,7 +189,7 @@ def pdf_process():
              # ============================================================================================    
                  # print("TIT: "+title_text)
         
-        if objective == "":     objective = getData_LongText(text_page, PATTERN_OBJE, 'E', '. '); print(objective)
+        if objective == "":     objective = getData_LongText(text_page, PATTERN_OBJE, 'E', '. '); #print(objective)
         
         text_method = ""
         method_pos = 0
@@ -262,26 +281,22 @@ def pdf_process():
             if band_method==True :
                 samples   = getData_LongText(text_method, PATTERN_SAMP, 'E', '.\n')
             else:
-            # samples   = getData_Long(text_page, PATTERN_SAMP)
                 samples   = getData_LongText(text_page, PATTERN_SAMP, 'E', '.\n')
-            # print("samples: "+samples)
         if text_page != "" and language!="" and page<=1 :
             text_con = getData_LongText(text_page, PATTERN_RESU, 'E', '.\n')
             if text_con != "" :
                 text_results.append(text_con.replace("\n", "")) 
-            # results0     = getData_LongText(text_page, PATTERN_RESU, 'E', '. ')
         if text_page != "" and language!="" :
             text_con = getData_LongText(text_page, PATTERN_CONC, 'E', '.\n')
             if text_con != "" :
                 text_conclusions.append(text_con)
-            # conclusions0    = getData_LongText(text_page, PATTERN_CONC, 'E', '.\n')
 
         # ============================================================================================
         # text_pdf = []
         if band_title == True and len(authors_name)>0 and year!="" and page == length-1 :
 
             addText_background(fname[page].split(".")[0]+".")
-            print("------------------- END PROCESS -------------------")
+            # print("------------------- END PROCESS -------------------")
 
             print("\n01._ AUTHOR NAME (" + str(len(authors_name))+ "):")
             for item in authors_name:
@@ -307,7 +322,6 @@ def pdf_process():
             method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
             for key, value in method_list.items() : 
                 if value in str(text_methodology) or value.capitalize() in str(text_methodology):
-                    # addText_background(vars()[key])
                     print("\n   .-"+key.capitalize()+" : " + vars()[key])
                 # vars()[item]
             addText_background_("\n - Enfoque detallado: ")
@@ -320,7 +334,6 @@ def pdf_process():
             if listQual : 
                 addText_background_("Cualitativo")
                 print("Cualitativo", end="")
-            # if approach : print(approach)
             addText_background_("\n - Nivel detallado: ")
             print("\n\n  5.2._ LEVEL DETAILS: ", end="")
             if level_appl : addText_background_("Aplicado, ");     print("Aplicado", end=", ")
@@ -340,15 +353,14 @@ def pdf_process():
             if len(listQual) > 0 : addText_background("   "+str(listQual)); print("  " + str(listQual))
 
             addText_background("\nLos resultados ... ")
-            # addText_background(str(text_results))
             print("\n08._ RESULTS : \n" + str(text_results))
             for item in text_results:
-                addText_background("- "+item)
+                addText_background(str("- "+item))
 
             addText_background("\nLas conclusiones ... ")
             # addText_background(str(text_conclusions))
             for item in text_conclusions:
-                addText_background("- "+item)
+                addText_background(str("- "+item))
             print("\n09._ CONCLUSIONS :\n" + str(text_conclusions))
 
             addText_background('\n\n')
@@ -359,12 +371,17 @@ def pdf_process():
             addText_background_("("+str(year)+"). ")
             addText_background_(title_text.capitalize())
             addText_background_(". Obtenido de ... https://")
-
             # break
+
+            document = build_document(fname[page], text_pdf)
+            document.save(cfg.FILES.SINGLE_OUTPUT+'/background.docx')
 
             #Save extracted text to file.txt
             text_pdf_out = text_pdf #.decode("utf-8")
-            with open("output/background.txt", "a", encoding="utf-8") as text_file:
+            with open(cfg.FILES.SINGLE_OUTPUT+"/background.txt", "a", encoding="utf-8") as text_file:
                 # text_file.writelines("Page_0" + str(int(page+1)) + "\n")
                 text_file.writelines(text_pdf_out)
+                result_process = True
         # input("................... press enter ........................")
+    
+    return result_process

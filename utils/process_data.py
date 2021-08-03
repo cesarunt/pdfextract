@@ -88,7 +88,7 @@ def getData_LongText(text_page, PATTERN, limit_start, limit_end):
         obj = ""
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
-            print("\nLong pattern: "+pattern+" found:"+str(patt))
+            # print("\nLong pattern: "+pattern+" found:"+str(patt))
             if limit_end == ''  : obj = text_page[patt.end(0)+1:]
             else :
                 if limit_start == 'S':
