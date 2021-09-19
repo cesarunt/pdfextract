@@ -14,7 +14,7 @@
                     <h5 class="card-header">Extraer Único PDF</h5>
                     <div class="card-body">
                         <!-- <form class=""> -->
-                            {% if not resultText %}
+                            {% if not result_file_text %}
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-12">
                                     <!-- <form method="post" action="/pdfs" enctype="multipart/form-data">
@@ -46,7 +46,7 @@
                                         <!-- Buttons on finish uploading -->
                                         <form method="POST" action="action_extract_one" enctype="multipart/form-data">
                                             <button class="btn btn-secondary d-none" type="button" id="cancelPDF_btn">Cancelar</button>
-                                            <button class="btn btn-success d-none" id="processPDF_btn" onclick="ai_clicImageProcess()" type="submit">
+                                            <button class="btn btn-success d-none" id="processPDF_btn" onclick="clicPDFProcess()" type="submit">
                                                 <i class="fas fa-play"></i> &nbsp;Procesar
                                             </button>
                                         </form>
@@ -54,7 +54,7 @@
                                         <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i> Procesar</button> -->
                                     </div>
                                     <div id="processPDF_wrapper" class="text-center d-none">
-                                        <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 150px; height: 150px;">
+                                        <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
                                         <p style="margin:0 auto;">
                                             <small style="color:gray;" lass="text-muted">procesando pdf</small>
                                         </p>
@@ -75,18 +75,22 @@
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-12 text-center">
                                     <div class="mb-3">
+                                        {% if result_save %}
                                         <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-word.png') }}">
+                                        {% else %}
+                                        <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
+                                        {% endif %}
                                         <!-- ../static/img/doc-word.png -->
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">{{ file_show }}</label>
+                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">{{ result_file_text }}</label>
                                     </div>
                                     <div class="mb-3">
-                                        <!-- <div class="card-footer text-center" style="padding: 0;"> -->
-                                        <!-- <img class="card-img-top" src="{{ resultText }}" style="border: 1px solid #F55; margin: 0 auto;"> -->
                                         <form method="POST" action="save_extract_one" enctype="multipart/form-data">
-                                            <input type="hidden" name="down_image" id="down_image" value="{{ resultText }}" />
+                                            <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
                                             <p style="text-align: center; margin: 15px 0 0 0;">
                                                 <a href="{{ url_for('close_extract_one', source='extract_one') }}" class="btn btn-secondary">Cerrar</a>
+                                                {% if result_save %}
                                                 <button class="btn btn-primary" id="saveImage_btn" type="submit">Guardar</button>
+                                                {% endif %}
                                             </p>
                                         </form>
                                     </div>

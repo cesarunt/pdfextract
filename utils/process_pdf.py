@@ -37,7 +37,12 @@ def convert_pdf_to_html(path):
     caching = True
     pagenos = set()
     for page in PDFPage.get_pages(filepath, pagenos, maxpages = maxpages, password = password, caching = caching, check_extractable = True):
-        interpreter.process_page(page)
+        # interpreter.process_page(page)
+        try:
+            interpreter.process_page(page)
+        except:
+            continue
+
     filepath.close()
     device.close()
     str = retstr.getvalue()

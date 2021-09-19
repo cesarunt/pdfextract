@@ -1,12 +1,19 @@
 from utils.config import cfg
-from textblob import TextBlob
-# import spacy
+# from textblob import TextBlob
+from langdetect import detect
+# from statistics import mode
+from scipy import stats as s
 import re
 
 # PATTERNS SPANISH
 # general patterns
 patterns_es = [ 
         cfg.LIST.BLOCK_WORDS_ES,
+        cfg.LIST.BLOCK_AUTHOR_ES,
+        cfg.LIST.PATTERN_ABST_ES,
+        cfg.LIST.PATTERN_METHOD_ES,
+        cfg.LIST.PATTERN_SUBTIT_ES,
+        cfg.LIST.PATTERN_ARTI_ES,
         cfg.LIST.PATTERN_OBJE_ES,
         cfg.LIST.PATTERN_METH_ES,
         cfg.LIST.PATTERN_TYPE_ES,
@@ -37,6 +44,11 @@ patterns_approach_es = [
 # general patterns
 patterns_en = [ 
         cfg.LIST.BLOCK_WORDS_EN,
+        cfg.LIST.BLOCK_AUTHOR_EN,
+        cfg.LIST.PATTERN_ABST_EN,
+        cfg.LIST.PATTERN_METHOD_EN,
+        cfg.LIST.PATTERN_SUBTIT_EN,
+        cfg.LIST.PATTERN_ARTI_EN,
         cfg.LIST.PATTERN_OBJE_EN,
         cfg.LIST.PATTERN_METH_EN,
         cfg.LIST.PATTERN_TYPE_EN,
@@ -65,15 +77,329 @@ patterns_approach_en = [
 
 
 # GETTING DATA FROM PATTERN (patt)
+
+# getting for URL
+def getData_ResultURL(text_page, PATTERN):
+    result_res = False
+    result_text = ""
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            obj = text_page[patt.start(0):].split(" ")[0]
+            if len(obj)>0:
+                result_res = True
+                result_text = obj
+                break
+
+    return result_res, result_text
+
+# getting for doi
+def getData_ResultDOI(text_page, PATTERN):
+    result_res = False
+    result_text = ""
+    # print(text_page)
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            obj = text_page[patt.start(0):].split("\n")[0]
+            if len(obj)>len(pattern):
+                result_res = True
+                result_text = obj
+                break
+
+    return result_res, result_text
+
+# getting for resumen
+def getData_TitleResumen(text_page, PATTERN, limit, intro_font) :
+    resumen_title = ""
+    # patt_band = False
+
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+    # print(text_page)
+
+    for pattern in PATTERN[:limit]:
+        patt = re.search(rf"{pattern}", text_page, re.IGNORECASE)
+        # print("... patt: " + pattern + "  - intro: "+ str(intro_font))
+        if patt != None :
+            # print("PATTERN: " + pattern ) 
+            # patt_band = True 
+            resumen_title = pattern
+            break
+        
+    return resumen_title
+
+# def getData_ResultResumen(text_page, PATTERN, band):
+def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band, pagefonts_mode):
+    result_text = ""
+    result_page = False
+    find_title = False
+    # font_title = 0
+    font_title_list = []
+    patt_band = False
+    result_lines = []
+    list_count = 0
+    list_fonts = []
+    list_max_key = 0        # len(key)
+    list_max_font = 0       # max value
+    font_title = pagefonts_mode
+
+    max_long = 0
+    max_font = 0
+    for item in pagelines_list:
+        if len(item[0])>max_long:
+            max_long = len(item[0])
+            max_font = item[1]
+            # print("text "+ item[0])
+    if max_long > 400 : pagefonts_mode = max_font
+
+    # print("introduction_mode: "+ str(pagefonts_mode))
+    # print("\n Result LIST")
+    # for item in pagelines_list:
+    #     print(item)
+
+    if band == False : result_lines = pagelines_list
+    else :
+        for key,value,_ in pagelines_list:
+            if find_title == False:
+                patt = re.search(rf"{resumen_title}", key, re.IGNORECASE)
+                # print("... Patt key: " + key + "  - value: "+ str(value))
+                if patt != None: # and value==pagefonts_mode:
+                    # print("*** Start: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                    find_title = True
+                    font_title = value
+                    # print("----font_title: "+ str(font_title))
+                    result_lines.append(tuple([key, value, 0]))
+                    continue
+            if find_title==True:
+                list_count += 1
+                if list_count < 5 :
+                    list_fonts.append(value)
+                    if len(key)>list_max_key:
+                        list_max_key = len(key)
+                        list_max_font = value
+                    # list_mode = mode(list_fonts)
+                    list_mode = s.mode(list_fonts)[0]
+                # if value==font_title:
+                result_lines.append(tuple([key, value, 0]))
+                    # font_title_list.append(value)
+        if list_max_font == list_mode :
+            font_title = list_mode
+    
+    # print("font_title: "+ str(font_title))
+    # print("\n Result Lines")
+    # for item in result_lines:
+    #     print(item)
+
+    if len(result_lines)>0 :
+        for key, value, _ in result_lines:
+            for pattern in PATTERN[limit:]:
+                patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+                if patt != None :
+                    # print("*** End: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                    patt_band=True; break
+            if patt_band:
+                result_page = True
+                break
+            elif value == font_title:  # ///////////////////////////////////////////////////////////
+                result_text = result_text + key
+            # elif value==pagefonts_mode:
+            #     result_text = result_text + key
+    # print("TEXT....")
+    # print(result_text)
+
+    return result_text, result_page
+
+
+# getting for introduction
+def getData_TitleIntroduction(text_page, PATTERN, limit, intro_font) :
+    resumen_title = ""
+    # patt_band = False
+
+    for pattern in PATTERN[:limit]:
+        patt = re.search(rf"{pattern}", text_page, re.IGNORECASE)
+        # print("... patt: " + pattern + "  - intro: "+ str(intro_font))
+        if patt != None :
+            # print("PATTERN: " + pattern + " - " + key + " - " + str(value)) 
+            # patt_band = True 
+            resumen_title = pattern
+            break
+        
+    return resumen_title
+
+def getData_ResultIntroduction(pagelines_list, introduction_title):
+    find_title = False
+    # result_lines = []
+    introduction_mode = 0
+
+    for key,value,_ in pagelines_list:
+        if find_title == False:    # author_band = True; continue
+            patt = re.search(rf"{introduction_title}", key, re.IGNORECASE)
+            if patt != None:
+                # print("*** patt: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                find_title = True
+                continue
+        else:
+            # result_lines.append(tuple([key, value, 0]))
+            introduction_mode = value
+            break
+    # print("\nResult Intro")
+    # for item in result_lines:
+    #     print(item)
+
+    return introduction_mode
+
+# getting for methodology
+def getData_TitleMethodology(text_page, PATTERN, limit) :
+    methodology_title = ""
+    # patt_band = False
+    # print(text_page)
+
+    # method_font_max = max(text_page, key=lambda x:x[1])[1]
+    # for key,value in text_page:
+    for pattern in PATTERN[:limit]:
+        patt = re.search(rf"{pattern}", text_page)
+        # print("__ PATTERN: " + str(patt) + " - pattern: " + pattern)
+        if patt != None :
+            # print("PATTERN: " + str(patt) ) 
+            # patt_band = True 
+            methodology_title = pattern
+            break
+    
+    return methodology_title
+
+def getData_ResultMethodology(pagelines_list, methodology_title, PATTERN, limit, band, intro_font, introduction_mode):
+    result_text = ""
+    result_page = False
+    find_title = False
+    patt_band = False
+    result_lines = []
+    font_title = introduction_mode
+
+    # print("\n Result LIST")
+    # for item in pagelines_list:
+    #     print(item)
+    # print('intro_font: '+ str(intro_font))
+    # print("introduction_mode: "+ str(introduction_mode))
+
+    if band == False : result_lines = pagelines_list
+    else :
+        for key,value,_ in pagelines_list:
+            if find_title == False:
+                patt = re.search(rf"{methodology_title}", key)
+                # print("\n___PREV patt: " + str(patt) + "  - key_value:" + key +" _ "+ str(value))
+                if (patt != None): # and value==intro_font) or (patt != None and value==introduction_mode):
+                    # print("\n___Start patt: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
+                    find_title = True
+                    font_title = value
+                    result_lines.append(tuple([key, value, 0]))
+                    continue
+            if find_title==True:
+                if value==font_title:
+                    result_lines.append(tuple([key, value, 0]))
+
+    # print("font_title: "+ str(font_title))
+    # print("\n Result Lines")
+    # for item in result_lines:
+    #     print(item)
+
+    if len(result_lines)>0 :
+        for key, value, _ in result_lines:
+            for pattern in PATTERN[limit:]:
+                patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+                # print("\n___POST patt: " + str(pattern) + " _ "+ str(value))
+                if patt != None: # and value == intro_font) or (patt != None and value==introduction_mode):
+                    # print("\n___End patt: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
+                    patt_band=True; break
+            if patt_band:
+                result_page = True
+                break
+            elif value == font_title : # or value==introduction_mode:
+                result_text = result_text + key
+
+    return result_text, result_page
+
+# getting for result
+def getData_TitleResults(text_page, PATTERN, limit, intro_font):
+    methodology_title = ""
+    # patt_band = False
+
+    # method_font_max = max(text_page, key=lambda x:x[1])[1]
+    # for key,value in text_page:
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+    # print("\nText Page ...")
+    # print(text_page)
+    for pattern in PATTERN[:limit]:
+        patt = re.search(rf"{pattern}", text_page)
+        # print("PATTERN: " + pattern + " ...intro:" + str(intro_font))
+        if patt != None :#and value == intro_font:
+            # print("\nResult OK:" + str(intro_font))
+            # patt_band = True
+            methodology_title = pattern
+            break
+    # if patt_band : break
+    
+    return methodology_title
+
+def getData_ResultResults(text_page, methodology_title, PATTERN, limit, band, pagefonts_mode):
+    result_page = False
+    result_text = ""
+    result_band = False
+
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+
+    if band == False : result_text = text_page
+    else :
+        patt = re.search(rf"\b{methodology_title}\b", text_page)
+        if patt != None :
+            result_text = text_page[patt.end(0):]
+    
+    if result_band == False :
+        for pattern in PATTERN[limit:] :
+            patt = re.search(rf"\b{pattern}\b", result_text)
+            if patt != None :
+                result_text = result_text[:patt.start(0)]
+                result_page = True
+                break
+
+    return result_text, result_page
+
+# getting for article
+def getData_ResultArticle(text_page, PATTERN):
+    result_res = False
+    result_text = ""
+
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+
+    for pattern in PATTERN :
+        patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        if patt != None :
+            obj = text_page[patt.start(0):].split("\n")[0]
+            if len(obj)>0:
+                result_res = True
+                result_text = obj
+                break
+
+    return result_res, result_text
+
 # getting long data
 def getData_ResultText(text_page, PATTERN):
     result = False
     pos = 0
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+
     for pattern in PATTERN :
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
-            # print("Result pattern: "+pattern+" found:"+str(patt))
-            # print("patt text: "+str(text_page[patt.start(0):].split('. ')[0]))
             pos = patt.start(0)
             result = True
             break
@@ -81,12 +407,15 @@ def getData_ResultText(text_page, PATTERN):
     return result, pos
 
 def getData_LongText(text_page, PATTERN, limit_start, limit_end):
-    # limit_start = S or E
-    # limit_end   = '. '
     text = ""
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+
     for pattern in PATTERN :
         obj = ""
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
+        # print("\nLong pattern: "+pattern+" found:"+str(patt))
         if patt != None :
             # print("\nLong pattern: "+pattern+" found:"+str(patt))
             if limit_end == ''  : obj = text_page[patt.end(0)+1:]
@@ -109,9 +438,11 @@ def getData_LongText(text_page, PATTERN, limit_start, limit_end):
     return text
 
 def getData_LongText_Result(text_page, PATTERN, limit_start='E', limit_end='. \n'):
-    # limit_start = S or E
-    # limit_end   = '. '
     text = ""
+    text_page = text_page.replace("   ", "#_")
+    text_page = text_page.replace("  ", "#_")
+    text_page = text_page.replace("#_", " ")
+
     for pattern in PATTERN :
         obj = ""
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
@@ -168,7 +499,9 @@ def getTools_ResultCount(text_page, PATTERN):
 
 # GETTING THE LANGUAGE (lang)
 def lang_getLanguage(text_page):
-    language = TextBlob(text_page).detect_language()
+    language = ""
+    # language = TextBlob(text_page).detect_language()
+    language = detect(text_page)
     return language
 
 def lang_loadPatterns(language):
@@ -177,19 +510,20 @@ def lang_loadPatterns(language):
     patterns_level = []
     patterns_approach = []
     # load patterns for language
-    if language == "en" :
-        patterns = patterns_en
-        patterns_level = patterns_level_en
-        patterns_approach = patterns_approach_en
-        lib_spacy = "xx_ent_wiki_sm"; from spacy.lang.en.stop_words import STOP_WORDS
-    else :
+    if language == "es" :
         patterns = patterns_es
         patterns_level = patterns_level_es
         patterns_approach = patterns_approach_es
-        lib_spacy = "es_core_news_sm"; from spacy.lang.es.stop_words import STOP_WORDS
+        lib_spacy = "es_core_news_sm"; #from spacy.lang.es.stop_words import STOP_WORDS
+    else :
+        patterns = patterns_en
+        patterns_level = patterns_level_en
+        patterns_approach = patterns_approach_en
+        lib_spacy = "xx_ent_wiki_sm"; #from spacy.lang.en.stop_words import STOP_WORDS
+
     # NLP = spacy.load(lib_spacy)
 # --------------------=-=-=-=-=-====-=-=-=-=
-    return lib_spacy, STOP_WORDS, patterns, patterns_level, patterns_approach
+    return lib_spacy, patterns, patterns_level, patterns_approach
 
 # PROCESS DATA AND TEXT
 def clear_text_save():
@@ -210,22 +544,6 @@ def find_number_in_word(word):
     result = False
     if word[-1] in cfg.LIST.BLOCK_NUMBERS: 
         result = True
-    return result
-
-def find_words_allowed(word_full):
-    result = False
-    new_word = ""
-    # separate word by empty space
-    word_parts = word_full.split()
-    # print(word_parts)
-    for word in word_parts :
-        # if find_number_in_word(word)==True :
-        #     word = ""
-        if word.lower() in cfg.LIST.ALLOW_WORDS :
-            result = True
-            # new_word = word_full
-            break
-        # new_word = new_word + word + " "
     return result
 
 def clear_word(word_full, list_words):

@@ -41,7 +41,7 @@ function showPDFResult(imageOut, imageW) {
 }
 
 // Function to upload file
-function ai_clicImageProcess() {
+function clicPDFProcess() {
   // Hide the Cancel button
   cancelPDF_btn.classList.add("d-none");
   // Hide the Process button
@@ -50,6 +50,18 @@ function ai_clicImageProcess() {
 //   alertPDF_wrapper.innerHTML = "";
   // Disable the input during upload
   inputPDF.disabled = true;
+  // Show the load icon Process
+  processPDF_wrapper.classList.remove("d-none");
+}
+
+// Function to upload file
+function clicPDFProcessMul() {
+  // Hide the Cancel button
+  cancelPDF_btn.classList.add("d-none");
+  // Hide the Process button
+  processPDF_btn.classList.add("d-none");
+  // Clear any existing alerts
+//   alertPDF_wrapper.innerHTML = "";
   // Show the load icon Process
   processPDF_wrapper.classList.remove("d-none");
 }

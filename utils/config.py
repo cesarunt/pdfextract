@@ -1,20 +1,55 @@
 from easydict import EasyDict as edict
 import os
 
+# PATH LOCAL
+# GLOBAL_PATH = os.path.abspath(os.getcwd())
+# PATH SERVER
+GLOBAL_PATH = '/var/www/webApp/webApp'
+
 # BLOCK AND ALLOW WORDS
 BLOCK_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-BLOCK_WORDS_ES = ['resumen', 'author', 'recibido', 'universidad', 'Dirección', 'Electrónica', 'Ingeniería', 'Facultad']
-BLOCK_WORDS_EN = ['abstract', 'author', 'jurnal', 'Article ', 'university', 'College ']
-ALLOW_WORDS = ['contreras', 'alarcón', 'anak', 'moinuddin', 'ok']
+# BLOCK_WORDS_ES = ['resumen', 'author', 'recibido', 'universidad', 'dirección', 'electrónica', 'ingeniería', 'facultad']
+# block by text_parser
+BLOCK_WORDS_ES = ['resumen', 'introducción', 'r e s u m e n']
+BLOCK_WORDS_EN = ['abstract', 'resumen', 'introduction', 'a b s t r a c t']
+BLOCK_AUTHOR_ES = ['recibido', 'aceptado', 'autor', 'clave:', 'keywords:', 'publicado', 'published', 'required', 'universidad', 'facultad', 'colegio', 'colegios', 'departamento', 'instituto', 'cuenta', 'magister', 'procedimientos', 'local', 'issn', 'http', 'www', '@', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+BLOCK_AUTHOR_EN = ['received', 'recibido', 'accepted', 'author', 'keywords', 'colleague', 'published', 'required', 'university', 'universidad', 'faculty', 'school', 'schools', 'departament', 'institute', 'account', 'magister', 'procedures', 'local', 'issn', 'http', 'www', '@', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+# RESUMEN
+PATTERN_ABST_ES = ['este estudio', 'sumario', 'resumen', 'r e s u m e n', 'abstract', 'a b s t r a c t', 'presente artículo', 'este artículo,', 'el propósito', 'pretende', 'palabras claves', 'palabras-clave', 'clave:', 'abstract', '©', '___']
+PATTERN_ABST_EN = ['this study', 'summary', 'resumen', 'r e s u m e n', 'abstract', 'a b s t r a c t', 'this paper', 'this article,', 'the purpose', 'aims to', 'keywords', 'acknowledgments', 'key words', 'palabras-clave', 'clave:', 'resumen', 'dedication', '©', '___' ]
+
+# METHODOLOGY
+PATTERN_METHOD_ES = ['Metodología de Investigación', 'Metodología', 'MeTodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'La metodología', 'Diseños y Métodos', 'Instrumentos', 'Resultados', 'RESULTADOS', 'Resultado', 'Los resultados', 'Data Analysis', 'Conclusiones', 'CONCLUSIONES', 'Tabla', 'Recomendaciones', 'Discusión', 'https', 'http']
+PATTERN_METHOD_EN = ['Research methodology', 'Methodology', 'MeThodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'The methodology', 'Research Design', 'Tools', 'Results', 'RESULTS', 'Resultados', 'Result', 'The results', 'Estimation', 'Conclusions', 'CONCLUSIONS', 'Table', 'Findings', 'FINDINGS', 'Suggestions', 'Discussion', 'https', 'http']
+
+PATTERN_SUBTIT_ES = ['Introducción', 'INTRODUCCIÓN', 'Introduction', 'INTRODUCTION']
+PATTERN_SUBTIT_EN = ['Introduction', 'INTRODUCTION', 'Introducción', 'INTRODUCCIÓN']
+
+# RESULTS
+PATTERN_RESU_ES = ['Nuestros resultados', 'Los resultados', 'Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Instrumentos', 'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
+PATTERN_RESU_EN = ['Our results', 'The results', 'Results', 'RESULTS', 'Result', 'RESULT', 'Tools', 'Measures', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'Resultados', 'Tabla', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
+
+# CONCLUSIONS
+PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'conflicto', 'Referencias', 'REFERENCIAS', 'Notas Finales', 'NOTAS FINALES', 'Bibliografía', 'BIBLIOGRAFÍA', 'www', '& ', 'Limitaciones']
+PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'C O N C L U D I N G', 'conflict', 'References', 'REFERENCES', 'Endnotes', 'ENDNOTES', 'Limitations', '& ']
+
+# PATTERN DOI (DOI)
+PATTERN_DOI_XX = ['https://doi.org/', 'doi', 'https://']
+PATTERN_ABST_BLOCK = ['issn','http']
+
+# PATTERN ARTICLE (ARTI)
+PATTERN_ARTI_ES = ['revista']
+PATTERN_ARTI_EN = ['journal']
 
 # PATTERN OBJECTIVE (OBJE)
-PATTERN_OBJE_ES = ['objetivo general', 'objetivo principal', 'propósito central', 'objetivo fue', 'por lo expuesto', 'objetivo']
-PATTERN_OBJE_EN = ['aims', 'aimed', 'study', 'Purpose', 'purpose', 'objective']
+PATTERN_OBJE_ES = ['el objetivo', 'objetivo general', 'objetivo principal', 'propósito', 'los objetivos']
+PATTERN_OBJE_EN = ['objective', 'aims', 'aimed', 'purpose', 'the objectives']
 
 # METHODOLOGY
 # PATTERN METHODOLOGY (METH) long
 PATTERN_METH_ES = ['metodología', 'diseño y métodos', 'métodos.', 'métodos']
-PATTERN_METH_EN = ['methodology', 'methods', 'methods.', 'research methods', 'research method']
+PATTERN_METH_EN = ['methodology', 'methods', 'methods.', 'research methods', 'research method', 'research design']
 
 # PATTERN TYPE (TYPE) NOT USE
 PATTERN_TYPE_ES = ['tipo']
@@ -47,24 +82,21 @@ PATTERN_LEVE_EXPO_EN = ['interviews', 'discussions', 'interview', 'discussion']
 # PATTERN APPROACH (APPR) long (3)
 PATTERN_APPR_QUAN_ES = ['encuesta', 'cuestionario', 'baterías', 'escalograma', 'escala', 'inventario', 'pruebas', 'técnicas estadísticas', 'correlación', 'cotejo', 'rúbrica', 'signatura', 'diferencial']
 PATTERN_APPR_QUAN_EN = ['survey', 'questionary', 'questionnaire', 'batteries', 'scalogram', 'scale', 'inventory', 'tests', 'test', 'collation', 'comparison', 'contrast', 'rubric', 'signature' 'differential']
-PATTERN_APPR_QUAL_ES = ['entrevistas', 'entrevista', 'guía de observación', 'diario', 'fichas', 'ficha', 'plan de trabajo', 'grabadoras', 'grabadora', 'análisis de contenidos', 'anécdotas', 'autobiografías', 'cuaderno de notas', 'libretas', 'libreta', 'apuntes', 'notas', 'preguntas', 'relatos', 'técnicas proyectivas']
-PATTERN_APPR_QUAL_EN = ['interviews', ' interview',' observation guide', 'guide', ' diary ', 'records', ' files', 'file', 'focus group', 'recorders',' recorder ',' analysis of contents', 'anecdotes',' autobiographies', 'notebooks', 'notebook',' notes', 'note',' questions', 'stories',' projective techniques' ]
+PATTERN_APPR_QUAL_ES = ['entrevistas', 'entrevista', 'guía de observación', 'diario', 'fichas', 'ficha', 'plan de trabajo', 'grabadoras', 'grabadora', 'análisis de contenidos', 'anécdotas', 'autobiografías', 'cuaderno de notas', 'libretas', 'libreta', 'apuntes', 'preguntas', 'relatos', 'técnicas proyectivas']
+PATTERN_APPR_QUAL_EN = ['interviews', ' interview',' observation guide', 'guide', ' diary ', 'records', ' files', 'file', 'focus group', 'recorders',' recorder ',' analysis of contents', 'anecdotes',' autobiographies', 'notebooks', 'notebook',' notes:', 'questions', 'stories','projective techniques' ]
 
 # PATTERN SAMPLE (SAMP)
 PATTERN_SAMP_ES = ['la muestra','muestra']
-PATTERN_SAMP_EN = ['sample']
+PATTERN_SAMP_EN = ['samples', 'sample', 'exemplo']
 
 # PATTERN TOOLS (TOOL)
 PATTERN_TOOL_ES = ['instrumentos', 'instrumento']
 PATTERN_TOOL_EN = ['tools', 'tool']
 
 # PATTERN RESULT (RESU)
-PATTERN_RESU_ES = ['resultados y análisis', 'resultados y discusión', 'siguientes resultados:', 'resultados:', 'resultados obtenidos', 'resultados']
-PATTERN_RESU_EN = ['results and discussion', 'result and discussion', 'results discussion', 'results obtained', 'findings', 'results']
+# PATTERN_RESU_ES = ['resultados y análisis', 'resultados y discusión', 'siguientes resultados:', 'resultados:', 'resultados obtenidos', 'resultados']
+# PATTERN_RESU_EN = ['results and discussion', 'result and discussion', 'results discussion', 'results obtained', 'findings', 'results']
 
-# PATTERN CONCLUSIONS (CONC)
-PATTERN_CONC_ES = ['conclusiones y recomendaciones', 'conclusiones:', 'conclusiones', 'se concluye', 'conclusión']
-PATTERN_CONC_EN = ['conclusions:', 'conclusions', 'conclusion']
 
 __C = edict()
 cfg = __C
@@ -76,16 +108,12 @@ __C.PROCESS.USE_GPU = False
 # Percentage to change if posible to process service
 __C.PROCESS.LIMIT_CPU = 90
 
-# PATH LOCAL
-GLOBAL_PATH = os.path.abspath(os.getcwd())
-# PATH SERVER
-# GLOBAL_PATH = '/var/www/webApp/webApp'
-
 # FILES
 __C.FILES = edict()
 __C.FILES.GLOBAL_PATH = GLOBAL_PATH
+__C.FILES.MAX_NUMPAGES = 40
 # HANDLE IMAGES / VIDEOS
-__C.FILES.MAX_CONTENT_LENGTH = 20 * 1024 * 1024
+__C.FILES.MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 __C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
 
 __C.FILES.SINGLE_UPLOAD      = GLOBAL_PATH + '/files/single/upload'
@@ -101,12 +129,24 @@ __C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
 
 # List
 __C.LIST = edict()
-__C.LIST.ALLOW_WORDS = ALLOW_WORDS
+__C.LIST.PATTERN_ABST_BLOCK = PATTERN_ABST_BLOCK
 __C.LIST.BLOCK_NUMBERS = BLOCK_NUMBERS
 __C.LIST.BLOCK_WORDS_ES = BLOCK_WORDS_ES
 __C.LIST.BLOCK_WORDS_EN = BLOCK_WORDS_EN
+__C.LIST.BLOCK_AUTHOR_ES = BLOCK_AUTHOR_ES
+__C.LIST.BLOCK_AUTHOR_EN = BLOCK_AUTHOR_EN
 __C.LIST.PATTERN_METH_ES = PATTERN_METH_ES
 __C.LIST.PATTERN_METH_EN = PATTERN_METH_EN
+
+__C.LIST.PATTERN_ABST_ES = PATTERN_ABST_ES
+__C.LIST.PATTERN_ABST_EN = PATTERN_ABST_EN
+__C.LIST.PATTERN_METHOD_ES = PATTERN_METHOD_ES
+__C.LIST.PATTERN_METHOD_EN = PATTERN_METHOD_EN
+__C.LIST.PATTERN_SUBTIT_ES = PATTERN_SUBTIT_ES
+__C.LIST.PATTERN_SUBTIT_EN = PATTERN_SUBTIT_EN
+__C.LIST.PATTERN_DOI_XX  = PATTERN_DOI_XX
+__C.LIST.PATTERN_ARTI_ES = PATTERN_ARTI_ES
+__C.LIST.PATTERN_ARTI_EN = PATTERN_ARTI_EN
 __C.LIST.PATTERN_OBJE_ES = PATTERN_OBJE_ES
 __C.LIST.PATTERN_OBJE_EN = PATTERN_OBJE_EN
 __C.LIST.PATTERN_TYPE_ES = PATTERN_TYPE_ES

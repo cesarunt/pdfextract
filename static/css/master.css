@@ -249,13 +249,13 @@ body {
 }
 
 .card-img-land {
-    width: 60%;
+    width: 55%;
     margin: 1rem auto 2rem;
 }
 
 .card-img-logo {
-    width: 27%;
-    margin: 1rem auto;
+    width: 24%;
+    margin: 1rem auto 0;
 }
 
 /*------------------------------------------------------------------
