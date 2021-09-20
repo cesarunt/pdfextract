@@ -135,12 +135,11 @@ def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band, p
     result_text = ""
     result_page = False
     find_title = False
-    # font_title = 0
-    font_title_list = []
     patt_band = False
     result_lines = []
     list_count = 0
     list_fonts = []
+    list_mode = 0
     list_max_key = 0        # len(key)
     list_max_font = 0       # max value
     font_title = pagefonts_mode
@@ -173,17 +172,16 @@ def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band, p
                     result_lines.append(tuple([key, value, 0]))
                     continue
             if find_title==True:
-                list_count += 1
-                if list_count < 5 :
-                    list_fonts.append(value)
-                    if len(key)>list_max_key:
-                        list_max_key = len(key)
-                        list_max_font = value
-                    # list_mode = mode(list_fonts)
-                    list_mode = s.mode(list_fonts)[0]
-                # if value==font_title:
-                result_lines.append(tuple([key, value, 0]))
-                    # font_title_list.append(value)
+                # Consideramos evaluar los primeros 4 items para obtener el valor mayor 
+                # list_count += 1
+                # if list_count < 5 :
+                #     list_fonts.append(value)
+                #     if len(key)>list_max_key:
+                #         list_max_key = len(key)
+                #         list_max_font = value
+                #     list_mode = s.mode(list_fonts)[0]
+                if value==font_title or value==pagefonts_mode:
+                    result_lines.append(tuple([key, value, 0]))
         if list_max_font == list_mode :
             font_title = list_mode
     
@@ -202,12 +200,10 @@ def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band, p
             if patt_band:
                 result_page = True
                 break
-            elif value == font_title:  # ///////////////////////////////////////////////////////////
+            else: #value == font_title:  # ///////////////////////////////////////////////////////////
                 result_text = result_text + key
             # elif value==pagefonts_mode:
             #     result_text = result_text + key
-    # print("TEXT....")
-    # print(result_text)
 
     return result_text, result_page
 

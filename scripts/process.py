@@ -115,8 +115,8 @@ def pdf_process(files_split, files_output):
             if language_band == False:
                 if page == 0:
                     language = lang_getLanguage(text_page)
-                elif title_text != "":
-                    language = lang_getLanguage(title_text)
+                # elif title_text != "":
+                #     language = lang_getLanguage(title_text)
                     language_band = True
                 # - Getting the language of text, with NLP
                 # language = lang_getLanguage(text_page)
@@ -147,6 +147,7 @@ def pdf_process(files_split, files_output):
                 authors_list = []
                 last_value = 0
                 last_key = " "
+
                 # print("\nText Parser...")
                 # print(str(len(text_parser)))
                 # for item in text_parser:
@@ -217,14 +218,24 @@ def pdf_process(files_split, files_output):
                     if len(authors_list) > 0 and title_text != "":
                         # 1er recorrido authors_list, para actualizar lista con "\n"
                         for key, value in authors_list :
-                            key_name = key.split("\n")
-                            if len(key_name) > 1 :
-                                authors_list.remove(tuple([key, value]))
-                                for key_split in key_name:
-                                    authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
-                        # 2do recorrido authors_list, para obtener la lista final de __authors_name
+                            if len(key)>1 :
+                                key_name = key.split("\n")
+                                if len(key_name) > 1 :
+                                    authors_list.remove(tuple([key, value]))
+                                    for key_split in key_name:
+                                        # Validar si ya existe
+                                        authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
+                        # 2do recorrido authors_list, para actualizar lista con ", "
                         for key, value in authors_list :
-                            # if value == title_font:     author_band = True; continue
+                            if len(key)>1 :
+                                key_name = key.split(",")
+                                if len(key_name)>1:
+                                    authors_list.remove(tuple([key, value]))
+                                    for key_split in key_name:
+                                        # Validar si ya existe
+                                        authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
+                        # 3er recorrido authors_list, para obtener la lista final de __authors_name
+                        for key, value in authors_list :
                             if len(key)>1 :
                                 # print("\nKey: " + key + " - Value: " + str(value))
                                 for auth_block in BLOCK_AUTHOR :
@@ -237,7 +248,10 @@ def pdf_process(files_split, files_output):
                                         # authors_name.append(key)
                                         authors_text += key + ", "
                     
-                    # print("\nLen Authors II ...")
+                    # print("\nAuthors List")
+                    # for item in authors_list:
+                    #     print(item)
+                    # print("\nAuthors Text ...")
                     # print(authors_text)
 
                 # AUTORES (ANTECEDENTES) ............
@@ -268,11 +282,11 @@ def pdf_process(files_split, files_output):
             # 4. GET THE RESUME TEXT
             # ============================================================================================
             if resumen_title=="":
-                resumen_title = getData_TitleResumen(text_page, PATTERN_ABST, 10, intro_font)
+                resumen_title = getData_TitleResumen(text_page, PATTERN_ABST, 8, intro_font)
                 # print("\nResumen Title: \n" + resumen_title)
                 if resumen_title != "" :
                     if resumen_text == "" :
-                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_title, PATTERN_ABST, 10, True, pageresum_mode)
+                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_title, PATTERN_ABST, 8, True, pageresum_mode)
 
                     if resumen_res :
                         resumen_text = resumen_text.replace(".\n\n", "._")
