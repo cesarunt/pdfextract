@@ -16,19 +16,19 @@ BLOCK_AUTHOR_ES = ['recibido', 'aceptado', 'autor', 'clave:', 'keywords:', 'publ
 BLOCK_AUTHOR_EN = ['received', 'recibido', 'accepted', 'author', 'keywords', 'colleague', 'published', 'required', 'india', 'account', 'magister', 'procedures', 'local', 'issn', 'http', 'www', '@', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 # RESUMEN
-PATTERN_ABST_ES = ['resumen', 'r e s u m e n', 'sumario', 'este estudio', 'presente artículo', 'este artículo,', 'el propósito', 'pretende', 'palabras claves', 'clave:', 'introducción', 'abstract', 'a b s t r a c t', '©', '___']
-PATTERN_ABST_EN = ['abstract', 'a b s t r a c t', 'summary', 'this study', 'this paper', 'this article,', 'the purpose', 'aims to', 'keywords', 'keywords:', 'introduction', 'acknowledgments', 'palabras clave', 'clave:', 'resumen', 'r e s u m e n', '©', '___' ]
+PATTERN_ABST_ES = ['resumen', 'r e s u m e n', 'sumario', 'este estudio', 'presente artículo', 'este artículo,', 'el propósito', 'pretende', 'palabras claves', 'clave:', 'Introducción', 'abstract', 'a b s t r a c t', '©', '___']
+PATTERN_ABST_EN = ['abstract', 'a b s t r a c t', 'summary', 'this study', 'this paper', 'this article,', 'the purpose', 'aims to', 'keywords', 'keywords:', 'Introduction', 'acknowledgments', 'palabras clave', 'clave:', 'resumen', 'r e s u m e n', '©', '___' ]
 
 # METHODOLOGY
 PATTERN_METHOD_ES = ['Metodología de Investigación', 'Metodología', 'MeTodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'La metodología', 'Diseños y Métodos', 'Instrumentos', 'Resultados', 'RESULTADOS', 'Resultado', 'Los resultados', 'Data Analysis', 'Conclusiones', 'CONCLUSIONES', 'Tabla', 'Recomendaciones', 'Discusión', 'https', 'http']
-PATTERN_METHOD_EN = ['Research methodology', 'Methodology', 'MeThodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'The methodology', 'Research Design', 'Tools', 'Results', 'RESULTS', 'Resultados', 'Result', 'The results', 'Estimation', 'Conclusions', 'CONCLUSIONS', 'Table', 'Findings', 'FINDINGS', 'Suggestions', 'Discussion', 'https', 'http']
+PATTERN_METHOD_EN = ['Research methodology', 'Methodology', 'MeThodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'The methodology', 'Research Design', 'Tools', 'Results', 'RESULTS', 'Resultados', 'Result', 'The results', 'Estimation', 'Conclusions', 'CONCLUSIONS', 'Findings', 'FINDINGS', 'Suggestions', 'Discussion', 'https', 'http']
 
 PATTERN_SUBTIT_ES = ['Introducción', 'INTRODUCCIÓN', 'Introduction', 'INTRODUCTION']
 PATTERN_SUBTIT_EN = ['Introduction', 'INTRODUCTION', 'Introducción', 'INTRODUCCIÓN']
 
 # RESULTS
 PATTERN_RESU_ES = ['Nuestros resultados', 'Los resultados', 'Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Instrumentos', 'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
-PATTERN_RESU_EN = ['Our results', 'The results', 'Results', 'RESULTS', 'Result', 'RESULT', 'Tools', 'Measures', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'Resultados', 'Tabla', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
+PATTERN_RESU_EN = ['Our results', 'The results', 'Results', 'RESULTS', 'Result', 'RESULT', 'Tools', 'Measures', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'Resultados', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
 
 # CONCLUSIONS
 PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'conflicto', 'Referencias', 'REFERENCIAS', 'Notas Finales', 'NOTAS FINALES', 'Bibliografía', 'BIBLIOGRAFÍA', 'www', '& ', 'Limitaciones']

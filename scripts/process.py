@@ -19,6 +19,9 @@ def addText_background(type, line):
         text_pdf.append(tuple([type, line]))
         # text_pdf.append(line + '\n')
 
+def removeAuthorsDuplicates(lst):
+    return [t for t in (set(tuple(i) for i in lst))]
+
 def pdf_process(files_split, files_output):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
@@ -41,7 +44,8 @@ def pdf_process(files_split, files_output):
     title_font_max = 33
     title_text = ""
     # Authors
-    authors_list = [] 
+    authors_list = []
+    authors_name = []
     authors_text = ""
     # Resumen
     resumen_title = ""
@@ -147,17 +151,10 @@ def pdf_process(files_split, files_output):
                 authors_list = []
                 last_value = 0
                 last_key = " "
-
-                # print("\nText Parser...")
-                # print(str(len(text_parser)))
-                # for item in text_parser:
-                #     print(item)
-                
                 line = 0
                 text_key = ""
                 
                 for key,value in text_parser :
-                    # key = key.replace("-", " ")
                     if intro_font == 0 : 
                         for item in PATTERN_SUBTIT :
                             patt = re.search(rf"{item}", key, re.IGNORECASE)
@@ -195,11 +192,6 @@ def pdf_process(files_split, files_output):
                     title_text = (' '.join(title_text_list))
                     title_band = True
                 if len(title_text_line)==0: title_text_line=[1]
-                
-                # pageresum_mode = mode(pageresum_list)
-                pageresum_mode = s.mode(pageresum_list)[0]
-                # pagefonts_mode = mode(pagefonts_list)
-                pagefonts_mode = s.mode(pagefonts_list)[0]
 
                 if (authors_text == "" and language != "" and title_band == True) or (authors_text!="" and title_font>title_font_last) :
                     title_font_last = title_font
@@ -234,6 +226,7 @@ def pdf_process(files_split, files_output):
                                     for key_split in key_name:
                                         # Validar si ya existe
                                         authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
+
                         # 3er recorrido authors_list, para obtener la lista final de __authors_name
                         for key, value in authors_list :
                             if len(key)>1 :
@@ -245,14 +238,12 @@ def pdf_process(files_split, files_output):
                                 text_nlp = NLP(key)
                                 for word in text_nlp.ents:
                                     if word.label_ == "PER" :
-                                        # authors_name.append(key)
+                                        authors_name.append(key)
                                         authors_text += key + ", "
                     
-                    # print("\nAuthors List")
-                    # for item in authors_list:
+                    # print("\nAuthors Names ...")
+                    # for item in authors_name:
                     #     print(item)
-                    # print("\nAuthors Text ...")
-                    # print(authors_text)
 
                 # AUTORES (ANTECEDENTES) ............
                 if objective == "":     objective = getData_LongText(resumen_text, PATTERN_OBJE, 'E', '. ')#%%%%%%%%%%%%%%%%%%%%%%
@@ -286,8 +277,7 @@ def pdf_process(files_split, files_output):
                 # print("\nResumen Title: \n" + resumen_title)
                 if resumen_title != "" :
                     if resumen_text == "" :
-                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_title, PATTERN_ABST, 8, True, pageresum_mode)
-
+                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_title, PATTERN_ABST, 8, True)
                     if resumen_res :
                         resumen_text = resumen_text.replace(".\n\n", "._")
                         resumen_text_list = resumen_text.split("\n\n")
@@ -323,9 +313,9 @@ def pdf_process(files_split, files_output):
                 if methodology_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de methodología
                     if methodology_text == "" :
-                        methodology_text, methodology_res = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, True, intro_font, introduction_mode)
-                    elif methodology_res == False :
-                        methodology_text_, methodology_res = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, methodology_res, intro_font, introduction_mode)
+                        methodology_text, methodology_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, True, 0, 0)
+                    elif methodology_res == False : 
+                        methodology_text_, methodology_res, _, _ = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, methodology_res, font_max, font_submax)
                         if methodology_text_ != "" :
                             methodology_text = methodology_text + methodology_text_
                         # else :
@@ -356,10 +346,10 @@ def pdf_process(files_split, files_output):
                 if result_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de resultados
                     if result_text == "" :
-                        result_text, result_res = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, True, intro_font, introduction_mode)
+                        result_text, result_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, True, intro_font, introduction_mode)
                     elif result_res == False :
                         # print("OKOKOKOKO")
-                        result_text_, result_res = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, result_res, intro_font, introduction_mode)
+                        result_text_, result_res, _, _ = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, result_res, intro_font, introduction_mode)
                         if result_text_!= "" :
                             result_text = result_text + result_text_
                         # else :
@@ -387,9 +377,9 @@ def pdf_process(files_split, files_output):
                 if conclusion_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                     if conclusion_text == "" :
-                        conclusion_text, conclusion_res = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, True, intro_font, introduction_mode)
+                        conclusion_text, conclusion_res, font_max, font_submax  = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, True, intro_font, introduction_mode)
                     elif conclusion_res == False :
-                        conclusion_text_, conclusion_res = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, conclusion_res, intro_font, introduction_mode)
+                        conclusion_text_, conclusion_res, _, _ = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, conclusion_res, intro_font, introduction_mode)
                         if conclusion_text_!= "" :
                             conclusion_text = conclusion_text + conclusion_text_
                         # else :
