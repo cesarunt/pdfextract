@@ -299,7 +299,6 @@ def pdf_process(files_split, files_output):
             # print("\nLanguage: " + language)
             # print("Title: \n"+title_text)
             # print("Title font: "+str(title_font))
-            # print("Intro font: \n"+str(intro_font))
             # print("\nResumen: \n" + resumen_text)
             # input(".................... resumen ....................")
             
@@ -346,10 +345,10 @@ def pdf_process(files_split, files_output):
                 if result_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de resultados
                     if result_text == "" :
-                        result_text, result_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, True, intro_font, introduction_mode)
+                        result_text, result_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, True, 0, 0)
                     elif result_res == False :
                         # print("OKOKOKOKO")
-                        result_text_, result_res, _, _ = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, result_res, intro_font, introduction_mode)
+                        result_text_, result_res, _, _ = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, result_res, font_max, font_submax)
                         if result_text_!= "" :
                             result_text = result_text + result_text_
                         # else :
@@ -372,14 +371,14 @@ def pdf_process(files_split, files_output):
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
                 if conclusion_title=="":
-                    conclusion_title = getData_TitleMethodology(text_page, PATTERN_CONC, 7)
+                    conclusion_title = getData_TitleMethodology(text_page, PATTERN_CONC, 8)
                     # print("\nConclusions Title:" + conclusion_title + " mode:" + str(pagefonts_mode))
                 if conclusion_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                     if conclusion_text == "" :
-                        conclusion_text, conclusion_res, font_max, font_submax  = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, True, intro_font, introduction_mode)
+                        conclusion_text, conclusion_res, font_max, font_submax  = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 8, True, 0, 0)
                     elif conclusion_res == False :
-                        conclusion_text_, conclusion_res, _, _ = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 7, conclusion_res, intro_font, introduction_mode)
+                        conclusion_text_, conclusion_res, _, _ = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 8, conclusion_res, font_max, font_submax)
                         if conclusion_text_!= "" :
                             conclusion_text = conclusion_text + conclusion_text_
                         # else :
@@ -503,7 +502,7 @@ def pdf_process(files_split, files_output):
                 if samples == "":     samples = getData_LongText(methodology_text, PATTERN_SAMP, 'E', '. ')
                 if samples == "":     samples = getData_LongText(resumen_text, PATTERN_SAMP, 'E', '. ')
                 # else:       samples   = getData_LongText(text_page, PATTERN_OBJE, 'E', '. ')
-                addText_background("B", "Muestra: ")
+                addText_background("N", "Muestra: ")
                 addText_background("N", samples)
 
                 addText_background("B", "\nRESULTADOS")

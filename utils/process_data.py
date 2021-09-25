@@ -82,10 +82,15 @@ patterns_approach_en = [
 def getMaxSubmax(font_sizes, font_title):
     max = font_title
     submax = 0
-    for item in font_sizes:
-        if item > submax and item < max:
-            submax = item
-            
+    for key, value in font_sizes:
+        if len(key)>1 and value > submax and value < max:
+            submax = value
+    if submax < 5:
+        for key, value in font_sizes:
+            if len(key)>1 and value > max:
+                submax = value
+                break
+    
     return max, submax
 
 
@@ -177,11 +182,11 @@ def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band):
                     # print("*** Start: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
                     find_title = True
                     font_title = value
-                    font_sizes.append(value)
+                    font_sizes.append(tuple([key, value]))
                     result_lines.append(tuple([key, value, 0]))
                     continue
             if find_title==True:
-                font_sizes.append(value)
+                font_sizes.append(tuple([key, value]))
                 result_lines.append(tuple([key, value, 0]))
                 # if value==font_title or value==pagefonts_mode:
                 #     result_lines.append(tuple([key, value, 0]))
@@ -191,17 +196,23 @@ def getData_ResultResumen(pagelines_list, resumen_title, PATTERN, limit, band):
         # print("Max and submax")
         # print(font_max)
         # print(font_submax)
-    
-    # print("font_title: "+ str(font_title))
+
+    # # print("font title: " + str(font_title) )
+    # # for item in font_sizes:
+    # #     print(item[1])
+
+    # print("font_max: "+ str(font_max) + " - " + str(font_submax))
     # print("\n Result Lines")
     # for item in result_lines:
     #     print(item)
 
     if len(result_lines)>0 :
         for key, value, _ in result_lines:
+            patt = None
             for pattern in PATTERN[limit:]:
                 patt = re.search(rf"{pattern}", key)
-                if patt != None :
+                # print("len ... "+ key[0:50] + " ... " + str(len(result_text)))
+                if patt != None and len(result_text)>50:
                     # print("*** End: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
                     patt_band=True; break
             if patt_band:
@@ -300,18 +311,18 @@ def getData_ResultMethodology(pagelines_list, methodology_title, PATTERN, limit,
                     # print("\n___Start patt: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                     find_title = True
                     font_title = value
-                    font_sizes.append(value)
+                    font_sizes.append(tuple([key, value]))
                     result_lines.append(tuple([key, value, 0]))
                     continue
             if find_title==True:
-                font_sizes.append(value)
+                font_sizes.append(tuple([key, value]))
                 result_lines.append(tuple([key, value, 0]))
                 # if value==font_title:
                 #     result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
 
-    # print("font_title: "+ str(font_title))
+    # print("font_max: "+ str(font_max))
     # print("\n Result Lines")
     # for item in result_lines:
     #     print(item)
@@ -319,7 +330,7 @@ def getData_ResultMethodology(pagelines_list, methodology_title, PATTERN, limit,
     if len(result_lines)>0 :
         for key, value, _ in result_lines:
             for pattern in PATTERN[limit:]:
-                patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+                patt = re.search(rf"\b{pattern}\b", key, re.IGNORECASE)
                 # print("\n___POST patt: " + str(pattern) + " _ "+ str(value))
                 if patt != None: # and value == intro_font) or (patt != None and value==introduction_mode):
                     # print("\n___End patt: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))

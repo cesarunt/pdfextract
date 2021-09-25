@@ -16,8 +16,8 @@ BLOCK_AUTHOR_ES = ['recibido', 'aceptado', 'autor', 'clave:', 'keywords:', 'publ
 BLOCK_AUTHOR_EN = ['received', 'recibido', 'accepted', 'author', 'keywords', 'colleague', 'published', 'required', 'india', 'account', 'magister', 'procedures', 'local', 'issn', 'http', 'www', '@', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 # RESUMEN
-PATTERN_ABST_ES = ['resumen', 'r e s u m e n', 'sumario', 'este estudio', 'presente artículo', 'este artículo,', 'el propósito', 'pretende', 'palabras claves', 'clave:', 'Introducción', 'abstract', 'a b s t r a c t', '©', '___']
-PATTERN_ABST_EN = ['abstract', 'a b s t r a c t', 'summary', 'this study', 'this paper', 'this article,', 'the purpose', 'aims to', 'keywords', 'keywords:', 'Introduction', 'acknowledgments', 'palabras clave', 'clave:', 'resumen', 'r e s u m e n', '©', '___' ]
+PATTERN_ABST_ES = ['resumen', 'r e s u m e n', 'sumario', 'este estudio', 'presente artículo', 'este artículo,', 'el propósito', 'pretende', 'palabras claves', 'clave:', 'Introducción', 'INTRODUCCIÓN', 'abstract', 'a b s t r a c t', '©', '___']
+PATTERN_ABST_EN = ['abstract', 'a b s t r a c t', 'summary', 'this study', 'this paper', 'this article,', 'the purpose', 'aims to', 'keywords', 'keywords:', 'Introduction', 'INTRODUCTION', 'acknowledgments', 'palabras clave', 'clave:', 'resumen', 'r e s u m e n', '©', '___' ]
 
 # METHODOLOGY
 PATTERN_METHOD_ES = ['Metodología de Investigación', 'Metodología', 'MeTodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'La metodología', 'Diseños y Métodos', 'Instrumentos', 'Resultados', 'RESULTADOS', 'Resultado', 'Los resultados', 'Data Analysis', 'Conclusiones', 'CONCLUSIONES', 'Tabla', 'Recomendaciones', 'Discusión', 'https', 'http']
@@ -31,8 +31,8 @@ PATTERN_RESU_ES = ['Nuestros resultados', 'Los resultados', 'Resultados', 'RESUL
 PATTERN_RESU_EN = ['Our results', 'The results', 'Results', 'RESULTS', 'Result', 'RESULT', 'Tools', 'Measures', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'Resultados', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
 
 # CONCLUSIONS
-PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'conflicto', 'Referencias', 'REFERENCIAS', 'Notas Finales', 'NOTAS FINALES', 'Bibliografía', 'BIBLIOGRAFÍA', 'www', '& ', 'Limitaciones']
-PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'C O N C L U D I N G', 'conflict', 'References', 'REFERENCES', 'Endnotes', 'ENDNOTES', 'Limitations', '& ']
+PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'Conclusión', 'CONCLUSIÓN', 'Discusiones y conclusiones', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'conflicto', 'Referencias', 'Notas Finales', 'Bibliografía', 'Limitaciones', '& ']
+PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'Conclusion', 'CONCLUSION', 'Discussion and conclusions',  'Concluding', 'CONCLUDING', 'C O N C L U D I N G', 'conflict', 'References', 'Endnotes', 'Bibliography', 'Limitations', '& ']
 
 # PATTERN DOI (DOI)
 PATTERN_DOI_XX = ['https://doi.org/', 'doi', 'https://']
