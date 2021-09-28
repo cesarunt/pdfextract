@@ -85,7 +85,7 @@ def getMaxSubmax(font_sizes, font_title):
     max = font_title
     submax = 0
 
-    if len(font_sizes) :
+    if len(font_sizes)>1 :
         if font_sizes[0][1] == font_sizes[1][1] == font_sizes[2][1] :
             submax = max
         else:
