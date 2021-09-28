@@ -48,9 +48,14 @@ def pdf_process(files_split, files_output):
     authors_name = []
     authors_text = ""
     # Resumen
+    resumen_font = 0
     resumen_title = ""
     resumen_text = ""
     resumen_res = False
+
+    font_max = 0
+    font_subtitle = 0
+
     # Introduction
     intro_font = 0
     introduction_title = ""
@@ -127,7 +132,7 @@ def pdf_process(files_split, files_output):
                 # language_band = True
                 # language = "en"
                 lib_spacy, patterns, patterns_level, patterns_approach = lang_loadPatterns(language)
-                BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_ABST, PATTERN_METHOD, PATTERN_SUBTIT, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns
+                BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_RESUM, PATTERN_INTRO, PATTERN_ABST, PATTERN_METHOD, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns
                 PATTERN_LEVE_APPL, PATTERN_LEVE_PRED, PATTERN_LEVE_EXPI, PATTERN_LEVE_RELA, PATTERN_LEVE_DESC, PATTERN_LEVE_EXPO = patterns_level
                 PATTERN_APPR_QUAN, PATTERN_APPR_QUAL = patterns_approach      
                 NLP = spacy.load(lib_spacy)
@@ -143,6 +148,8 @@ def pdf_process(files_split, files_output):
                 # title_font_max  = max(text_parser, key=lambda x:x[1] )[1] 
                 title_font_max = title_font
                 patt_band = False
+                patt_num = 0
+                band_autor = False
                 title_text_line = []
                 pagelines_list = []
                 pagelong_item = []      # longitud del item para obtener el texto resumen mas exacto
@@ -155,17 +162,25 @@ def pdf_process(files_split, files_output):
                 text_key = ""
                 
                 for key,value in text_parser :
+                    if resumen_font == 0 : 
+                        for item in PATTERN_RESUM :
+                            patt = re.search(rf"\b{item}\b", key)
+                            if patt != None :
+                                resumen_font = value
+                                # print("Resumen font: " + str(resumen_font))
+                                break
                     if intro_font == 0 : 
-                        for item in PATTERN_SUBTIT :
-                            patt = re.search(rf"{item}", key, re.IGNORECASE)
+                        for item in PATTERN_INTRO :
+                            patt = re.search(rf"\b{item}\b", key)
                             if patt != None :
                                 intro_font = value
+                                # print("Introducción font: " + str(intro_font))
                                 break
                     if value > 0 :
                         pageresum_list.append(value)
                         if last_value > 0 :
-                            line = line + 1
                             pagelines_list.append(tuple([last_key, last_value, line]))
+                            line = line + 1
                             pagefonts_list.append(value)
                             pagelong_item.append(len(last_key))
 
@@ -180,8 +195,8 @@ def pdf_process(files_split, files_output):
                     last_key = text_key
 
                 if last_key!="" and last_value>0:
-                    line += 1
                     pagelines_list.append(tuple([last_key, last_value, line]))
+                    line += 1
                     pagefonts_list.append(last_value)
 
                 if title_font_max > title_font and title_font_max <= 40:
@@ -195,51 +210,76 @@ def pdf_process(files_split, files_output):
 
                 if (authors_text == "" and language != "" and title_band == True) or (authors_text!="" and title_font>title_font_last) :
                     title_font_last = title_font
+                    
                     patt_band = False
-
+                    patt_i = 0
                     for key,value,line in pagelines_list :
-                        # get MAX value for title font
-                        if line > title_text_line[0]:
-                            for word_block in BLOCK_WORDS :
-                                wordl_patt = re.search(rf"{word_block}", key, re.IGNORECASE)
-                                if wordl_patt != None : patt_band=True; break
-                            if patt_band : break
-                            else: authors_list.append(tuple([key, value]))
+                        if band_autor == False:
+                            for pattern in ['Autor', 'Autores']:
+                                patt = re.search(rf"\b{pattern}", key, re.IGNORECASE)
+                                if patt != None :
+                                    # print("AUTOR: " + pattern + " - " + str(patt.group(0)) + " - ") 
+                                    patt_band = True
+                                    break    
+                            if patt_band :
+                                band_autor = True
+                                if str(patt.group(0)) == 'AUTOR':   patt_num = 1
+                                else:   patt_num = 2
+                                continue
+                        
+                        if band_autor and len(key)>1:
+                            patt_i += 1
+                            authors_list.append(tuple([key, value]))
+                            if patt_i >= patt_num :
+                                authors_name.append(key)
+                                authors_text += key + ", "
+                                break
+                    
+                    patt_band = False
+                    if len(authors_list) == 0 :
+                        for key,value,line in pagelines_list :
+                            # get MAX value for title font
+                            if line > title_text_line[0]:
+                                for word_block in BLOCK_WORDS :
+                                    wordl_patt = re.search(rf"{word_block}", key, re.IGNORECASE)
+                                    if wordl_patt != None : patt_band=True; break
+                                if patt_band : break
+                                else: authors_list.append(tuple([key, value]))
 
-                    # authors_text = ""
-                    if len(authors_list) > 0 and title_text != "":
-                        # 1er recorrido authors_list, para actualizar lista con "\n"
-                        for key, value in authors_list :
-                            if len(key)>1 :
-                                key_name = key.split("\n")
-                                if len(key_name) > 1 :
-                                    authors_list.remove(tuple([key, value]))
-                                    for key_split in key_name:
-                                        # Validar si ya existe
-                                        authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
-                        # 2do recorrido authors_list, para actualizar lista con ", "
-                        for key, value in authors_list :
-                            if len(key)>1 :
-                                key_name = key.split(",")
-                                if len(key_name)>1:
-                                    authors_list.remove(tuple([key, value]))
-                                    for key_split in key_name:
-                                        # Validar si ya existe
-                                        authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
+                        # authors_text = ""
+                        if len(authors_list) > 0 and title_text != "":
+                            # 1er recorrido authors_list, para actualizar lista con "\n"
+                            for key, value in authors_list :
+                                if len(key)>1 :
+                                    key_name = key.split("\n")
+                                    if len(key_name) > 1 :
+                                        authors_list.remove(tuple([key, value]))
+                                        for key_split in key_name:
+                                            # Validar si ya existe
+                                            authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
+                            # 2do recorrido authors_list, para actualizar lista con ", "
+                            for key, value in authors_list :
+                                if len(key)>1 :
+                                    key_name = key.split(",")
+                                    if len(key_name)>1:
+                                        authors_list.remove(tuple([key, value]))
+                                        for key_split in key_name:
+                                            # Validar si ya existe
+                                            authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
 
-                        # 3er recorrido authors_list, para obtener la lista final de __authors_name
-                        for key, value in authors_list :
-                            if len(key)>1 :
-                                # print("\nKey: " + key + " - Value: " + str(value))
-                                for auth_block in BLOCK_AUTHOR :
-                                    auth_patt = re.search(rf"{auth_block}", key, re.IGNORECASE)
-                                    if auth_patt != None : patt_band=True; break
-                                if patt_band or len(key)<=1 : patt_band=False; continue
-                                text_nlp = NLP(key)
-                                for word in text_nlp.ents:
-                                    if word.label_ == "PER" :
-                                        authors_name.append(key)
-                                        authors_text += key + ", "
+                            # 3er recorrido authors_list, para obtener la lista final de __authors_name
+                            for key, value in authors_list :
+                                if len(key)>1 :
+                                    # print("\nKey: " + key + " - Value: " + str(value))
+                                    for auth_block in BLOCK_AUTHOR :
+                                        auth_patt = re.search(rf"{auth_block}", key, re.IGNORECASE)
+                                        if auth_patt != None : patt_band=True; break
+                                    if patt_band or len(key)<=1 : patt_band=False; continue
+                                    text_nlp = NLP(key)
+                                    for word in text_nlp.ents:
+                                        if word.label_ == "PER" :
+                                            authors_name.append(key)
+                                            authors_text += key + ", "
                     
                     # print("\nAuthors Names ...")
                     # for item in authors_name:
@@ -273,11 +313,11 @@ def pdf_process(files_split, files_output):
             # 4. GET THE RESUME TEXT
             # ============================================================================================
             if resumen_title=="":
-                resumen_title = getData_TitleResumen(text_page, PATTERN_ABST, 8, intro_font)
+                resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 5, 3, resumen_font)
                 # print("\nResumen Title: \n" + resumen_title)
                 if resumen_title != "" :
                     if resumen_text == "" :
-                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_title, PATTERN_ABST, 8, True)
+                        resumen_text, resumen_res, font_subtitle = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 8, True)
                     if resumen_res :
                         resumen_text = resumen_text.replace(".\n\n", "._")
                         resumen_text_list = resumen_text.split("\n\n")
@@ -286,15 +326,18 @@ def pdf_process(files_split, files_output):
                         resumen_text = str(' '.join(resumen_text_list))
                         resumen_text = resumen_text.replace("\n", "")
                         resumen_text = resumen_text.replace("._", ".\n\n")
+                # print("Resumen font_subtitle .... " + str(font_subtitle))
             
             if introduction_title=="":
-                introduction_title = getData_TitleIntroduction(text_page, ['Introducción', 'Introduction'], 2, intro_font)
+                introduction_title = getData_TitleIntroduction(text_page, PATTERN_INTRO, 2, intro_font)
                 # print("\nIntroduction Title:")
                 # print(introduction_title)
-                if introduction_title != "" and introduction_text == "" :
-                    introduction_mode = getData_ResultIntroduction(pagelines_list, introduction_title)
-                if introduction_mode == 0:
-                    introduction_mode = intro_font
+                if introduction_title != "" :
+                    # introduction_mode = getData_ResultIntroduction(pagelines_list, introduction_title)
+                    introduction_text, _, font_subtitle = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
+                # if introduction_mode == 0:
+                #     introduction_mode = intro_font
+                # print("Introducción font_subtitle .... " + str(font_subtitle))
             
             # print("\nLanguage: " + language)
             # print("Title: \n"+title_text)
@@ -306,15 +349,17 @@ def pdf_process(files_split, files_output):
                 # 5. GET THE METHODOLOGY TEXT
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
+                # print("\nMetodo Title : " + methodology_title)
                 if methodology_title=="":
-                    methodology_title = getData_TitleMethodology(text_page, PATTERN_METHOD, 10)
+                    methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 6, 2, intro_font)
                     # print("\nMethodology Title: " + methodology_title + "  _ Mode: " + str(pagefonts_mode))
                 if methodology_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de methodología
                     if methodology_text == "" :
-                        methodology_text, methodology_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, True, 0, 0)
-                    elif methodology_res == False : 
-                        methodology_text_, methodology_res, _, _ = getData_ResultMethodology(pagelines_list, methodology_title, PATTERN_METHOD, 10, methodology_res, font_max, font_submax)
+                        methodology_text, methodology_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 8, True, 0, 0, 0)
+                        # print("\nmethodology_res .... " + str(methodology_res))
+                    elif methodology_res == False :
+                        methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 8, methodology_res, font_max, font_submax, font_lastmax)
                         if methodology_text_ != "" :
                             methodology_text = methodology_text + methodology_text_
                         # else :
@@ -331,24 +376,20 @@ def pdf_process(files_split, files_output):
                 # print(methodology_text)
                 # input("........ metodologia ...........")
                 # ------------------------------------------------------------------------------------------
-                # print("\nPageLine_List")
-                # for item in pagelines_list:
-                #     print(item)
 
                 # 6. GET THE RESULT TEXT
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_RESU
                 if result_title=="":
                     # print("\nIntro: " + str(intro_font))
-                    result_title = getData_TitleMethodology(text_page, PATTERN_RESU, 6)
+                    result_title, result_pos = getData_TitleResumen_(pagelines_list, PATTERN_RESU, 4, 1, intro_font)
                     # print("\nResult Title:" + result_title + " mode:" + str(pagefonts_mode))
                 if result_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de resultados
                     if result_text == "" :
-                        result_text, result_res, font_max, font_submax = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, True, 0, 0)
+                        result_text, result_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 5, True, 0, 0, 0)
                     elif result_res == False :
-                        # print("OKOKOKOKO")
-                        result_text_, result_res, _, _ = getData_ResultMethodology(pagelines_list, result_title, PATTERN_RESU, 6, result_res, font_max, font_submax)
+                        result_text_, result_res, _, _, _ = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 5, result_res, font_max, font_submax, font_lastmax)
                         if result_text_!= "" :
                             result_text = result_text + result_text_
                         # else :
@@ -371,14 +412,14 @@ def pdf_process(files_split, files_output):
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
                 if conclusion_title=="":
-                    conclusion_title = getData_TitleMethodology(text_page, PATTERN_CONC, 8)
-                    # print("\nConclusions Title:" + conclusion_title + " mode:" + str(pagefonts_mode))
+                    conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 4, 3, intro_font)
+                    # print("\nConclusions Title:" + conclusion_title)
                 if conclusion_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                     if conclusion_text == "" :
-                        conclusion_text, conclusion_res, font_max, font_submax  = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 8, True, 0, 0)
+                        conclusion_text, conclusion_res, font_max, font_submax, font_lastmax  = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 7, True, 0, 0, 0)
                     elif conclusion_res == False :
-                        conclusion_text_, conclusion_res, _, _ = getData_ResultMethodology(pagelines_list, conclusion_title, PATTERN_CONC, 8, conclusion_res, font_max, font_submax)
+                        conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 7, conclusion_res, font_max, font_submax, font_lastmax)
                         if conclusion_text_!= "" :
                             conclusion_text = conclusion_text + conclusion_text_
                         # else :
@@ -433,8 +474,6 @@ def pdf_process(files_split, files_output):
                 # if methodology_text == "":
                     # print("\nResumen text")
                     # print(resumen_text)
-                    # methodology_text, _, _ = getData_ResultMethodology(resumen_text, 'methodology', PATTERN_METHOD, 7, True, intro_font, pagefonts_mode)
-                    # methodology_text = getData_LongText(resumen_text, PATTERN_METHOD[0:7], 'S', ', ')
 
                 if type_level == "" :   type_level  = getData_LongText(methodology_text, PATTERN_TYPE, 'S', ', ')
                 if design == "" :       design     = getData_LongText(methodology_text, PATTERN_DESI, 'S', ', ')
@@ -459,36 +498,39 @@ def pdf_process(files_split, files_output):
                 # methodology_text = methodology_text.replace("\n", "")
                 # methodology_text = methodology_text.replace(".   ", ".\n\n")
                 # methodology_text = methodology_text.replace("#", "\n\n")
-                addText_background("N", methodology_text)
 
-                # print("\n06._ METHODOLOGY :\n" + methodology_text, end="")
-                method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
-                # for key, value in method_list.items() : 
-                #     if (value in methodology_text) or (value.capitalize() in methodology_text):
-                #         print("\n   .-"+key.capitalize()+" : " + vars()[key])
-                    # vars()[item]
-                
-                # Metodologia detalles
-                methodology_det = ""
-                # print("\n  6.1._ APPROACH DETAILS : ", end="")
-                listQuan = list(dict.fromkeys(listQuan))
-                if len(listQuan) > 0 :
-                    methodology_det = methodology_det + "Cuantitativo, "
-                    # print("Cuantitativo", end=", ")
-                listQual = list(dict.fromkeys(listQual))
-                if listQual : 
-                    methodology_det = methodology_det + "Cualitativo, "
-                    # print("Cualitativo", end="")
-                # print("\n\n  6.1_ LEVEL DETAILS: ", end="")
-                # methodology_det += methodology_det + "\n"
-                if level_appl : methodology_det += methodology_det + "Aplicado, ";     print("Aplicado", end=", ")
-                if level_pred : methodology_det += methodology_det + "Predictivo, ";   print("Predictivo", end=", ")
-                if level_expi : methodology_det += methodology_det + "Explicativo, ";  print("Explicativo", end=", ")
-                if level_rela : methodology_det += methodology_det + "Relacional, ";   print("Relacional", end=", ")
-                if level_desc : methodology_det += methodology_det + "Descriptivo, ";  print("Descriptivo", end=", ")
-                if level_expo : methodology_det += methodology_det + "Exploratorio"; print("Exploratorio", end="")
-                addText_background("N", "Metodología Detalles:\n" + methodology_det)
-                
+                if methodology_text=="":
+                    addText_background("N", "No existe información específica sobre Metodología o Métodos.")
+                else:
+                    addText_background("N", methodology_text)
+                    # print("\n06._ METHODOLOGY :\n" + methodology_text, end="")
+                    method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
+                    # for key, value in method_list.items() : 
+                    #     if (value in methodology_text) or (value.capitalize() in methodology_text):
+                    #         print("\n   .-"+key.capitalize()+" : " + vars()[key])
+                        # vars()[item]
+                    
+                    # Metodologia detalles
+                    methodology_det = ""
+                    # print("\n  6.1._ APPROACH DETAILS : ", end="")
+                    listQuan = list(dict.fromkeys(listQuan))
+                    if len(listQuan) > 0 :
+                        methodology_det = methodology_det + "Cuantitativo, "
+                        # print("Cuantitativo", end=", ")
+                    listQual = list(dict.fromkeys(listQual))
+                    if listQual : 
+                        methodology_det = methodology_det + "Cualitativo, "
+                        # print("Cualitativo", end="")
+                    # print("\n\n  6.1_ LEVEL DETAILS: ", end="")
+                    # methodology_det += methodology_det + "\n"
+                    if level_appl : methodology_det += methodology_det + "Aplicado, ";     print("Aplicado", end=", ")
+                    if level_pred : methodology_det += methodology_det + "Predictivo, ";   print("Predictivo", end=", ")
+                    if level_expi : methodology_det += methodology_det + "Explicativo, ";  print("Explicativo", end=", ")
+                    if level_rela : methodology_det += methodology_det + "Relacional, ";   print("Relacional", end=", ")
+                    if level_desc : methodology_det += methodology_det + "Descriptivo, ";  print("Descriptivo", end=", ")
+                    if level_expo : methodology_det += methodology_det + "Exploratorio"; print("Exploratorio", end="")
+                    addText_background("N", "Metodología Detalles:\n" + methodology_det)
+
                 tools_text = ""
                 # print("\n07._ TOOLS : Tecnica(s) de recoleccion de datos empleada(s): ")
                 if len(listQuan) > 0 : 
@@ -509,14 +551,20 @@ def pdf_process(files_split, files_output):
                 # result_text = list(filter(lambda x : x != '', result_text.split('\n\n')))
                 # result_text = result_text.replace("\n", "")
                 # result_text = result_text.replace(".  ", ".\n\n")
-                addText_background("N", result_text)
+                if result_text=="":
+                    addText_background("N", "No existe información específica sobre Resultados.")
+                else:
+                    addText_background("N", result_text)
 
                 addText_background("B", "\nCONCLUSIONES")
                 ## conclusion_text = conclusion_text.replace("\n", "#")
                 # conclusion_text = conclusion_text.replace("\n", "")
                 # conclusion_text = conclusion_text.replace(".  ", ".\n\n")
                 ## conclusion_text = conclusion_text.replace("#", "\n")
-                addText_background("N", conclusion_text)
+                if conclusion_text=="":
+                    addText_background("N", "No existe información específica sobre Conclusiones.")
+                else:
+                    addText_background("N", conclusion_text)
 
                 # Create la REFERENCE
                 doi_print = ""
