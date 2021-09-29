@@ -38,9 +38,22 @@ def strip_illegal_xml_characters(s, default, base=10):
 def delete_paragraph(paragraph):
     paragraph._element.getparent().remove(paragraph._element)
     paragraph._p = paragraph._element = None
-    # p = paragraph._element
-    # p.getparent().remove(p)
-    # p._p = p._element = None
+
+def validate_path(path):
+    new_path = path
+    path_split = path.split("/")
+    filename = path_split[-1]
+
+    if filename[0] == "_":
+        i = 0
+        for c in filename:
+            if c != filename[0]:
+                pos = i
+                break
+            i += 1
+        new_path = "/".join(path_split[:-1])+"/"+filename[pos:]
+
+    return new_path
 
 def build_document_(title, text_pdf, language):
     # document = Document() 
@@ -304,12 +317,14 @@ def action_extract_mul():
             for filename in file_pdfs :
                 filename = fold(filename)                
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
+                path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(' ','_')
                 fname = os.listdir(app.config['MULTIPLE_SPLIT'])
 
                 # 1. SPLIT PDF
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 pdf_remove(fname, app.config['MULTIPLE_SPLIT'])       # Call pdf remove function
+
                 result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT'])      # Call pdf splitter function
 
                 if result_split == 0:
