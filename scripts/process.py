@@ -313,20 +313,28 @@ def pdf_process(files_split, files_output):
             # 4. GET THE RESUME TEXT
             # ============================================================================================
             if resumen_title=="":
-                resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 5, 3, resumen_font)
+                resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 10, 2, resumen_font)
                 # print("\nResumen Title: \n" + resumen_title)
                 if resumen_title != "" :
                     if resumen_text == "" :
-                        resumen_text, resumen_res, font_subtitle = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 8, True)
+                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 12, True)
                     if resumen_res :
-                        resumen_text = resumen_text.replace(".\n\n", "._")
-                        resumen_text_list = resumen_text.split("\n\n")
+                        # print("\nResumen 1: \n" + resumen_text)
+                        # resumen_text = resumen_text.replace(".\n\n", "._")
+                        # resumen_text_list = resumen_text.split("\n\n")
+                        # for item in resumen_text_list:
+                        #     if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
+                        # resumen_text = str(' '.join(resumen_text_list))
+                        # resumen_text = resumen_text.replace("\n", "")
+                        # resumen_text = resumen_text.replace("._", ".\n\n")
+                        resumen_text_list = resumen_text.split("\n")
                         for item in resumen_text_list:
                             if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
                         resumen_text = str(' '.join(resumen_text_list))
-                        resumen_text = resumen_text.replace("\n", "")
-                        resumen_text = resumen_text.replace("._", ".\n\n")
+                        resumen_text = resumen_text.replace("\n", " ")
+
                 # print("Resumen font_subtitle .... " + str(font_subtitle))
+                
             
             if introduction_title=="":
                 introduction_title = getData_TitleIntroduction(text_page, PATTERN_INTRO, 2, intro_font)
@@ -334,15 +342,12 @@ def pdf_process(files_split, files_output):
                 # print(introduction_title)
                 if introduction_title != "" :
                     # introduction_mode = getData_ResultIntroduction(pagelines_list, introduction_title)
-                    introduction_text, _, font_subtitle = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
-                # if introduction_mode == 0:
-                #     introduction_mode = intro_font
-                # print("Introducción font_subtitle .... " + str(font_subtitle))
+                    introduction_text, _ = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
             
             # print("\nLanguage: " + language)
             # print("Title: \n"+title_text)
             # print("Title font: "+str(title_font))
-            # print("\nResumen: \n" + resumen_text)
+            # print("\nResumen 2: \n" + resumen_text)
             # input(".................... resumen ....................")
             
             if (resumen_text != "" or authors_text!= "") and page > 0:
@@ -351,7 +356,7 @@ def pdf_process(files_split, files_output):
                 # finding the title of methodology using PATTERN_METHOD
                 # print("\nMetodo Title : " + methodology_title)
                 if methodology_title=="":
-                    methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 6, 2, intro_font)
+                    methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 7, 2, intro_font)
                     # print("\nMethodology Title: " + methodology_title + "  _ Mode: " + str(pagefonts_mode))
                 if methodology_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de methodología
@@ -359,23 +364,29 @@ def pdf_process(files_split, files_output):
                         methodology_text, methodology_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 8, True, 0, 0, 0)
                         # print("\nmethodology_res .... " + str(methodology_res))
                     elif methodology_res == False :
-                        methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 8, methodology_res, font_max, font_submax, font_lastmax)
+                        methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 9, methodology_res, font_max, font_submax, font_lastmax)
                         if methodology_text_ != "" :
                             methodology_text = methodology_text + methodology_text_
                         # else :
                         #     methodology_text = ""
                     if methodology_res :
-                        methodology_text = methodology_text.replace(".\n\n", "._")
-                        methodology_text_list = methodology_text.split("\n\n")
+                        # methodology_text = methodology_text.replace("\n\n", "")
+                        # methodology_text_list = methodology_text.split("\n\n")
+                        # for item in methodology_text_list:
+                        #     if item.isdigit() or len(item)<=1: methodology_text_list.remove(item)
+                        # methodology_text = str(' '.join(methodology_text_list))
+                        # methodology_text = methodology_text.replace("\n", "")
+                        # methodology_text = methodology_text.replace("._", ".\n\n")
+                        methodology_text_list = methodology_text.split("\n")
                         for item in methodology_text_list:
                             if item.isdigit() or len(item)<=1: methodology_text_list.remove(item)
-                        methodology_text = str(' '.join(methodology_text_list))
-                        methodology_text = methodology_text.replace("\n", "")
-                        methodology_text = methodology_text.replace("._", ".\n\n")
+                        methodology_text = str(''.join(methodology_text_list))
+                        methodology_text = methodology_text.replace("\n", " ")
+                        
                 # print("\nMETODOLOGIA:")
                 # print(methodology_text)
                 # input("........ metodologia ...........")
-                # ------------------------------------------------------------------------------------------
+                # # ------------------------------------------------------------------------------------------
 
                 # 6. GET THE RESULT TEXT
                 # ============================================================================================

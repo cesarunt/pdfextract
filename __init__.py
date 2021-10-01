@@ -318,7 +318,7 @@ def action_extract_mul():
                 filename = fold(filename)                
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
                 path = validate_path(path)
-                path = path.replace('(','').replace(')','').replace(' ','_')
+                path = path.replace('(','').replace(')','').replace(',','').replace(' ','_')
                 fname = os.listdir(app.config['MULTIPLE_SPLIT'])
 
                 # 1. SPLIT PDF

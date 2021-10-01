@@ -137,6 +137,10 @@ def getData_TitleResumen(pagelines_list, PATTERN, limit1, limit2, font_max) :
     resumen_title = ""
     resumen_pos = 0
     patt_band = False
+
+    # print("\nTITLE Result LIST")
+    # for item in pagelines_list:
+    #     print(item)
     
     for key, value, line in pagelines_list:
         for pattern in PATTERN[:limit1]:
@@ -222,7 +226,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit, band):
                     find_title = True
                     font_title = value
                     font_sizes.append(tuple([key, value]))
-                    result_lines.append(tuple([key, value, 0]))
+                    result_lines.append(tuple(['', value, 0]))
                     continue
             if find_title==True:
                 font_sizes.append(tuple([key, value]))
@@ -251,7 +255,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit, band):
                 if value > font_max and len(key)>3:
                     break
 
-    return result_text, result_page, font_max
+    return result_text, result_page
 
 
 # getting for introduction
