@@ -33,8 +33,8 @@ PATTERN_RESU_ES = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Nuestr
 PATTERN_RESU_EN = ['Results', 'RESULTS', 'Result', 'RESULT', 'Our results', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
 
 # CONCLUSIONS   (4-3-...)
-PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'Conclusión', 'CONCLUSIÓN', 'Discusión y conclusión', 'Discusiones y conclusiones', 'Concluyendo', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'BIBLIOGRAFIA', 'Notas finales', 'Limitaciones', '& ']
-PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'Conclusion', 'CONCLUSION', 'Discussion and conclusion', 'Discussion and conclusions', 'Concluding', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography',  'Endnotes', 'Limitations', '& ']
+PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'C O N C L U S I O N E S', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'Discusión y conclusión', 'Discusiones y conclusiones', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'BIBLIOGRAFIA', 'Notas finales', 'Limitaciones', '& ']
+PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'C O N C L U S I O N S', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'C O N C L U D I N G', 'Discussion and conclusion', 'Discussion and conclusions', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography',  'Endnotes', 'Limitations', '& ']
 
 # PATTERN DOI (DOI)
 PATTERN_DOI_XX = ['https://doi.org/', 'doi', 'https://']

@@ -423,14 +423,14 @@ def pdf_process(files_split, files_output):
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
                 if conclusion_title=="":
-                    conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 4, 3, intro_font)
+                    conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 8, 2, intro_font)
                     # print("\nConclusions Title:" + conclusion_title)
                 if conclusion_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                     if conclusion_text == "" :
-                        conclusion_text, conclusion_res, font_max, font_submax, font_lastmax  = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 7, True, 0, 0, 0)
+                        conclusion_text, conclusion_res, font_max, font_submax, font_lastmax  = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 10, True, 0, 0, 0)
                     elif conclusion_res == False :
-                        conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 7, conclusion_res, font_max, font_submax, font_lastmax)
+                        conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 10, conclusion_res, font_max, font_submax, font_lastmax)
                         if conclusion_text_!= "" :
                             conclusion_text = conclusion_text + conclusion_text_
                         # else :
