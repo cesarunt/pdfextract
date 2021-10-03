@@ -144,7 +144,8 @@ def getData_TitleResumen(pagelines_list, PATTERN, limit1, limit2, font_max) :
     
     for key, value, line in pagelines_list:
         for pattern in PATTERN[:limit1]:
-            patt = re.search(rf"\b{pattern}\b", key, re.IGNORECASE)
+            patt = re.search(rf"\b{pattern}\b", key)
+            # print("find ...: " + pattern + "... key_value: " + key +" _ "+ str(value)+" line"+ str(line))
             if patt != None and value >= font_max :
                 # print("START 1 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                 resumen_title = pattern
@@ -172,41 +173,45 @@ def getData_TitleResumen_(pagelines_list, PATTERN, limit1, limit2, font_max) :
     resumen_pos = 0
     patt_band = False
 
+    # print("\n\n___font_max: "+ str(font_max))
     # print("\n Result LIST")
     # for item in pagelines_list:
     #     print(item)
     
     for key, value, line in pagelines_list:
-        for pattern in PATTERN[:limit1]:
-            patt = re.search(rf"\b{pattern}\b", key)
-            if patt != None and value >= font_max :
-                # print("START 1 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
-                resumen_title = pattern
-                resumen_pos = line
-                patt_band=True; break
-        if patt_band:
-            break
-    
-    if resumen_title == "" :
-        for key, value, line in pagelines_list:
-            for pattern in PATTERN[limit1:limit1+limit2]:
+        if value >= font_max :
+            for pattern in PATTERN[:limit1]:
                 patt = re.search(rf"\b{pattern}\b", key)
-                if patt != None and value >= font_max:
-                    # print("START 2 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
+                if patt != None and ('Table' not in key):
+                    # print("START 1 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                     resumen_title = pattern
                     resumen_pos = line
                     patt_band=True; break
             if patt_band:
                 break
     
+    if resumen_title == "" :
+        for key, value, line in pagelines_list:
+            if value >= font_max :
+                for pattern in PATTERN[limit1:limit1+limit2]:
+                    patt = re.search(rf"\b{pattern}\b", key)
+                    # print("find: "+ pattern + "  key_value: " + key +" _ "+ str(value)+ " line: "+str(line))
+                    if patt != None and ('Table' not in key):
+                        # print("START 2 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
+                        resumen_title = pattern
+                        resumen_pos = line
+                        patt_band=True; break
+                if patt_band:
+                    break
+    
     return resumen_title, resumen_pos
 
 # def getData_ResultResumen(text_page, PATTERN, band):
-def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit, band):
+def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, band, font_max_, font_submax_):
     result_text = ""
     result_page = False
     find_title = False
-    patt_band = False
+    patt_band1, patt_band2 = False, False
     font_sizes = []
     font_max = 0
     font_submax = 0
@@ -216,46 +221,68 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit, band):
     # print("\n Result LIST")
     # for item in pagelines_list:
     #     print(item)
-    if band == True :
-        for key,value, line in pagelines_list:
+    
+    if band == False : 
+        result_lines = pagelines_list; font_max = font_max_; font_submax = font_submax_
+        # print("Font_max 1: "+ str(font_max) + " - " + str(font_submax))
+    else :
+        for key, value, line in pagelines_list:
             if find_title == False:
                 if line == resumen_pos :
                 # patt = re.search(rf"{resumen_title}", key, re.IGNORECASE)
                 # if patt != None: # and value==pagefonts_mode:
-                    # print("*** Start: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                    # print("*** Start:  key_value:" + key +"_"+ str(value))
                     find_title = True
                     font_title = value
                     font_sizes.append(tuple([key, value]))
                     result_lines.append(tuple(['', value, 0]))
                     continue
             if find_title==True:
-                font_sizes.append(tuple([key, value]))
-                result_lines.append(tuple([key, value, 0]))
+                num_SpacesByWord = key.count(' ')
+                if num_SpacesByWord >= len(key)/3 :
+                    # print("space ..." + str(num_SpacesByWord) + " - " + str(line) + " - " + str(len(key)/2))
+                    key_spaces = key.replace(' ', '')
+                    font_sizes.append(tuple([key_spaces, value]))
+                    result_lines.append(tuple([key_spaces, value, 0]))
+                else:
+                    font_sizes.append(tuple([key, value]))
+                    result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
-        # print("Font_max: "+ str(font_max) + " - " + str(font_submax))
+    #     print("Font_max 2: "+ str(font_max) + " - " + str(font_submax))
     
     # print("\n Result Lines")
     # for item in result_lines:
     #     print(item)
+
     if len(result_lines)>0 :
         for key, value, _ in result_lines:
             patt = None
-            for pattern in PATTERN[limit:]:
-                patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+            # if len(key)>1 and (value == font_max or value == font_submax):
+            for pattern in PATTERN[limit1:limit1+limit2]:
+                patt = re.search(rf"{pattern}", key)
                 if patt != None and len(result_text)>50:
-                    # print("*** End: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
-                    patt_band=True; break
-            if patt_band:
+                    # print("*** End1: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                    patt_band1=True; break
+            if patt_band1:
                 result_page = True
                 break
-            else:
+            if patt_band1==False:
+                for pattern in PATTERN[limit1+limit2:]:
+                    patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+                    if patt != None and len(result_text)>50:
+                        # print("*** End2: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
+                        patt_band2=True; break
+                if patt_band2:
+                    result_page = True
+                    break
+            if patt_band1 == False and patt_band2 == False:
                 if len(key)>1 and (value == font_max or value == font_submax):
                     result_text = result_text + key
-                if value > font_max and len(key)>3:
-                    break
+                # if value > font_max and len(key)>3:
+                #     break
 
-    return result_text, result_page
+    return result_text, result_page, font_max, font_submax
 
 
 # getting for introduction
@@ -371,10 +398,17 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
                     font_i += 1
                     continue
             if find_title==True:
-                # print("Subtitle Value: " + str(value))
-                font_sizes.append(tuple([key, value]))
+                num_SpacesByWord = key.count(' ')
+                if num_SpacesByWord >= len(key)/3 :
+                    # print("space ..." + str(num_SpacesByWord) + " - " + str(line) + " - " + str(len(key)/2))
+                    key_spaces = key.replace(' ', '')
+                    font_sizes.append(tuple([key_spaces, value]))
+                    result_lines.append(tuple([key_spaces, value, 0]))
+                else:
+                    font_sizes.append(tuple([key, value]))
+                    result_lines.append(tuple([key, value, 0]))
+
                 font_values.append(value)
-                result_lines.append(tuple([key, value, font_i]))
                 font_i += 1
                 # if value==font_title:
                 #     result_lines.append(tuple([key, value, 0]))
@@ -383,6 +417,7 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
 
     # print("font_max: "+ str(font_max))
     # print("font_submax: "+ str(font_submax))
+    # print("font_lastmax: "+ str(font_lastmax))
     # print("\n Result Lines")
     # for item in result_lines:
     #     print(item)
@@ -397,14 +432,15 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
             for pattern in PATTERN[limit:]:
                 patt = re.search(rf"\b{pattern}\b", key)
                 # print("\n___POST patt: " + str(pattern) + " _ "+ str(value))
-                if patt != None and value >= font_submax and value <= font_max : # or (patt != None and value==introduction_mode):
+                if patt != None : #and value >= font_submax and value <= font_max : # or (patt != None and value==introduction_mode):
                     # print("\n___End patt: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                     patt_band=True; break
             if patt_band:
                 result_page = True
                 break
             else:
-                if len(key)>1 and (value == font_max or value == font_submax or (font_lastmax>0 and value==font_lastmax)):  # ///////////////////////////////////////////////////////////
+                # if len(key)>2 and ((value == font_max or value == font_submax) or (font_lastmax>0 and value==font_lastmax) or (font_lastmax>0 and value<=font_max)):  # ///////////////////////////////////////////////////////////
+                if len(key)>1 and (value<=font_max and value>font_submax*0.8):
                     result_text = result_text + key
                 if value > font_max and len(key)>3:
                     break

@@ -160,21 +160,29 @@ def pdf_process(files_split, files_output):
                 last_key = " "
                 line = 0
                 text_key = ""
+                key_on = ""
                 
                 for key,value in text_parser :
+                    num_SpacesByWord = key.count(' ')
+                    if num_SpacesByWord >= len(key)/3 :
+                        # print("\nspace ..." + str(num_SpacesByWord) + " - " + key + " - " + str(len(key)/2))
+                        key_on = key.replace(' ', '')
+                    else:
+                        key_on = key
+                    
                     if resumen_font == 0 : 
                         for item in PATTERN_RESUM :
-                            patt = re.search(rf"\b{item}\b", key)
+                            patt = re.search(rf"\b{item}\b", key_on)
                             if patt != None :
                                 resumen_font = value
                                 # print("Resumen font: " + str(resumen_font))
                                 break
                     if intro_font == 0 : 
                         for item in PATTERN_INTRO :
-                            patt = re.search(rf"\b{item}\b", key)
+                            patt = re.search(rf"\b{item}\b", key_on)
                             if patt != None :
                                 intro_font = value
-                                # print("Introducción font: " + str(intro_font))
+                                print("\nIntroducción font: " + str(intro_font))
                                 break
                     if value > 0 :
                         pageresum_list.append(value)
@@ -183,12 +191,10 @@ def pdf_process(files_split, files_output):
                             line = line + 1
                             pagefonts_list.append(value)
                             pagelong_item.append(len(last_key))
-
-                            # print("item list: " + str(value) + " ... key : " + key)
                             if last_value > title_font_max and len(last_key.split(" "))>5 :
                                 title_font_max = last_value
                             text_key = ""
-                        text_key = text_key + key
+                        text_key = text_key + key_on
                     if value == 0 :
                         text_key = text_key + " "
                     last_value = value
@@ -313,42 +319,46 @@ def pdf_process(files_split, files_output):
             # 4. GET THE RESUME TEXT
             # ============================================================================================
             if resumen_title=="":
-                resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 10, 2, resumen_font)
+                resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 6, 3, resumen_font)
                 # print("\nResumen Title: \n" + resumen_title)
-                if resumen_title != "" :
-                    if resumen_text == "" :
-                        resumen_text, resumen_res = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 12, True)
-                    if resumen_res :
-                        # print("\nResumen 1: \n" + resumen_text)
-                        # resumen_text = resumen_text.replace(".\n\n", "._")
-                        # resumen_text_list = resumen_text.split("\n\n")
-                        # for item in resumen_text_list:
-                        #     if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
-                        # resumen_text = str(' '.join(resumen_text_list))
-                        # resumen_text = resumen_text.replace("\n", "")
-                        # resumen_text = resumen_text.replace("._", ".\n\n")
-                        resumen_text_list = resumen_text.split("\n")
-                        for item in resumen_text_list:
-                            if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
-                        resumen_text = str(' '.join(resumen_text_list))
-                        resumen_text = resumen_text.replace("\n", " ")
-
-                # print("Resumen font_subtitle .... " + str(font_subtitle))
-                
+            if resumen_title != "" :
+                if resumen_text == "" :
+                    resumen_text, resumen_res, font_max, font_submax = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 9, 5, True, 0, 0)
+                    # print("RES Resumen "+ str(resumen_res))
+                elif resumen_res == False :
+                    resumen_text_, resumen_res, _, _ = getData_ResultResumen(pagelines_list, resumen_pos, PATTERN_ABST, 9, 5, resumen_res, font_max, font_submax)
+                    if resumen_text_ != "" :
+                        resumen_text = resumen_text + resumen_text_
+                if resumen_res :
+                    # print("\nResumen 1: \n" + resumen_text)
+                    # resumen_text = resumen_text.replace(".\n\n", "._")
+                    # resumen_text_list = resumen_text.split("\n\n")
+                    # for item in resumen_text_list:
+                    #     if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
+                    # resumen_text = str(' '.join(resumen_text_list))
+                    # resumen_text = resumen_text.replace("\n", "")
+                    # resumen_text = resumen_text.replace("._", ".\n\n")
+                    resumen_text_list = resumen_text.split("\n")
+                    for item in resumen_text_list:
+                        if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
+                    resumen_text = str(' '.join(resumen_text_list))
+                    resumen_text = resumen_text.replace("\n", " ")
             
-            if introduction_title=="":
-                introduction_title = getData_TitleIntroduction(text_page, PATTERN_INTRO, 2, intro_font)
+            # if introduction_title=="":
+                # introduction_title = getData_TitleIntroduction(text_page, PATTERN_INTRO, 2, intro_font)
                 # print("\nIntroduction Title:")
                 # print(introduction_title)
-                if introduction_title != "" :
+                # if introduction_title != "" :
                     # introduction_mode = getData_ResultIntroduction(pagelines_list, introduction_title)
-                    introduction_text, _ = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
+                    # introduction_text, _ = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
             
             # print("\nLanguage: " + language)
             # print("Title: \n"+title_text)
             # print("Title font: "+str(title_font))
             # print("\nResumen 2: \n" + resumen_text)
             # input(".................... resumen ....................")
+
+            # print("\INTRO FONT: " + str(intro_font))
             
             if (resumen_text != "" or authors_text!= "") and page > 0:
                 # 5. GET THE METHODOLOGY TEXT
@@ -356,15 +366,15 @@ def pdf_process(files_split, files_output):
                 # finding the title of methodology using PATTERN_METHOD
                 # print("\nMetodo Title : " + methodology_title)
                 if methodology_title=="":
-                    methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 7, 2, intro_font)
+                    methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 10, 10, intro_font)
                     # print("\nMethodology Title: " + methodology_title + "  _ Mode: " + str(pagefonts_mode))
                 if methodology_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de methodología
                     if methodology_text == "" :
-                        methodology_text, methodology_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 8, True, 0, 0, 0)
+                        methodology_text, methodology_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 20, True, 0, 0, 0)
                         # print("\nmethodology_res .... " + str(methodology_res))
                     elif methodology_res == False :
-                        methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 9, methodology_res, font_max, font_submax, font_lastmax)
+                        methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 20, methodology_res, font_max, font_submax, font_lastmax)
                         if methodology_text_ != "" :
                             methodology_text = methodology_text + methodology_text_
                         # else :
@@ -386,21 +396,21 @@ def pdf_process(files_split, files_output):
                 # print("\nMETODOLOGIA:")
                 # print(methodology_text)
                 # input("........ metodologia ...........")
-                # # ------------------------------------------------------------------------------------------
+                # ------------------------------------------------------------------------------------------
 
                 # 6. GET THE RESULT TEXT
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_RESU
                 if result_title=="":
                     # print("\nIntro: " + str(intro_font))
-                    result_title, result_pos = getData_TitleResumen_(pagelines_list, PATTERN_RESU, 4, 1, intro_font)
+                    result_title, result_pos = getData_TitleResumen_(pagelines_list, PATTERN_RESU, 4, 4, intro_font)
                     # print("\nResult Title:" + result_title + " mode:" + str(pagefonts_mode))
                 if result_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de resultados
                     if result_text == "" :
-                        result_text, result_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 5, True, 0, 0, 0)
+                        result_text, result_res, font_max, font_submax, font_lastmax = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 8, True, 0, 0, 0)
                     elif result_res == False :
-                        result_text_, result_res, _, _, _ = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 5, result_res, font_max, font_submax, font_lastmax)
+                        result_text_, result_res, _, _, _ = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 8, result_res, font_max, font_submax, font_lastmax)
                         if result_text_!= "" :
                             result_text = result_text + result_text_
                         # else :
@@ -423,14 +433,14 @@ def pdf_process(files_split, files_output):
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
                 if conclusion_title=="":
-                    conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 8, 2, intro_font)
+                    conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 9, 9, intro_font)
                     # print("\nConclusions Title:" + conclusion_title)
                 if conclusion_title != "":
                     # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                     if conclusion_text == "" :
-                        conclusion_text, conclusion_res, font_max, font_submax, font_lastmax  = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 10, True, 0, 0, 0)
+                        conclusion_text, conclusion_res, font_max, font_submax, font_lastmax  = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 18, True, 0, 0, 0)
                     elif conclusion_res == False :
-                        conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 10, conclusion_res, font_max, font_submax, font_lastmax)
+                        conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 18, conclusion_res, font_max, font_submax, font_lastmax)
                         if conclusion_text_!= "" :
                             conclusion_text = conclusion_text + conclusion_text_
                         # else :

@@ -17,24 +17,24 @@ BLOCK_AUTHOR_EN = ['received', 'recibido', 'accepted', 'author', 'keywords', 'co
 
 PATTERN_RESUM_ES = ['RESUMEN', 'Resumen', 'R E S U M E N']
 PATTERN_RESUM_EN = ['ABSTRACT', 'Abstract', 'A B S T R A C T']
-PATTERN_INTRO_ES = ['INTRODUCCIÓN', 'Introducción', 'INTRODUCCION', 'I N T R O D U C C I Ó N']
-PATTERN_INTRO_EN = ['INTRODUCTION', 'Introduction', 'I N T R O D U C T I O N']
+PATTERN_INTRO_ES = ['INTRODUCCIÓN', 'Introducción', 'INTRODUCTION', 'Introduction', 'INTRODUCCION']
+PATTERN_INTRO_EN = ['INTRODUCCIÓN', 'Introducción', 'INTRODUCTION', 'Introduction']
 
 # RESUMEN       (5-3-...)
-PATTERN_ABST_ES = ['Resumen', 'RESUMEN', 'ESUMEN', 'R E S U M E N', 'Abstract', 'ABSTRACT', 'BSTRACT', 'A B S T R A C T', 'Sumario', 'SUMARIO' 'este estudio', 'presente artículo', 'palabras clave', 'clave:', 'introducción', 'abstract', 'a b s t r a c t', '©', '___']
-PATTERN_ABST_EN = ['Resumen', 'RESUMEN', 'ESUMEN', 'R E S U M E N', 'Abstract', 'ABSTRACT', 'BSTRACT', 'A B S T R A C T', 'Summary', 'SUMMARY', 'this study', 'this paper', 'keywords', 'keywords:', 'introduction', 'acknowledgments', 'resumen', 'r e s u m e n', '©', '___' ]
+PATTERN_ABST_ES = ['Resumen', 'RESUMEN', 'ESUMEN', 'Sumario', 'Este artículo', 'Este estudio', 'Abstract', 'ABSTRACT', 'BSTRACT', 'Introducción', 'INTRODUCCIÓN', 'INTRODUCCION', 'Resumen', 'RESUMEN', 'palabras clave', 'clave:', 'Publicado', '___']
+PATTERN_ABST_EN = ['Resumen', 'RESUMEN', 'ESUMEN', 'Summary', 'This paper', 'This study', 'Abstract', 'ABSTRACT', 'BSTRACT', 'Introduction', 'INTRODUCTION', 'Abstract', 'ABSTRACT', 'keywords', 'KEYWORDS', 'words:', 'Published', '___' ]
 
 # METHODOLOGY   (6-2-...)
-PATTERN_METHOD_ES = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'ÉTODO', 'La metodología', 'Diseños y Métodos', 'Resultados', 'Los resultados', 'Data Analysis', 'Recomendaciones', 'Discusión', 'https', 'http']
-PATTERN_METHOD_EN = ['Methodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method',  'METHOD', 'ETHOD', 'The methodology', 'Research Design', 'Results', 'Resultados', 'The results', 'Estimation', 'Findings', 'Suggestions', 'Discussion', 'https', 'http']
+PATTERN_METHOD_ES = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'ÉTODO', 'Metodología de Investigación', 'Diseños y métodos', 'Diseños y Métodos',    'Methodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'ETHOD', 'Research methodology', 'Research design', 'Research Design',     'Resultados', 'Los resultados', 'Data Analysis', 'Recomendaciones', 'Discusión', 'https', 'http']
+PATTERN_METHOD_EN = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'ÉTODO', 'Metodología de Investigación', 'Diseños y métodos', 'Diseños y Métodos',    'Methodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'ETHOD', 'Research methodology', 'Research design', 'Research Design',     'Results', 'Resultados', 'The results', 'Estimation', 'Findings', 'Empirical', 'Suggestions', 'Discussion', 'https', 'http']
 
 # RESULTS       (4-2-...)
-PATTERN_RESU_ES = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Nuestros resultados', 'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
-PATTERN_RESU_EN = ['Results', 'RESULTS', 'Result', 'RESULT', 'Our results', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
+PATTERN_RESU_ES = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO',    'Results', 'RESULTS', 'Result', 'RESULT',     'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
+PATTERN_RESU_EN = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO',    'Results', 'RESULTS', 'Result', 'RESULT',     'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
 
 # CONCLUSIONS   (4-3-...)
-PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'C O N C L U S I O N E S', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'C O N C L U Y E N D O', 'Discusión y conclusión', 'Discusiones y conclusiones', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'BIBLIOGRAFIA', 'Notas finales', 'Limitaciones', '& ']
-PATTERN_CONC_EN = ['Conclusions', 'CONCLUSIONS', 'C O N C L U S I O N S', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'C O N C L U D I N G', 'Discussion and conclusion', 'Discussion and conclusions', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography',  'Endnotes', 'Limitations', '& ']
+PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'CONCLU', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'Discusión y conclusión', 'Discusiones y conclusiones',     'Conclusions', 'CONCLUSIONS', 'CONCLU', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'Discussion and conclusion', 'Discussion and conclusions',      'Referencias', 'REFERENCIAS', 'References', 'REFERENCES', 'BIBLIOGRAFÍA', 'Bibliografía', 'BIBLIOGRAFIA', 'Notas finales', 'Limitaciones', '& ']
+PATTERN_CONC_EN = ['Conclusiones', 'CONCLUSIONES', 'CONCLU', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'Discusión y conclusión', 'Discusiones y conclusiones',     'Conclusions', 'CONCLUSIONS', 'CONCLU', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'Discussion and conclusion', 'Discussion and conclusions',      'Referencias', 'REFERENCIAS', 'References', 'REFERENCES', 'BIBLIOGRAPHY', 'Bibliography', 'ENDNOTES', 'Endnotes', 'Limitations', '& ']
 
 # PATTERN DOI (DOI)
 PATTERN_DOI_XX = ['https://doi.org/', 'doi', 'https://']
