@@ -235,7 +235,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
                     find_title = True
                     font_title = value
                     font_sizes.append(tuple([key, value]))
-                    result_lines.append(tuple(['', value, 0]))
+                    result_lines.append(tuple([key, value, 0]))
                     continue
             if find_title==True:
                 num_SpacesByWord = key.count(' ')
@@ -249,7 +249,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
                     result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
-    #     print("Font_max 2: "+ str(font_max) + " - " + str(font_submax))
+        # print("Font_max 2: "+ str(font_max) + " - " + str(font_submax))
     
     # print("\n Result Lines")
     # for item in result_lines:

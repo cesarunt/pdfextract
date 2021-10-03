@@ -182,7 +182,7 @@ def pdf_process(files_split, files_output):
                             patt = re.search(rf"\b{item}\b", key_on)
                             if patt != None :
                                 intro_font = value
-                                print("\nIntroducción font: " + str(intro_font))
+                                # print("\nIntroducción font: " + str(intro_font))
                                 break
                     if value > 0 :
                         pageresum_list.append(value)
