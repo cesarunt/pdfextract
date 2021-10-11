@@ -355,7 +355,7 @@ def pdf_process(files_split, files_output):
             # print("\nLanguage: " + language)
             # print("Title: \n"+title_text)
             # print("Title font: "+str(title_font))
-            # print("\nResumen 2: \n" + resumen_text)
+            # print("\nResumen OK: \n" + resumen_text)
             # input(".................... resumen ....................")
 
             # print("\INTRO FONT: " + str(intro_font))

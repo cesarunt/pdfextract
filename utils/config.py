@@ -21,8 +21,8 @@ PATTERN_INTRO_ES = ['INTRODUCCIÓN', 'Introducción', 'INTRODUCTION', 'Introduct
 PATTERN_INTRO_EN = ['INTRODUCCIÓN', 'Introducción', 'INTRODUCTION', 'Introduction']
 
 # RESUMEN       (5-3-...)
-PATTERN_ABST_ES = ['Resumen', 'RESUMEN', 'ESUMEN', 'Sumario', 'Este artículo', 'Este estudio', 'Abstract', 'ABSTRACT', 'BSTRACT', 'Introducción', 'INTRODUCCIÓN', 'INTRODUCCION', 'Resumen', 'RESUMEN', 'palabras clave', 'clave:', 'Publicado', '___']
-PATTERN_ABST_EN = ['Resumen', 'RESUMEN', 'ESUMEN', 'Summary', 'This paper', 'This study', 'Abstract', 'ABSTRACT', 'BSTRACT', 'Introduction', 'INTRODUCTION', 'Abstract', 'ABSTRACT', 'keywords', 'KEYWORDS', 'words:', 'Published', '___' ]
+PATTERN_ABST_ES = ['Resumen', 'RESUMEN', 'ESUMEN', 'Sumario', 'Este artículo', 'Este estudio', 'Abstract', 'ABSTRACT', 'BSTRACT', 'Introducción', 'INTRODUCCIÓN', 'INTRODUCCION', 'Resumen',  'RESUMEN',  'palabras clave', 'clave:', '___']
+PATTERN_ABST_EN = ['Resumen', 'RESUMEN', 'ESUMEN', 'Summary', 'This paper',    'This study',   'Abstract', 'ABSTRACT', 'BSTRACT', 'Introduction', 'INTRODUCTION', 'Published by', 'Abstract', 'ABSTRACT', 'keywords',       'words:', '___' ]
 
 # METHODOLOGY   (6-2-...)
 PATTERN_METHOD_ES = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'ÉTODO', 'Metodología de Investigación', 'Diseños y métodos', 'Diseños y Métodos',    'Methodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'ETHOD', 'Research methodology', 'Research design', 'Research Design',     'Resultados', 'Los resultados', 'Data Analysis', 'Recomendaciones', 'Discusión', 'https', 'http']

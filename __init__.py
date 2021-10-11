@@ -5,6 +5,7 @@ from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProc
 from werkzeug.utils import secure_filename
 from scripts.split import pdf_remove, pdf_splitter
 from scripts.process import pdf_process
+from datetime import datetime
 from docx import Document
 from docx.shared import Pt 
 from fold_to_ascii import fold
@@ -344,13 +345,14 @@ def action_extract_mul():
                     # print("Out web: " + app.config['MULTIPLE_FORWEB'])
 
                     if len(text_pdf) > 1 :
+                        now = datetime.now()
                         document = build_document(filename, text_pdf, language)
-                        file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple.docx'
+                        file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                         document.save(file_save)
                         # result_save = True
                         result_valid += 1
                         result_file_text = "Antecedente Múltiple"
-                        result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple.docx'
+                        result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                 
                 if result_valid > 0 :
                     result_save = True

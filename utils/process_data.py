@@ -143,10 +143,10 @@ def getData_TitleResumen(pagelines_list, PATTERN, limit1, limit2, font_max) :
     #     print(item)
     
     for key, value, line in pagelines_list:
-        for pattern in PATTERN[:limit1]:
+        for pattern in PATTERN[:limit1+limit2]:
             patt = re.search(rf"\b{pattern}\b", key)
             # print("find ...: " + pattern + "... key_value: " + key +" _ "+ str(value)+" line"+ str(line))
-            if patt != None and value >= font_max :
+            if patt != None and value >= font_max and '...' not in key:
                 # print("START 1 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                 resumen_title = pattern
                 resumen_pos = line
@@ -154,17 +154,17 @@ def getData_TitleResumen(pagelines_list, PATTERN, limit1, limit2, font_max) :
         if patt_band:
             break
     
-    if resumen_title == "" :
-        for key, value, line in pagelines_list:
-            for pattern in PATTERN[limit1:limit1+limit2]:
-                patt = re.search(rf"\b{pattern}\b", key)
-                if patt != None and value >= font_max:
-                    # print("START 2 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
-                    resumen_title = pattern
-                    resumen_pos = line
-                    patt_band=True; break
-            if patt_band:
-                break
+    # if resumen_title == "" :
+    #     for key, value, line in pagelines_list:
+    #         for pattern in PATTERN[limit1:limit1+limit2]:
+    #             patt = re.search(rf"\b{pattern}\b", key)
+    #             if patt != None and value >= font_max:
+    #                 print("START 2 __TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
+    #                 resumen_title = pattern
+    #                 resumen_pos = line
+    #                 patt_band=True; break
+    #         if patt_band:
+    #             break
     
     return resumen_title, resumen_pos
 
@@ -224,7 +224,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
     
     if band == False : 
         result_lines = pagelines_list; font_max = font_max_; font_submax = font_submax_
-        # print("Font_max 1: "+ str(font_max) + " - " + str(font_submax))
+        # print("Font_max 1: "+ str(font_max) + " - Submax: " + str(font_submax))
     else :
         for key, value, line in pagelines_list:
             if find_title == False:
@@ -249,7 +249,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
                     result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
-        # print("Font_max 2: "+ str(font_max) + " - " + str(font_submax))
+        # print("Font_max 2: "+ str(font_max) + " - Submax: " + str(font_submax))
     
     # print("\n Result Lines")
     # for item in result_lines:
@@ -270,6 +270,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
             if patt_band1==False:
                 for pattern in PATTERN[limit1+limit2:]:
                     patt = re.search(rf"{pattern}", key, re.IGNORECASE)
+                    # print("pattern: "+ pattern + "  key: " + key[0:35])
                     if patt != None and len(result_text)>50:
                         # print("*** End2: " + str(patt) + "  - key_value:" + key +"_"+ str(value))
                         patt_band2=True; break
@@ -424,7 +425,8 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
 
     if len(result_lines)>0 :
         for key, value, fi in result_lines:
-            if fi == 1 and font_lastmax == 0:
+            # if len(font_sizes)>2 :
+            if fi == 1 and font_lastmax == 0 and len(font_values)>2 :
                 if font_values[fi-1] == font_max and font_values[fi+1] == font_submax :
                     font_lastmax = value
 
@@ -639,16 +641,16 @@ def lang_loadPatterns(language):
     patterns_level = []
     patterns_approach = []
     # load patterns for language
-    if language == "es" :
-        patterns = patterns_es
-        patterns_level = patterns_level_es
-        patterns_approach = patterns_approach_es
-        lib_spacy = "es_core_news_sm"; #from spacy.lang.es.stop_words import STOP_WORDS
-    else :
+    if language == "en" :
         patterns = patterns_en
         patterns_level = patterns_level_en
         patterns_approach = patterns_approach_en
-        lib_spacy = "xx_ent_wiki_sm"; #from spacy.lang.en.stop_words import STOP_WORDS
+        lib_spacy = "xx_ent_wiki_sm"; #from spacy.lang.es.stop_words import STOP_WORDS
+    else :
+        patterns = patterns_es
+        patterns_level = patterns_level_es
+        patterns_approach = patterns_approach_es
+        lib_spacy = "es_core_news_sm"; #from spacy.lang.en.stop_words import STOP_WORDS
 
     # NLP = spacy.load(lib_spacy)
 # --------------------=-=-=-=-=-====-=-=-=-=
