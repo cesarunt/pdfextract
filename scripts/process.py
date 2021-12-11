@@ -107,17 +107,11 @@ def pdf_process(files_split, files_output):
             text_html = convert_pdf_to_html((files_split+'/{}').format(fname[page])) #Extract text with PDF_to_html Function call
             # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
             # print(text_html)
-
-            #Save extracted text to TEXT_FILE
-            # with open(files_output + "/background.txt", "a", encoding="utf-8") as text_file:
-            #     text_file.writelines("\nPage_0" + str(page) + "\n")
-            #     text_file.writelines(text_html_out)
-
             # 2. GET THE LANGUAGE
             # ============================================================================================
 
             # document level language detection. Think of it like average language of document!
-            # print("Language ...")
+            print("Language ...")
             # print(translator)
             # input(" .... language ....")
 

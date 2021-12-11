@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PDF Extract - ES Consultores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/solid.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/brands.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/master.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/flagiconcss/css/flag-icon.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-dir.png') }}" type="image/gif" />
+</head>
+
+<body>
+    <!-- SECTION BODY, START -->
+    <div class="wrapper">
+        <!-- <div id="body" class="active"> -->
+            <!-- navbar navigation component -->
+            
+            <!-- end of navbar navigation -->   
+            {% block content %}
+
+            {% endblock %}
+        <!-- </div>  -->
+        
+    </div>
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- <script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script> -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Uploads files -->
+    <script src="{{ url_for('static', filename='js/form-pdf.js') }}"></script>
+</body>
+
+</html>

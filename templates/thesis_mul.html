@@ -11,47 +11,49 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <h5 class="card-header">Extraer Único PDF</h5>
+                    <h5 class="card-header">Extraer Múltiples Tesis</h5>
                     <div class="card-body">
                         <!-- <form class=""> -->
                             {% if not result_file_text %}
-                            <div class="row" style="padding: 0 1rem;">
+                            <div class="row">
                                 <div class="col-sm-12">
-                                    <!-- <form method="post" action="/pdfs" enctype="multipart/form-data">
+                                    {% if not resultLoad %}
+                                    <form method="post" action="/paper_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
-                                            <input type="file" name="files[]" multiple="true" autocomplete="off" required>
-                                            <p>
-                                                <input type="submit" value="Submit">
+                                            <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
+                                            <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
+                                            <div class="line"></div>
+                                            
+                                            <p style="margin: 10px auto;">
+                                                <input type="submit" class="btn btn-primary" value="Cargar PDFs">
                                             </p>
+
                                         </div>
-                                    </form> -->
-                                    <div class="mb-3 text-center">
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDF</label><br>
-                                        <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" oninput="input_pdf_file();">
-                                          <!-- <button class="btn btn-primary" type="button" id="button-addon2">Seleccionar</button> -->
-                                    </div>
+                                    </form>
+                                    {% else %}
+                                    <!-- <div class="mb-3 text-center">
+                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
+                                        <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
+                                    </div> -->
+                                    <form method="POST" action="action_paper_mul" enctype="multipart/form-data">
+                                        <div class="mb-3 text-center">
+                                            <img class="card-img-logo" src="{{ url_for('static', filename='img/pdf-upload.png') }}">
+                                            <!-- ../static/img/doc-word.png -->
+                                            <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">PDFs cargados con éxito.</label>
+                                        </div>
+                                        <div class="mb-3 text-center" style="margin: 1rem 0;">
+                                            <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button>
+                                            <button class="btn btn-success" id="processPDF_btn" onclick="clicPDFProcessMul()" type="submit">
+                                                <i class="fas fa-play"></i> &nbsp;Procesar
+                                            </button>
+                                        </div>
+                                    </form>
+                                    {% endif %}
                                 </div>
-                                <div class="line"></div><br>
 
                                 <div class="col-sm-12 text-center">
                                     <div class="mb-3">
-                                        <!-- Buttons at start -->
-                                        <button onclick="uploadPDF('{{ request.url }}');" id="uploadPDF_btn" class="btn btn-primary" type="submit">
-                                            Cargar PDF
-                                        </button>
-                                        <!-- Buttons on start uploading -->
-                                        <button class="btn btn-primary d-none" id="loadingPDF_btn" type="button" disabled>
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Cargando...
-                                        </button>
-                                        <!-- Buttons on finish uploading -->
-                                        <form method="POST" action="action_extract_one" enctype="multipart/form-data">
-                                            <button class="btn btn-secondary d-none" type="button" id="cancelPDF_btn">Cancelar</button>
-                                            <button class="btn btn-success d-none" id="processPDF_btn" onclick="clicPDFProcess()" type="submit">
-                                                <i class="fas fa-play"></i> &nbsp;Procesar
-                                            </button>
-                                        </form>
-                                        <!-- <button type="submit" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Cancelar</button>
-                                        <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i> Procesar</button> -->
+                                        
                                     </div>
                                     <div id="processPDF_wrapper" class="text-center d-none">
                                         <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
@@ -80,14 +82,19 @@
                                         {% else %}
                                         <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
                                         {% endif %}
+                                        {% if result_invalid_text %}
+                                        <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%; font-size: small; color: darkred;">{{ result_invalid_text }}</label>
+                                        {% endif %}
                                         <!-- ../static/img/doc-word.png -->
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">{{ result_file_text }}</label>
                                     </div>
                                     <div class="mb-3">
-                                        <form method="POST" action="save_extract_one" enctype="multipart/form-data">
+                                        <!-- <div class="card-footer text-center" style="padding: 0;"> -->
+                                        <!-- <img class="card-img-top" src="{{ result_file_down }}" style="border: 1px solid #F55; margin: 0 auto;"> -->
+                                        <form method="POST" action="save_paper_mul" enctype="multipart/form-data">
                                             <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
                                             <p style="text-align: center; margin: 15px 0 0 0;">
-                                                <a href="{{ url_for('close_extract_one', source='extract_one') }}" class="btn btn-secondary">Cerrar</a>
+                                                <a href="{{ url_for('close_paper_mul', source='paper_mul') }}" class="btn btn-secondary">Cerrar</a>
                                                 {% if result_save %}
                                                 <button class="btn btn-primary" id="saveImage_btn" type="submit">Guardar</button>
                                                 {% endif %}

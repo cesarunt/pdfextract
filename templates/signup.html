@@ -1,0 +1,43 @@
+{% extends "layout_users.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="auth-content">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="mb-3">
+                <img src="../static/img/esca-logo.png" alt="bootraper logo" class="app-logo">
+            </div>
+            <h6 class="text-muted" style="font-weight: bold;">Crear nueva cuenta</h6>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="notification is-danger" style="margin: 5px 0 10px;">
+                        {{ messages[0] }}<br> <!-- Ingrese <a href="{{ url_for('auth.login') }}">aquí</a>. -->
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="/signup">
+                <div class="mb-3 text-start small">
+                    <label for="name" class="form-label">Nombre</label>
+                    <!-- <input type="text" class="form-control" placeholder="Ingrese nombre" required> -->
+                    <input class="form-control" type="text" name="name" placeholder="Ingrese correo" autofocus="" required>
+                </div>
+                <div class="mb-3 text-start small">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <!-- <input type="email" class="form-control" placeholder="Ingrese correo" required> -->
+                    <input class="form-control" type="email" name="email" placeholder="Ingrese correo" autofocus="" required>
+                </div>
+                <div class="mb-3 text-start small">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <!-- <input type="password" class="form-control" placeholder="Ingrese contraseña" required> -->
+                    <input class="form-control" type="password" name="password" placeholder="Ingrese contraseña" required>
+                </div>
+                <!-- <button class="btn btn-primary shadow-2 mb-4">Registrar</button> -->
+                <button class="btn btn-primary shadow-2 mb-3">Sign Up</button>
+            </form>
+            <p class="mb-0 text-muted">¿Ya tienes una cuenta? <a href="{{ url_for('auth.login') }}">Ingresar</a></p>
+        </div>
+    </div>
+    <p class="text-muted" style="margin: 15px 0 5px; text-align: center;">Volver al <a href="{{ url_for('main.index') }}">Página Principal</a></p>
+</div>
+{% endblock %}

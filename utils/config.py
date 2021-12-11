@@ -2,9 +2,9 @@ from easydict import EasyDict as edict
 import os
 
 # PATH LOCAL
-# GLOBAL_PATH = os.path.abspath(os.getcwd())
+GLOBAL_PATH = os.path.abspath(os.getcwd())
 # PATH SERVER
-GLOBAL_PATH = '/var/www/webApp/webApp'
+# GLOBAL_PATH = '/var/www/webApp/webApp'
 
 # BLOCK AND ALLOW WORDS
 BLOCK_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
@@ -127,6 +127,7 @@ __C.FILES.MULTIPLE_UPLOAD    = GLOBAL_PATH + '/files/multiple/upload'
 __C.FILES.MULTIPLE_SPLIT     = GLOBAL_PATH + '/files/multiple/split'
 __C.FILES.MULTIPLE_OUTPUT    = GLOBAL_PATH + '/files/multiple/output'
 __C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
+__C.FILES.SINGLE_SPLIT_WEB   = 'files/single/split'
 
 
 # List

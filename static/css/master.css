@@ -427,6 +427,42 @@ table.dataTable>tbody>tr.child ul.dtr-details {
     color: #767676 !important;
 }
 
+.pagination {
+    display: inline-block;
+}
+
+.pagination a {
+    color: black;
+    float: left;
+    font-size: smaller;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .2s;
+}
+  
+.pagination a.hover {
+    background-color: dodgerblue;
+    color: rgb(34, 31, 31);
+}
+  
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+/* .pagination-page-info {
+    padding: .6em;
+    padding-left: 0;
+    width: 40em;
+    margin: .5em;
+    margin-left: 0;
+    font-size: 12px;
+}
+.pagination-page-info b {
+    color: black;
+    background: #6aa6ed;
+    padding-left: 2px;
+    padding: .1em .25em;
+    font-size: 150%;
+} */
+
 /*------------------------------------------------------------------
 [11. Responsive properties] 
 */

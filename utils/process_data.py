@@ -1,7 +1,6 @@
 from utils.config import cfg
 # from textblob import TextBlob
 from langdetect import detect
-# from statistics import mode
 from scipy import stats as s
 import re
 
@@ -120,7 +119,6 @@ def getData_ResultURL(text_page, PATTERN):
 def getData_ResultDOI(text_page, PATTERN):
     result_res = False
     result_text = ""
-    # print(text_page)
     for pattern in PATTERN :
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
@@ -137,10 +135,6 @@ def getData_TitleResumen(pagelines_list, PATTERN, limit1, limit2, font_max) :
     resumen_title = ""
     resumen_pos = 0
     patt_band = False
-
-    # print("\nTITLE Result LIST")
-    # for item in pagelines_list:
-    #     print(item)
     
     for key, value, line in pagelines_list:
         for pattern in PATTERN[:limit1+limit2]:
@@ -172,11 +166,6 @@ def getData_TitleResumen_(pagelines_list, PATTERN, limit1, limit2, font_max) :
     resumen_title = ""
     resumen_pos = 0
     patt_band = False
-
-    # print("\n\n___font_max: "+ str(font_max))
-    # print("\n Result LIST")
-    # for item in pagelines_list:
-    #     print(item)
     
     for key, value, line in pagelines_list:
         if value >= font_max :
@@ -217,10 +206,6 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
     font_submax = 0
     result_lines = []
     font_title = 0
-
-    # print("\n Result LIST")
-    # for item in pagelines_list:
-    #     print(item)
     
     if band == False : 
         result_lines = pagelines_list; font_max = font_max_; font_submax = font_submax_
@@ -229,9 +214,6 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
         for key, value, line in pagelines_list:
             if find_title == False:
                 if line == resumen_pos :
-                # patt = re.search(rf"{resumen_title}", key, re.IGNORECASE)
-                # if patt != None: # and value==pagefonts_mode:
-                    # print("*** Start:  key_value:" + key +"_"+ str(value))
                     find_title = True
                     font_title = value
                     font_sizes.append(tuple([key, value]))
@@ -249,12 +231,7 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
                     result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
-        # print("Font_max 2: "+ str(font_max) + " - Submax: " + str(font_submax))
     
-    # print("\n Result Lines")
-    # for item in result_lines:
-    #     print(item)
-
     if len(result_lines)>0 :
         for key, value, _ in result_lines:
             patt = None
@@ -295,8 +272,6 @@ def getData_TitleIntroduction(text_page, PATTERN, limit, intro_font) :
         patt = re.search(rf"{pattern}", text_page, re.IGNORECASE)
         # print("... patt: " + pattern + "  - intro: "+ str(intro_font))
         if patt != None :
-            # print("PATTERN: " + pattern + " - " + key + " - " + str(value)) 
-            # patt_band = True 
             resumen_title = pattern
             break
         
@@ -304,7 +279,6 @@ def getData_TitleIntroduction(text_page, PATTERN, limit, intro_font) :
 
 def getData_ResultIntroduction(pagelines_list, introduction_title):
     find_title = False
-    # result_lines = []
     introduction_mode = 0
 
     for key,value,_ in pagelines_list:
@@ -318,16 +292,12 @@ def getData_ResultIntroduction(pagelines_list, introduction_title):
             # result_lines.append(tuple([key, value, 0]))
             introduction_mode = value
             break
-    # print("\nResult Intro")
-    # for item in result_lines:
-    #     print(item)
 
     return introduction_mode
 
 # getting for methodology
 def getData_TitleMethodology(text_page, PATTERN, limit) :
     methodology_title = ""
-    # print(text_page)
 
     for pattern in PATTERN[:limit]:
         patt = re.search(rf"{pattern}", text_page)
@@ -347,9 +317,7 @@ def getData_TitleMethodology_(pagelines_list, PATTERN, limit, font_max) :
     for key, value, line in pagelines_list:
         for pattern in PATTERN[:limit]:
             patt = re.search(rf"\b{pattern}\b", key)
-            # print("____patt: " + str(pattern) + " - " + key[:30] + " - " + str(value))
             if patt != None and value == font_max:
-                # print("__TITLE FOUND: " + str(patt) + "  ... key_value: " + key +" _ "+ str(value))
                 methodology_title = pattern
                 methodology_pos = line
                 patt_band=True; break
@@ -373,10 +341,6 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
     font_values = []
     font_title = font_max_
 
-    # print("\n Result LIST")
-    # for item in pagelines_list:
-    #     print(item)
-
     if band == False : 
         result_lines = pagelines_list; font_max = font_max_; font_submax = font_submax_; font_lastmax = font_lastmax_
         for key,value,_ in pagelines_list:
@@ -385,11 +349,6 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
         for key,value,line in pagelines_list:
             if find_title == False:
                 if line == methodology_pos :
-                # patt = re.search(rf"{methodology_title}", key)
-                # print("\n___PREV patt: " + str(patt) + "  - key_value:" + key +" _ "+ str(value))
-                # if (patt != None): # and value==intro_font) or (patt != None and value==introduction_mode):
-                    # print("\n___Start patt: Key_value: " + key +" _ "+ str(value))
-                    # print("\n Key: " + key + " _ Value: " + str(value))
                     find_title = True
                     font_title = value
                     # print("Title Value: " + str(value))
@@ -415,13 +374,6 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
                 #     result_lines.append(tuple([key, value, 0]))
         
         font_max, font_submax = getMaxSubmax(font_sizes, font_title)
-
-    # print("font_max: "+ str(font_max))
-    # print("font_submax: "+ str(font_submax))
-    # print("font_lastmax: "+ str(font_lastmax))
-    # print("\n Result Lines")
-    # for item in result_lines:
-    #     print(item)
 
     if len(result_lines)>0 :
         for key, value, fi in result_lines:
@@ -454,7 +406,6 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
 # getting for result
 def getData_TitleResults(text_page, PATTERN, limit, intro_font):
     methodology_title = ""
-    # patt_band = False
 
     # method_font_max = max(text_page, key=lambda x:x[1])[1]
     # for key,value in text_page:
@@ -467,8 +418,6 @@ def getData_TitleResults(text_page, PATTERN, limit, intro_font):
         patt = re.search(rf"{pattern}", text_page)
         # print("PATTERN: " + pattern + " ...intro:" + str(intro_font))
         if patt != None :#and value == intro_font:
-            # print("\nResult OK:" + str(intro_font))
-            # patt_band = True
             methodology_title = pattern
             break
     # if patt_band : break
