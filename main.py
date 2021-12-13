@@ -1,12 +1,12 @@
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory
+from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
 from scripts.split import pdf_remove, pdf_splitter, img_splitter
 from scripts.process import pdf_process
 from datetime import datetime
-from utils.sqlite_tools import get_ThesisByName, update_DetailByIds
+from utils.sqlite_tools import get_ThesisByName, update_DetailByIds, get_listThesisByWord
 from __init__ import create_app, db
 
 import cv2
@@ -185,6 +185,13 @@ def thesis_mul():
     else:
         return render_template('thesis_mul.html')
 
+@main.route('/thesis_search')
+def thesis_search():
+    if current_user.is_authenticated:
+        return render_template('thesis_search.html', name=current_user.name.split()[0])
+    else:
+        return render_template('thesis_search.html')
+
 @main.route('/report')
 def report():
     return render_template('report.html')
@@ -349,11 +356,7 @@ def thesis_split(filename):
 def action_thesis_one():
     result_split = False
     global file_pdf
-    global pd_id
-    global pd_pdf 
-    # global document  
-    # print("action_thesis_one ...")
-    # text_pdf = []
+    global pdf_id
 
     if request.method == "POST":         
         # result_save = None
@@ -370,89 +373,97 @@ def action_thesis_one():
             file_pdf = fold(file_pdf)
             fname = os.listdir(app.config['SINGLE_SPLIT'])
             path = os.path.join(app.config['SINGLE_UPLOAD'],file_pdf)
-            action = request.values.get("action") 
+            action = request.values.get("action")
 
             if action :
-                x = int(request.values.get("x"))
-                y = int(request.values.get("y"))
-                w = int(request.values.get("w"))
-                h = int(request.values.get("h"))
-                # print(x)
-                # print(y)
-                # print(w)
-                # print(h)
+                det_id =        int(request.values.get("det_id"))
+                det_attribute = int(request.values.get("det_attribute"))
+                rect = {
+                        'x': int(request.values.get("x")),
+                        'y': int(request.values.get("y")),
+                        'w': int(request.values.get("w")),
+                        'h': int(request.values.get("h"))
+                    }
                 image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
-                # print(image)
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-                # x,y,w,h = 43, 127, 600, 110  
-                ROI = thresh[y:y+h,x:x+w]
+                ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
                 text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
 
                 if text :
-                    pdf = update_DetailByIds(pd_id, pd_pdf, text, "1")
+                    pdf = update_DetailByIds(det_id, pdf_id, det_attribute, text, 1, rect)
                 print("text")
                 print(text)
                 result_split = 1
+            # else:
+            # document = Document()
+            # 1. SPLIT PDF
+            # print("\n------------------- START SPLIT PROCESS -------------------")
+            if action is None:
+                pdf_remove(fname, app.config['SINGLE_SPLIT'])       # Call pdf remove function
+                result_split = img_splitter(path, app.config['SINGLE_SPLIT'])      # Call pdf splitter function
             
-            else:
-                # document = Document()
-                # 1. SPLIT PDF
-                # print("\n------------------- START SPLIT PROCESS -------------------")
-                if action is None:
-                    pdf_remove(fname, app.config['SINGLE_SPLIT'])       # Call pdf remove function
-                    result_split = img_splitter(path, app.config['SINGLE_SPLIT'])      # Call pdf splitter function
-                
-                if result_split == 0:
-                    result_save = 0
-                    pdf_text = {'result': "Procesamiento Incompleto"}
-                
-                if result_split == 1:
-                    # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    # VALIDACION ... EL PDF NO TIENE TODOS LOS COMPONENTES DETECTADOS .. LEER BD
-                    pdf_file = {
-                            'name': file_pdf,
-                            'path_upload': "http://127.0.0.1:5000/files/single/upload/"+file_pdf,
-                            'path_images': app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg' #+'.jpg'
-                            }
-                    pdf = get_ThesisByName(file_pdf)
-                    pd_id = pdf['id']
-                    pd_pdf = pdf['det']
-                    print("Detail from pdf_detail : "+path)
-                    print("len pdf found yes: " + str(len(pdf['foundlistY'])))
-                    print("len pdf_found no: " + str(len(pdf['foundlistN'])))
+            if result_split == 0:
+                result_save = 0
+                pdf_text = {'result': "Procesamiento Incompleto"}
+            
+            if result_split == 1:
+                # print("\n------------------ START EXTRACT PROCESS ------------------")
+                # VALIDACION ... EL PDF NO TIENE TODOS LOS COMPONENTES DETECTADOS .. LEER BD
+                pdf_file = {
+                        'name': file_pdf,
+                        'path_upload': "http://127.0.0.1:5000/files/single/upload/"+file_pdf,
+                        'path_images': app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg' #+'.jpg'
+                        }
+                pdf = get_ThesisByName(file_pdf)
+                pdf_id = pdf['id']
+                # print("Detail from pdf_detail : "+path)
+                # print("len pdf found yes: " + str(len(pdf['foundlistY'])))
+                # print("len pdf_found no: " + str(len(pdf['foundlistN'])))
 
-                    """Verificar pdf_details, encontrados y no encontradps"""
-                    if len(pdf['foundlistN']): select = None
-                    else: select = "."
-                    list_npages = list(range(1, int(pdf['npage']+1)))
-                    list_npages = [str(int) for int in list_npages]
-                    pdf['listnpages'] = list_npages
-                    pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
-    
-                    # Verify content of pdf_detail
-                    """
-                    is_article, text_pdf, language = pdf_process(app.config['SINGLE_SPLIT'], app.config['SINGLE_OUTPUT'])           # Call pdf process function
-                    document = build_document(file_pdf, text_pdf, language)
-                    if is_article == False:
-                        result_save = 0
-                        result_file_text = "Error cargando formato de Tesis ... \nMuy pronto estará disponible"
-                    elif len(text_pdf) > 1 :
-                        file_save = app.config['SINGLE_OUTPUT']+'/background_'+file_pdf+'.docx'
-                        document.save(file_save)
-                        result_save = 1
-                        result_file_text = file_pdf.split(".pdf")[0]
-                        result_file_down = app.config['SINGLE_FORWEB']+'/background_'+file_pdf+'.docx'
-                    else:
-                        result_save = 0
-                        result_file_text = "Error en la carga del PDF"
-                    """
+                """Verificar pdf_details, encontrados y no encontradps"""
+                if len(pdf['foundlistN']): select = None 
+                else: select = "."
+                list_npages = list(range(1, int(pdf['npages']+1)))
+                list_npages = [str(int) for int in list_npages]
+                pdf['listnpages'] = list_npages
+                pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
         else:
             result_cpu = True
             pdf_text = {'result': "Servidor Ocupado", 'found': "", 'not_found': ""}
             # result_file_text = "El servidor está procesando, debe esperar un momento."
     
-    return render_template('thesis_one.html', _pdf_result = pdf_result, _pdf_file = pdf_file, _pdf = pdf)
+    return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
+
+
+@main.route("/action_thesis_search", methods=["POST"])
+def action_thesis_search():
+    # result_split = False
+    pdfs = None
+
+    if request.method == "POST":
+        # result_save = None
+        keyword = request.values.get("keyword") 
+        # action = None
+        # text = None
+        
+        if len(keyword) > 1:
+            # print("\n------------------ START EXTRACT PROCESS ------------------")
+            # VALIDACION ... EL PDF NO TIENE TODOS LOS COMPONENTES DETECTADOS .. LEER BD
+            # pdf_file = {
+            #         'name': file_pdf,
+            #         'path_upload': "http://127.0.0.1:5000/files/single/upload/"+file_pdf,
+            #         'path_images': app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg' #+'.jpg'
+            #         }
+            pdfs = get_listThesisByWord(keyword)
+            
+            # pdf_id = pdf['id']
+            # print("Detail from pdf_detail : "+path)
+            # print("len pdf found yes: " + str(len(pdf['foundlistY'])))
+            print("len pdfs: " + str(len(pdfs)))
+
+        
+    return render_template('thesis_search.html', _pdfs = pdfs)
 
 
 @main.route("/close_thesis_one/<source>")

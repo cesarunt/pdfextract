@@ -86,36 +86,45 @@
                                         <div id="div_notfound" class="text-center">
                                             {% for detail in _pdf.foundlistN %}
                                             <li style="padding:4px 0 0 0;">
-                                                <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.value }} &nbsp;</label>
+                                                <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
                                                 <label for="state" class="form-label">
-                                                    <select id="pages" class="form-select" style="display: inline-block; width: auto;" required>
+                                                    <select id="pages" class="form-select" style="display: inline-block; width: auto; font-size: small;" required>
                                                         {% for x in _pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </label>
-                                                <button type="button" id="edit-{{detail.colname}}" class="btn btn-sm btn-secondary" onclick="activeCanvas(this.id)">
-                                                    <i class="fas fa-sign"></i>
+                                                <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeCanvas(this.id)">
+                                                    <i class="fas fa-vector-square"></i>
                                                 </button>
-                                                <button type="submit" id="save-{{detail.colname}}" class="btn btn-sm btn-primary d-none" onclick="saveCanvas('{{ request.url }}', this.id)">
+                                                <!-- <button type="submit" id="save_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-primary d-none" onclick="saveCanvas('{{ request.url }}', this.id)">
                                                     <i class="fas fa-save"></i>
-                                                </button>
+                                                </button> -->
                                             </li>
                                             {% endfor %}
                                         </div> 
                                         <div id="div_found" class="text-center d-none">
                                             {% for detail in _pdf.foundlistY %}
                                             <li style="padding:4px 0 0 0;">
-                                                <label for="state" class="form-label" style="width: 105px; text-align: right;">{{ detail.value }} &nbsp;</label>
+                                                <label for="state" class="form-label" style="width: 105px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
                                                 <label for="state" class="form-label">
-                                                    <select id="pages" class="form-select" style="display: inline-block; width: auto;" required>
+                                                    <select id="pages" class="form-select" style="display: inline-block; width: auto; font-size: small;" required>
                                                         {% for x in _pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
-                                                        <option value="{{detail.num}}" selected>{{detail.num}}</option>
+                                                        <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
                                                     </select>
                                                 </label>
-                                                <i class="fas fa-sign"></i>
+                                                <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeCanvas(this.id)">
+                                                    <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
+                                                    <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
+                                                    <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
+                                                    <input type="hidden" id="det_height-{{detail.det_name}}" value="{{detail.det_height}}" />
+                                                    <i class="fas fa-vector-square"></i>
+                                                </button>
+                                                <!-- <button type="submit" id="save_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-primary d-none" onclick="saveCanvas('{{ request.url }}', this.id)">
+                                                    <i class="fas fa-save"></i>
+                                                </button> -->
                                             </li>
                                             {% endfor %}
                                         </div>
@@ -134,19 +143,26 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
-                                        <div id="buttons" class="text-center">
+                                        <div id="buttons" class="text-center" style="width: 100%;">
                                             <button type="button" class="btn btn-icon icon-left btn-info mb-2"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button type="button" class="btn btn-icon icon-left btn-info mb-2"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        <div id="content" class="text-center">
-                                            <canvas id="canvas_pdf" class="" width="600px" height="900px" 
+                                        <div id="content" class="text-center" style="width: 100%;">
+                                            <canvas id="canvas_pdf" class="" width="700px" height="1000px" 
                                                 style="opacity: 0.5; border:1px solid black; position: relative; background-image: url('{{ _pdf_file.path_images}}'); background-size: 100% 100%;">
                                             </canvas>
                                             <!-- <canvas id="canvas_pdf" class="" width="680" height="800" style="border:1px solid black; background-image: url('../files/single/split/page_0.jpg');"></canvas> -->
-                                            <!-- <iframe id="iframe_pdf" src="{{ _pdf_file.path_upload }}" class="" style="width:600px; height:900px;" frameborder="0">
-                                            
-                                            </iframe> -->
+                                            <!-- <iframe id="iframe_pdf" src="{{ _pdf_file.path_upload }}" class="" style="width:600px; height:900px;" frameborder="0"> -->
+                                            <button type="submit" id="cancel_name" class="btn btn-secondary d-none" onclick="cancelCanvas(this.id)" style="position: absolute; left:925px; top:102px">
+                                                <i class="fas fa-window-close"></i>
+                                            </button>
+                                            <button type="submit" id="save_name" class="btn btn-primary d-none" onclick="saveCanvas('{{ request.url }}', this.id)" style="position: absolute; left:925px; top:142px">
+                                                <i class="fas fa-save"></i>
+                                            </button>
+                                        
+                                            </iframe>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>

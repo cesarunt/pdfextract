@@ -48,7 +48,7 @@ def img_splitter(path, files_split):
     # fname = os.path.splitext(os.path.basename(path))[0]
     result = 0
     # print("img splitter")
-    images = convert_from_path(path, size=(600,900))
+    images = convert_from_path(path, size=(700,1000))
 
     for i in range(len(images)):
     # Save pages as images in the pdf

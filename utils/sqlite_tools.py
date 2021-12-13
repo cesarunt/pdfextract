@@ -2,6 +2,16 @@ import sqlite3
 import json
 import os
 
+def get_pdf_info(cursor, tablename, file_pdf):
+    """Get column names of main table, given its name and a cursor (or connection) to the database.
+    """
+    query = f"""
+                SELECT pdf_id, pdf_name, pdf_npages FROM {tablename}
+                WHERE pdf_name = "{file_pdf}" 
+            """
+    cursor.execute(query)
+    return cursor.fetchone()
+
 def get_col_names(cursor, tablename):
     """Get column names of a table, given its name and a cursor
        (or connection) to the database.
@@ -11,7 +21,7 @@ def get_col_names(cursor, tablename):
 
 def get_ThesisByName(file_pdf):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
-    table_name = 'pdf_detail'
+    table_name = 'pdf_attributes'
     table_colnames = None
     pdf = dict()
     pdf_foundlistY = []      #   Atributos Encontrados SI
@@ -20,45 +30,46 @@ def get_ThesisByName(file_pdf):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
-        table_colnames = get_col_names(cursor, table_name)
-        query = f'SELECT a.pdf_name, a.pdf_npage, b.* FROM pdf a INNER JOIN pdf_detail b ON a.pdf_id = b.pd_pdf WHERE a.pdf_name = "{file_pdf}" ORDER BY pd_id DESC LIMIT 2' 
-        # print(query)
+        pdf_info = get_pdf_info(cursor, 'pdf_info', file_pdf)
+        pdf_id, pdf_name, pdf_npages = pdf_info
+        query = f"""
+                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
+                    FROM (pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+                    WHERE a.pdf_id = "{pdf_id}" 
+                    ORDER BY b.det_id ASC
+                """ 
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-
-        row = 0
-        for record in records:
-            if row == 0 :
-                record_num = record
-            if row == 1:
-                i = 4
-                for value in record[4:-1]:
-                    if value :
-                        pdf_foundlistY.append({
-                                        'colname':  table_colnames[i-2], 
-                                        'value':    str(table_colnames[i-2].split('_')[-1]).capitalize(),
-                                        'num':      record_num[i]
-                                        })
-                    else:
-                        pdf_foundlistN.append({
-                                        'colname':  table_colnames[i-2], 
-                                        'value':    str(table_colnames[i-2].split('_')[-1]).capitalize(),
-                                        'num':      None
-                                        })
-                    i+=1
-            row=row+1
-            print("...")
         
+        for record in records:
+            if record[3] :
+                pdf_foundlistY.append({
+                                'det_id':       record[0],
+                                'det_attribute':record[1],
+                                'det_name':     record[2], 
+                                'det_value':    record[3],
+                                'det_npage':    record[4],
+                                'det_x':        record[5],
+                                'det_y':        record[6],
+                                'det_width':    record[7],
+                                'det_height':   record[8]
+                                })
+            else:
+                pdf_foundlistN.append({
+                                'det_id':       record[0],
+                                'det_attribute':record[1],
+                                'det_name':     record[2]
+                                })
+
         pdf = {
-            'id':           record[2],
-            'det':          record[3],
-            'name':         record[0],
-            'npage':        record[1],
+            'id':           pdf_id,
+            'name':         pdf_name,
+            'npages':       pdf_npages,
             'foundlistY':   pdf_foundlistY,
             'foundlistN':   pdf_foundlistN,
         }
-        print(json.dumps(pdf))
+        # print(json.dumps(pdf))
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -70,20 +81,68 @@ def get_ThesisByName(file_pdf):
         return pdf
 
 
-def update_DetailByIds(pd_id, pd_pdf, text, num):
+def get_listThesisByWord(keyword):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
-    table_name = 'pdf_detail'
-    table_colnames = None
+    table_name = 'pdf_keywords'
+    # table_colnames = None
+    pdfs = []
+    # pdf_foundlistY = []      #   Atributos Encontrados SI
+    # pdf_foundlistN = []      #   Atributos Encontrados NO
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        # pdf_info = get_pdf_info(cursor, table_name, keyword)
+        # pdf_id, pdf_name, pdf_npages = pdf_info
+        query = f"""
+                    SELECT a.pdf_id, a.pdf_name, a.pdf_npages, a.pdf_size, b.det_value, c.key_name
+                    FROM (pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_keywords c ON a.pdf_id = c.key_info
+                    WHERE c.key_name LIKE "%{keyword}%" AND b.det_attribute = 2
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+
+        for record in records:
+            if record[4] == "":
+                pdf_title = "Titulo No registrado"
+            else:
+                pdf_title = record[4]
+            pdfs.append({
+                    'pdf_id':       record[0],
+                    'pdf_name':     record[1],
+                    'pdf_npages':   record[2], 
+                    'pdf_size':     record[3],
+                    'det_value':    pdf_title,
+                    'key_name':     record[5]
+                    })
+        
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return pdfs
+
+# def update_DetailByIds(pd_id, pd_pdf, text, num):
+def update_DetailByIds(det_id, det_info, det_attribute, text, npage=1, rect=dict):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_details'
+    # table_colnames = None
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
-        # table_colnames = get_col_names(cursor, table_name)
-        query = f'UPDATE pdf_detail SET pd_titulo = "{text}" WHERE pd_id = "{pd_id}" AND pd_pdf = "{pd_pdf}"' 
-        sqlite_select_query = query
-        cursor.execute(sqlite_select_query)
-        query = f'UPDATE pdf_detail SET pd_titulo = "{num}" WHERE (pd_id = 5 OR pd_id = 6) AND pd_pdf = "{pd_pdf}"'
+        query = f"""
+                    UPDATE pdf_details SET det_value="{text}", det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
+                    WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
+                """
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()

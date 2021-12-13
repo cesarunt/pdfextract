@@ -49,6 +49,8 @@ var isDown = false;
 var startX;
 var startY;
 
+var _det_id = null
+var _det_attribute = null
 var _x = null
 var _y = null
 var _w = null
@@ -338,14 +340,37 @@ function on_select_attributes() {
 // Function to active canvas and hide/show buttons
 function activeCanvas(edit_id) {
   canvas_pdf.style.opacity = 1;
-
   // Hide edit_id
   // Show save_id
-  let save_id = "save-"+edit_id.split("-")[1]
-  var edit_btn = document.getElementById(edit_id);
-  var save_btn = document.getElementById(save_id);
-  edit_btn.classList.add("d-none")
-  save_btn.classList.remove("d-none");
+  let detail_id = edit_id.split("_")
+  var save_name = document.getElementById("save_name");
+  save_name.classList.remove("d-none");
+  var cancel_name = document.getElementById("cancel_name");
+  cancel_name.classList.remove("d-none");
+
+  let detail_edit = detail_id[1].split("-")
+  _det_id = detail_edit[0]
+  _det_attribute = detail_edit[1]
+  // Verify data x, y
+  var det_x =      document.getElementById('det_x-'+detail_edit[2]).value
+  var det_y =      document.getElementById('det_y-'+detail_edit[2]).value
+  var det_width =  document.getElementById('det_width-'+detail_edit[2]).value
+  var det_height = document.getElementById('det_height-'+detail_edit[2]).value
+
+  if (det_x != null && det_y != null) {
+    ctx.strokeRect(det_x, det_y, det_width, det_height);
+  }
+}
+
+// Function to inactive canvas and hide/show buttons
+function cancelCanvas(edit_id) {
+  canvas_pdf.style.opacity = 0.5;
+  var save_name = document.getElementById("save_name");
+  save_name.classList.add("d-none");
+  var cancel_name = document.getElementById("cancel_name");
+  cancel_name.classList.add("d-none");
+
+  ctx.clearRect(0, 0, canvas_pdf.width, canvas_pdf.height);
 }
 
 // Function to save over canvas and hide/show buttons
@@ -378,11 +403,20 @@ function saveCanvas(url, save_id) {
   // Create a XMLHTTPRequest instance
   var request = new XMLHttpRequest();
 
+  // let detail_id = save_id.split("_")
+  // let detail_save = detail_id[1].split("-")
+  // // let detail = save_id.split("-")
+  // _det_id = detail_save[0]
+  // _det_attribute = detail_save[1]
+
+
   // Set the response type
   request.responseType = "json";
 
-  var action = "save_attribute";
+  var action = "save";
   data.append("action", action);
+  data.append("det_id", _det_id);
+  data.append("det_attribute", _det_attribute);
   data.append("x", _x);
   data.append("y", _y);
   data.append("w", _w);
@@ -393,21 +427,17 @@ function saveCanvas(url, save_id) {
     if (request.status == 200) {
       // Hide save_id
       // Show edit_id
-      let edit_id = "edit-"+save_id.split("-")[1]
-      var save_btn = document.getElementById(save_id);
-      var edit_btn = document.getElementById(edit_id);
-      save_btn.classList.add("d-none")
-      edit_btn.classList.remove("d-none");
+      var save_name = document.getElementById(save_id);
+      save_name.classList.add("d-none");
+      var cancel_name = document.getElementById("cancel_name");
+      cancel_name.classList.add("d-none");
+      
       alert(`Registro Exitoso`, "warning");
       canvas_pdf.style.opacity = 0.5;
+      location.reload();
     }
     else {
-      let edit_id = "edit-"+save_id.split("-")[1]
-      var save_btn = document.getElementById(save_id);
-      var edit_btn = document.getElementById(edit_id);
-      save_btn.classList.add("d-none")
-      edit_btn.classList.remove("d-none");
-      alert(`Registro Exitoso`, "warning");
+      alert(`Registro Exitoso 500`, "warning");
       canvas_pdf.style.opacity = 0.5;
     }
 
