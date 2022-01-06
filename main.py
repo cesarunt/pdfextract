@@ -438,30 +438,14 @@ def action_thesis_one():
 
 @main.route("/action_thesis_search", methods=["POST"])
 def action_thesis_search():
-    # result_split = False
     pdfs = None
 
     if request.method == "POST":
-        # result_save = None
         keyword = request.values.get("keyword") 
-        # action = None
-        # text = None
         
         if len(keyword) > 1:
-            # print("\n------------------ START EXTRACT PROCESS ------------------")
-            # VALIDACION ... EL PDF NO TIENE TODOS LOS COMPONENTES DETECTADOS .. LEER BD
-            # pdf_file = {
-            #         'name': file_pdf,
-            #         'path_upload': "http://127.0.0.1:5000/files/single/upload/"+file_pdf,
-            #         'path_images': app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg' #+'.jpg'
-            #         }
             pdfs = get_listThesisByWord(keyword)
-            
-            # pdf_id = pdf['id']
-            # print("Detail from pdf_detail : "+path)
-            # print("len pdf found yes: " + str(len(pdf['foundlistY'])))
             print("len pdfs: " + str(len(pdfs)))
-
         
     return render_template('thesis_search.html', _pdfs = pdfs)
 

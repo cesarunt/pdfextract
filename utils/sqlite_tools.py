@@ -86,8 +86,6 @@ def get_listThesisByWord(keyword):
     table_name = 'pdf_keywords'
     # table_colnames = None
     pdfs = []
-    # pdf_foundlistY = []      #   Atributos Encontrados SI
-    # pdf_foundlistN = []      #   Atributos Encontrados NO
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
@@ -155,41 +153,3 @@ def update_DetailByIds(det_id, det_info, det_attribute, text, npage=1, rect=dict
             print("The SQLite connection is closed")
         
         return result
-
-
-"""
-def readAllTable():
-    data_base = 'db.sqlite'
-    table_name = 'pdf_detail'
-    try:
-        sqliteConnection = sqlite3.connect(data_base)
-        cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
-        
-        sqlite_select_query = 'SELECT * from pdf_detail'
-        cursor.execute(sqlite_select_query)
-        records = cursor.fetchall()
-        print("Total rows are:  ", len(records))
-        print("Printing each row\n")
-
-        for row in records:
-            print("pdf_id: ",       row[1])
-            print("pe_author: ",    row[2])
-            print("pe_title: ",     row[3])
-            print("pe_entity: ",    row[4])
-            print("pe_abstract: ",  row[5])
-            print("ct_method: pag.",    row[16])
-            print("\n")
-
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("Failed to read data from sqlite table", error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print("The SQLite connection is closed")
-"""
-
-# readAllTable()
-# readOneTable()
