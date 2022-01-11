@@ -94,7 +94,7 @@
                                         <form method="POST" action="save_paper_mul" enctype="multipart/form-data">
                                             <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
                                             <p style="text-align: center; margin: 15px 0 0 0;">
-                                                <a href="{{ url_for('close_paper_mul', source='paper_mul') }}" class="btn btn-secondary">Cerrar</a>
+                                                <a href="{{ url_for('main.close_paper_mul', source='paper_mul') }}" class="btn btn-secondary">Cerrar</a>
                                                 {% if result_save %}
                                                 <button class="btn btn-primary" id="saveImage_btn" type="submit">Guardar</button>
                                                 {% endif %}

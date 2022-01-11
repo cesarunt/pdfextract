@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container">
+        <div class="page-title">  </div>
+        <div class="row">
+            <div class="col-md-12 page-header" style="text-align: right; font-size: smaller; margin: 5px auto;">                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <h6 class="card-header">Información del Proyecto</h6>
+                    <div class="card-body" style="text-align: center;">
+                        <!-- <h5 class="card-title">Construcción de Antecedentes</h5> -->
+                        <h5 class="card-title-info">{{ project.pro_title}} </h5>
+                        <p class="card-text-info">{{ project.pro_uni }}</p>
+                        <p class="card-text-info">{{ project.pro_career }}</p>
+                        <p class="card-text-info"><b>Variables</b>: {{ project.pro_key_id1 }}, {{ project.pro_key_id2 }}, {{ project.pro_key_id3 }}</p>
+                        <p class="card-text-info" style="font-size: smaller;">({{ project.pro_date }})</p>
+                        <p>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="font-weight: normal;">PDFs Procesados: <b>{{ project.pro_n_articles }}</b></th>
+                                        <th style="font-weight: normal;">Nº Procesamientos: <b>{{ project.pro_n_process }}</b></th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </p>
+                        <img class="card-img-land" style="width: 70%;" src="../../static/img/analisis-docs.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

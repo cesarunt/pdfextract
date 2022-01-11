@@ -243,14 +243,42 @@ body {
     text-align: center;
 }
 
+.card-title-form {
+    margin: 0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-title-info {
+    margin: 0.25rem 0 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-body button {
+    font-size: smaller;
+  }
+
 .card-text {
     margin: 0 1rem;
     text-align: justify;
 }
 
+.card-text-form {
+    margin: 0 0.1rem;
+    font-size: smaller;
+    text-align: justify;
+}
+
+.card-text-info {
+    margin: 0.25rem 1rem;
+    font-size: medium;
+    text-align: center;
+}
+
 .card-img-land {
-    width: 55%;
-    margin: 1rem auto 2rem;
+    width: auto;
+    margin: 0;
 }
 
 .card-img-logo {

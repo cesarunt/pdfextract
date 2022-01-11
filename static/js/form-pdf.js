@@ -25,36 +25,51 @@ var updatePDF_btn = document.getElementById("updatePDF_btn");
 var div_notfound = document.getElementById("div_notfound");
 var div_found = document.getElementById("div_found");
 
-
 // var iframe_pdf = document.getElementById("iframe_pdf");
 
 // get references to the canvas and context
 var canvas_pdf = document.getElementById("canvas_pdf");
-var ctx = canvas_pdf.getContext("2d");
 
-// style the context
-ctx.strokeStyle = "blue";
-ctx.lineWidth = 2;
+if (canvas_pdf){
+  var ctx = canvas_pdf.getContext("2d");
+  // style the context
+  ctx.strokeStyle = "blue";
+  ctx.lineWidth = 2;
 
-// calculate where the canvas is on the window
-// (used to help calculate mouseX/mouseY)
-var canvasOffset = canvas_pdf.getBoundingClientRect();
-var offsetX = canvasOffset.left;
-var offsetY = canvasOffset.top;
+  // calculate where the canvas is on the window
+  // (used to help calculate mouseX/mouseY)
+  var canvasOffset = canvas_pdf.getBoundingClientRect();
+  var offsetX = canvasOffset.left;
+  var offsetY = canvasOffset.top;
 
-// this flage is true when the user is dragging the mouse
-var isDown = false;
+  // this flage is true when the user is dragging the mouse
+  var isDown = false;
 
-// these vars will hold the starting mouse position
-var startX;
-var startY;
+  // these vars will hold the starting mouse position
+  var startX;
+  var startY;
 
-var _det_id = null
-var _det_attribute = null
-var _x = null
-var _y = null
-var _w = null
-var _h = null
+  var _det_id = null
+  var _det_attribute = null
+  var _x = null
+  var _y = null
+  var _w = null
+  var _h = null
+
+  document.getElementById('canvas_pdf').addEventListener('mousedown', function(e) {
+    handleMouseDown(e);
+  });
+  document.getElementById('canvas_pdf').addEventListener('mousemove', function(e) {
+    handleMouseMove(e);
+  });
+  document.getElementById('canvas_pdf').addEventListener('mouseup', function(e) {
+    handleMouseUp(e);
+  });
+  document.getElementById('canvas_pdf').addEventListener('mouseout', function(e) {
+    handleMouseOut(e);
+  });
+}
+
 
 // Canvas Functions
 // ---------------------------------------------------------------------------------------------------------------------
@@ -127,19 +142,6 @@ function handleMouseMove(e) {
   _w = width
   _h = height
 }
-
-document.getElementById('canvas_pdf').addEventListener('mousedown', function(e) {
-handleMouseDown(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mousemove', function(e) {
-handleMouseMove(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mouseup', function(e) {
-handleMouseUp(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mouseout', function(e) {
-handleMouseOut(e);
-});
 
 // ---------------------------------------------------------------------------------------------------------------------
 

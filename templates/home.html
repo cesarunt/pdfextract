@@ -1,0 +1,64 @@
+{% extends "layout_home.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container" style="max-width: 1000px;">
+        <div class="page-title">    </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <!-- <h5 class="card-header">Portada</h5> -->
+                    <div class="card-body">
+                        <h4 class="card-title-form">Gestor Inteligente de Proyectos</h4>
+                        <!-- <p class="card-text-form">Elaborar un proyecto de investigación o tesis, es la tarea más importante que realizamos durante la etapa de formación profesional, por ello hemos desarrollado dos formas de implementar esta tarea, de la forma tradicional mediante la carga de archivos y de forma empiríca basada en el histórico de proyectos.</p> -->
+                    </div>
+                    <img class="card-img-land" src="../static/img/home-landing.jpg">
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 1rem;">
+                <h5 style="padding: 0.5rem; margin-bottom: 0;"><b>Crear Proyectos</b></h5>
+                <div class="row" style="border: 1px solid rgba(0,0,0,.125); margin: 0 0.1rem;">
+                    <div class="col-md-6" style="margin: 1rem 0;">
+                        <div class="dfd text-center">
+                            <a href="{{ url_for('main.upload_form') }}">
+                                <!-- <i class="blue large-icon fas fa-file-upload" style="margin-bottom: 0.5rem;"></i> -->
+                                <img class="card-img-land" style="width: 70px;" src="../static/img/icon-upload.png">
+                                <p class="text-muted" style="margin: 0.25rem 0 0;"><b>Subir Documentos</b></p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="margin: 1rem 0;">
+                        <div class="dfd text-center">
+                            <a href="{{ url_for('main.db_form') }}">
+                                <!-- <i class="gray large-icon fas fa-database" style="margin-bottom: 0.5rem;"></i> -->
+                                <img class="card-img-land" style="width: 92px;" src="../static/img/icon-database.png">
+                                <p class="text-muted" style="margin: 0.25rem 0 0;"><b>Base de Datos</b></p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-12">
+                <h5 style="padding: 0.5rem; margin-bottom: 0;"><b>Actualizar Proyectos</b></h5>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="card-title-form" style="margin-bottom: 0.75rem;">Seleccionar proyecto <span style="font-size: small; font-weight: 100;">(últimos 5)</span></p>
+                        {% for project in projects %}
+                        <a href="{{ url_for('main.upload_home', id=project.pro_id) }}">
+                            <button type="button" class="btn btn-outline-dark mb-2">{{project.pro_title}} <span class="badge bg-light text-dark" style="background-color:cornflowerblue !important;">({{project.pro_uni}})</span></button><br>
+                        </a>
+                        {% endfor %}
+                        <!-- <span class="badge bg-light text-dark" style="padding: 0.5rem; background-color:cornflowerblue !important;">Ver todos</span> -->
+                        <button type="button" class="btn btn-primary" style="margin: 1rem;">Ver todos</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <img class="card-img-land" src="../static/img/analisis-docs.jpg"> -->
+        </div>
+    </div>
+</div>
+{% endblock %}

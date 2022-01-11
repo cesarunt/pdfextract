@@ -27,7 +27,7 @@ def login(): # define login page fucntion
         # if the above check passes, then we know the user has the right credentials
         login_user(user, remember=remember)
         # return redirect(url_for('main.profile'))
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.home'))
 
 @auth.route('/signup', methods=['GET', 'POST'])# we define the sign up path
 def signup(): # define the sign up function
@@ -56,4 +56,4 @@ def signup(): # define the sign up function
 @login_required
 def logout(): #define the logout function
     logout_user()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.home'))
