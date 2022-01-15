@@ -1,10 +1,9 @@
 // Define variables
 
-
 var variables = document.getElementById("keywords");
-var keyword1 = document.getElementById("keyword1");
-var keyword2 = document.getElementById("keyword2");
-var keyword3 = document.getElementById("keyword3");
+// var keyword1 = document.getElementById("keyword1");
+// var keyword2 = document.getElementById("keyword2");
+// var keyword3 = document.getElementById("keyword3");
 
 const var_list = []
 
@@ -13,17 +12,17 @@ if (variables){
     for(let i=1; i<=count; i++){
         var variable = "key_" + i.toString()
         document.getElementById(variable).onclick = function(event) {
-            console.log(var_list.indexOf(this.value))
-            if (var_list.indexOf(this.value) >= 0) {
+            // console.log(var_list.indexOf(this.id))
+            if (var_list.indexOf(this.id) >= 0) {
                 this.classList.remove("btn-primary");
                 this.classList.add("btn-secondary");
-                var_list.pop(this.value)
+                var_list.pop(this.id)
             } 
             else {
                 if (var_list.length < 3) {
                     this.classList.remove("btn-secondary");
                     this.classList.add("btn-primary");
-                    var_list.push(this.value)
+                    var_list.push(this.id)
                     // console.log(var_list)
                 }
                 else {

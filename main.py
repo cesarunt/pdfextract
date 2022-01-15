@@ -170,9 +170,8 @@ def upload_form():
 @main.route('/create/db')
 def db_form():
     if current_user.is_authenticated:
-        list_universities = get_listUniversities()
-        list_keywords = get_listKeywords()
-        return render_template('db_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords, n_keywords=len(list_keywords))
+        # list_projects = get_listProjects()
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "")
     else:
         return render_template('db_form.html')
 
@@ -180,8 +179,10 @@ def db_form():
 def upload_home(id):
     if current_user.is_authenticated:
         one_project = get_projectById(id)
-        print("one_project", one_project)
-        return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], pro_id=id)
+        list_keywords = get_pkDetailById(id)
+
+        print("list_keywords", list_keywords)
+        return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywords=list_keywords, pro_id=id)
     else:
         return render_template('upload_home.html')
 
@@ -227,35 +228,72 @@ def report():
     return render_template('report.html')
 
 
-# ----------------------------------- FORM UPLOAD -----------------------------------
-
+"""
+    FORM UPLOAD DOCUMENTS
+    =====================
+"""
 @main.route("/save_upload", methods=["POST"])
 def save_upload():
-    msg = ""
+    id = 0
+    msg_project = ""
+    msg_pkdetail = ""
     if request.method == 'POST':
+        current_date = date.today().strftime("%d/%m/%Y")
         project = {
             'title' :       request.form['title'],
             'university' :  request.form['university'],
             'career' :      request.form['career'],
-            'keyword_1' :   request.form['keyword_1'],
-            'keyword_2' :   request.form['keyword_2'],
-            'keyword_3' :   request.form['keyword_3'],
             'type' :        request.form['type'],
             'n_articles':   0,
             'n_process':    0,
-            'created' :     date.today().strftime("%d/%m/%Y")
+            'created' :     current_date
         }
+        keywords = []
+        key1 = request.form['keyword_1']
+        if key1 != "": keywords.append(key1.split('_')[-1])
+        key2 = request.form['keyword_2']
+        if key2 != "": keywords.append(key2.split('_')[-1])
+        key3 = request.form['keyword_3']
+        if key3 != "": keywords.append(key3.split('_')[-1])
+        
         try:
-            response, id = put_newProject(project)
-            if response is True:
-                msg = "Proyecto registrado con éxito"
+            response_project, id = put_newProject(project)
+            if response_project is True:
+                msg_project = "Proyecto registrado con éxito"
         except:
-            msg = "Error en registro de proyecto"
+            msg_project = "Error en registro del proyecto"
+        
+        try:
+            for key in keywords:
+                response_pkdetail = put_newPKdetail(id, key, current_date)
+            if response_pkdetail is True:
+                msg_pkdetail = "PKdetail registrado con éxito"
+        except:
+            msg_pkdetail = "Error en registro de PKdetail"
+        
         finally:
-            print(msg)
-            # return render_template("result.html",msg = msg)
+            print(msg_project)
+            print(msg_pkdetail)
             return redirect('/upload/home/'+str(id))
-            # return render_template('upload_home.html')
+
+"""
+    FORM SEARCH DATABASES
+    =====================
+"""
+@main.route("/search_db", methods=["POST"])
+def search_db():
+    num_projects = 0
+    list_projects = None
+
+    if request.method == "POST":
+        keyword = request.values.get("keyword") 
+
+        if len(keyword) > 1:
+            list_projects = get_squareProjects_ByWord(keyword)
+            num_projects = len(list_projects)
+            print("len projects: " + str(num_projects))
+        
+    return render_template('db_form.html', n_projects = num_projects, projects = list_projects, keyword = keyword)
 
 
 # ----------------------------------- PDF EXTRACT ONE -----------------------------------
