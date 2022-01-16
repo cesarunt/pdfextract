@@ -1,5 +1,5 @@
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
+from flask import Blueprint, Response, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
@@ -16,6 +16,7 @@ from docx import Document
 from docx.shared import Pt 
 from fold_to_ascii import fold
 from flask_login import current_user
+from wtforms import TextField, Form
 
 main = Blueprint('main', __name__)
 
@@ -147,6 +148,9 @@ def build_document(title, text_pdf, language):
 def allowed_files(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+class SearchForm(Form):
+    autocomp = TextField('Busca palabras claves', id='keyword_autocomplete')
+
 # ------------------------------------ ROUTING ------------------------------------
 
 # Home
@@ -158,14 +162,25 @@ def home():
     else:
         return render_template('login.html')
 
+# @main.route('/_autocomplete', methods=['GET'])
+# def autocomplete():
+#     list_keywords = get_listKeywords()  
+#     return Response(json.dumps(list_keywords), mimetype='application/json')
+
 @main.route('/create/upload')
 def upload_form():
     if current_user.is_authenticated:
         list_universities = get_listUniversities()
         list_keywords = get_listKeywords()
-        return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords, n_keywords=len(list_keywords))
+        # keywords_form = SearchForm(request.form)
+        return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords)
     else:
         return render_template('upload_form.html')
+
+@app.route('/create/upload', methods=['GET', 'POST'])
+def upload_form():
+    form = SearchForm(request.form)
+    return render_template("upload_form.html", keywords_form=form)
 
 @main.route('/create/db')
 def db_form():

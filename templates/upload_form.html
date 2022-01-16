@@ -41,28 +41,37 @@
                                 </div>
                             </div>
                             <div class="col-md-12 col-lg-12">
-                                <div class="card">
-                                    <div class="card-body" id="keywords" style="text-align: center;">
+                                <div class="col-md-3">..</div>
+                                <div class="col-md-4">
+                                    <label for="city" class="form-label">Palabras claves</label>
+                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" required onkeyup="showResults(this.value)">
+                                    <div id="result"></div>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese palabra clave</div>
+                                </div>
+                                <div class="col-md-3">..</div>
+                                <div class="card d-none">
+                                    <div class="card-body" id="keywords_group" style="text-align: center;">
                                         <input id="keyword_1" name="keyword_1" type="hidden" value="">
                                         <input id="keyword_2" name="keyword_2" type="hidden" value="">
                                         <input id="keyword_3" name="keyword_3" type="hidden" value="">
-                                        <input id="n_keywords" name="n_keywords" type="hidden" value="{{ n_keywords }}">
+                                        <input id="keywords" name="keywords" type="hidden" value="{{ keywords }}">
                                         <p class="card-title-form" style="margin-bottom: 0.75rem;">Seleccionar palabras clave <span style="font-size: small; font-weight: 100;">(máximo 3)</span></p>
-                                        {% for keyword in keywords %}
-                                        <button id="key_{{keyword.key_id}}" type="button" value="{{keyword.key_name}}" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">{{keyword.key_name}} </button>
-                                        {% endfor %}
+                                        
                                     </div>
                                 </div>
                             </div>
                             <div class="line"></div>
                             <div class="col-md-12 col-lg-12 text-center">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="type" value="A" id="radio1" checked>
-                                    <label class="form-check-label" for="radio1">Antecedentes</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="type" value="M" id="radio2">
-                                    <label class="form-check-label" for="radio2">Marco Teórico</label>
+                                <div class="col-sm-12">
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="checkbox" name="type" id="check1" value="A" checked>
+                                      <label class="form-check-label" for="inlineCheckbox1">Antecedentes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                      <input class="form-check-input" type="checkbox" name="type" id="check2" value="M">
+                                      <label class="form-check-label" for="inlineCheckbox2">Marco Teórico</label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="line"></div>

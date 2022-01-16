@@ -217,6 +217,7 @@ def get_listUniversities():
         query = f"""
                     SELECT uni_id, uni_name, uni_nickname
                     FROM "{table_name}"
+                    WHERE  uni_active = 1
                 """
         print(query)
         sqlite_select_query = query
@@ -248,8 +249,9 @@ def get_listKeywords():
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT key_id, key_name
+                    SELECT key_name
                     FROM "{table_name}"
+                    WHERE  key_active = 1
                 """
         print(query)
         sqlite_select_query = query
@@ -257,10 +259,7 @@ def get_listKeywords():
         records = cursor.fetchall()
 
         for record in records:
-            keywords.append({
-                    'key_id':       record[0],
-                    'key_name':     record[1],
-                    })
+            keywords.append(record[0])
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
