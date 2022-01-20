@@ -16,16 +16,16 @@
                         <h5 class="card-title-form">Formulario de Registro</h5>
                         <form class="needs-validation" action="{{ url_for('main.save_upload') }}" method="POST" accept-charset="utf-8">
                             <div class="mb-3">
-                                <label for="address" class="form-label">Título</label>
-                                <input type="text" class="form-control" name="title" placeholder="" required>
+                                <!-- <label for="address" class="form-label">Título</label> -->
+                                <input type="text" class="form-control" name="title" placeholder="Ingrese el título" required>
                                 <div class="valid-feedback">OK!</div>
                                 <div class="invalid-feedback">Ingrese el título</div>
                             </div>
                             <div class="row g-2">
                                 <div class="mb-3 col-md-8">
-                                    <label for="state" class="form-label">Universidad</label>
+                                    <!-- <label for="state" class="form-label">Universidad</label> -->
                                     <select name="university" class="form-select" required>
-                                        <option value="" selected>Elegir universidad</option>
+                                        <option value="" selected>Seleccione la universidad</option>
                                         {% for university in universities %}
                                         <option value="{{university.uni_id}}">{{university.uni_name}} - ({{university.uni_nickname}})</option>
                                         {% endfor %}
@@ -34,48 +34,44 @@
                                     <div class="invalid-feedback">Seleccione la universidad</div>
                                 </div>
                                 <div class="mb-3 col-md-4">
-                                    <label for="zip" class="form-label">Carrera</label>
-                                    <input type="text" class="form-control" name="career" placeholder="" required>
+                                    <!-- <label for="zip" class="form-label">Carrera</label> -->
+                                    <input type="text" class="form-control" name="career" placeholder="Ingrese la carrera" required>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese la carrera</div>
                                 </div>
                             </div>
-                            <div class="col-md-12 col-lg-12">
-                                <div class="col-md-3">..</div>
+                            <div class="row g-2">
+                                <input id="keywords_out" name="keywords_out" type="hidden" value="">
+                                <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
+                                <!-- <input id="keyids" name="keyids" type="hidden" value="{{ keyids }}"> -->
                                 <div class="col-md-4">
-                                    <label for="city" class="form-label">Palabras claves</label>
-                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" required onkeyup="showResults(this.value)">
+                                    <!-- <label for="city" class="form-label">Palabras claves</label> -->
+                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" onkeyup="showResults(this.value)">
                                     <div id="result"></div>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese palabra clave</div>
                                 </div>
-                                <div class="col-md-3">..</div>
-                                <div class="card d-none">
-                                    <div class="card-body" id="keywords_group" style="text-align: center;">
-                                        <input id="keyword_1" name="keyword_1" type="hidden" value="">
-                                        <input id="keyword_2" name="keyword_2" type="hidden" value="">
-                                        <input id="keyword_3" name="keyword_3" type="hidden" value="">
-                                        <input id="keywords" name="keywords" type="hidden" value="{{ keywords }}">
-                                        <p class="card-title-form" style="margin-bottom: 0.75rem;">Seleccionar palabras clave <span style="font-size: small; font-weight: 100;">(máximo 3)</span></p>
-                                        
+                                <div class="col-md-8" id="keywords_select" style="margin-top: 10px;">
+                                    <label id="keywords_label" class="form-label d-none" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas &nbsp;<a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" href="#"> (limpiar)</a>  </label><br>
                                     </div>
                                 </div>
                             </div>
-                            <div class="line"></div>
+
+                            <div class="line" style="margin: 10px auto;"></div>
                             <div class="col-md-12 col-lg-12 text-center">
                                 <div class="col-sm-12">
                                     <div class="form-check form-check-inline">
-                                      <input class="form-check-input" type="checkbox" name="type" id="check1" value="A" checked>
+                                      <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
                                       <label class="form-check-label" for="inlineCheckbox1">Antecedentes</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                      <input class="form-check-input" type="checkbox" name="type" id="check2" value="M">
+                                      <input class="form-check-input" type="checkbox" name="type_m" value="M">
                                       <label class="form-check-label" for="inlineCheckbox2">Marco Teórico</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="line"></div>
-                            <div class="col-md-12 col-lg-12 text-center" style="margin: 2rem 0 1rem;">
+                            <div class="line" style="margin: 10px auto;"></div>
+                            <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 1rem;">
                                 <button type="submit" id="save_upload" class="btn btn-primary" style="font-size: medium;" onclick="validateFormUpload()"> &nbsp; Guardar &nbsp;
                                 </button>
                             </div>

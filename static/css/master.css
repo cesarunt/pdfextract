@@ -301,8 +301,7 @@ body {
     margin: 0;
   }
   #result ul li {
-    padding: 5px 0;
-    margin-left: 5px;
+    padding: 5px 7px;
   }
   #result ul li:hover {
     background: #eee;

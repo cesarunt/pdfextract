@@ -162,16 +162,14 @@ def home():
     else:
         return render_template('login.html')
 
-# @main.route('/_autocomplete', methods=['GET'])
-# def autocomplete():
-#     list_keywords = get_listKeywords()  
-#     return Response(json.dumps(list_keywords), mimetype='application/json')
-
 @main.route('/create/upload')
 def upload_form():
     if current_user.is_authenticated:
         list_universities = get_listUniversities()
         list_keywords = get_listKeywords()
+
+        # print("LIST KEYWORDS")
+        # print(list_keywords)
         # keywords_form = SearchForm(request.form)
         return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords)
     else:
@@ -254,22 +252,34 @@ def save_upload():
     msg_pkdetail = ""
     if request.method == 'POST':
         current_date = date.today().strftime("%d/%m/%Y")
+        try:
+            if request.form['type_a']:
+                type_a = 1
+        except:
+            type_a = 0
+        
+        try:
+            if request.form['type_m']:
+                type_m = 1
+        except:
+            type_m = 0
+
+        if current_user.is_authenticated:
+            user_id = current_user.id
+
         project = {
             'title' :       request.form['title'],
             'university' :  request.form['university'],
             'career' :      request.form['career'],
-            'type' :        request.form['type'],
+            'type_a' :      type_a,
+            'type_m' :      type_m,
             'n_articles':   0,
             'n_process':    0,
+            'user' :        user_id,
             'created' :     current_date
         }
-        keywords = []
-        key1 = request.form['keyword_1']
-        if key1 != "": keywords.append(key1.split('_')[-1])
-        key2 = request.form['keyword_2']
-        if key2 != "": keywords.append(key2.split('_')[-1])
-        key3 = request.form['keyword_3']
-        if key3 != "": keywords.append(key3.split('_')[-1])
+        keywords = request.form['keywords_out'].split(',')
+        print("keywords", keywords)
         
         try:
             response_project, id = put_newProject(project)
@@ -300,16 +310,19 @@ def search_db():
     num_projects = 0
     list_projects = None
 
-    if request.method == "POST":
-        keyword = request.values.get("keyword") 
+    if current_user.is_authenticated:
+        if request.method == "POST":
+            keyword = request.values.get("keyword") 
+            if len(keyword) > 1:
+                list_projects = get_squareProjects_ByWord(keyword)
+                num_projects = len(list_projects)
+                
+                print("len projects: " + str(num_projects))
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword)
+    else:
+        return render_template('db_form.html', keyword = "")
 
-        if len(keyword) > 1:
-            list_projects = get_squareProjects_ByWord(keyword)
-            num_projects = len(list_projects)
-            print("len projects: " + str(num_projects))
-        
-    return render_template('db_form.html', n_projects = num_projects, projects = list_projects, keyword = keyword)
-
+    
 
 # ----------------------------------- PDF EXTRACT ONE -----------------------------------
 @main.route('/paper_one', methods=['POST'])

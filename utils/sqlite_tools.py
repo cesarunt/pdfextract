@@ -161,8 +161,8 @@ def put_newProject(project=dict):
         print(json.dumps(project))
         print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_career, pro_type, pro_n_articles, pro_n_process, pro_created) 
-                    VALUES ("{project['title']} ", "{project['university']}", "{project['career']}", "{project['type']}", "{project['n_articles']}", "{project['n_process']}", "{project['created']}")
+                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_career, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
+                    VALUES ("{project['title']} ", "{project['university']}", "{project['career']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
                 """
         print(query)
         sqlite_select_query = query
@@ -244,22 +244,25 @@ def get_listKeywords():
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'key_info'
     keywords = []
+    # keynames = []
+    # keyids = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT key_name
+                    SELECT key_id, key_name
                     FROM "{table_name}"
                     WHERE  key_active = 1
                 """
-        print(query)
+        # print("listKeywords", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
 
         for record in records:
-            keywords.append(record[0])
+            keywords.append(str(record[0])+"-"+record[1])
+        # print("keywords", keywords)
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
@@ -279,7 +282,7 @@ def get_listProjects():
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career
+                    SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     ORDER BY a.pro_id DESC
                     LIMIT 5
@@ -291,10 +294,11 @@ def get_listProjects():
 
         for record in records:
             projects.append({
-                    'pro_id':       record[0],
-                    'pro_title':    record[1],
-                    'pro_uni':      record[2],
-                    'pro_career':   record[3],
+                    'pro_id':     record[0],
+                    'pro_title':  record[1],
+                    'pro_uni':    record[2],
+                    'pro_career': record[3],
+                    'pro_user':   record[4],
                     })
         cursor.close()
     except sqlite3.Error as error:
@@ -315,7 +319,7 @@ def get_projectById(id):
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_title, b.uni_name, a.pro_career, a.pro_type, a.pro_n_articles, a.pro_n_process, a.pro_created
+                    SELECT a.pro_title, b.uni_name, a.pro_career, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
@@ -330,7 +334,8 @@ def get_projectById(id):
                 'pro_type':       record[3],
                 'pro_n_articles': record[4],
                 'pro_n_process':  record[5],
-                'pro_date':       record[6],
+                'pro_user':       record[6],
+                'pro_date':       record[7],
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -408,9 +413,10 @@ def get_squareProjects_ByWord(keyword):
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, a.pro_created
-                    FROM  ("{table_name}" a INNER JOIN pro_key_details b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id
+                    SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created
+                    FROM  (("{table_name}" a INNER JOIN pro_key_details b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id) INNER JOIN user u ON a.pro_user = u.id
                     WHERE a.pro_title LIKE "%{keyword}%" OR c.key_name LIKE "%{keyword}%"
+                    ORDER BY a.pro_id DESC
                 """
         print(query)
         sqlite_select_query = query
@@ -418,7 +424,7 @@ def get_squareProjects_ByWord(keyword):
         records = cursor.fetchall()
         # print(json.dumps(records))
 
-        colors = ['primary', 'success', 'danger', 'warning', 'info', 'dark']
+        colors = ['success', 'danger', 'warning', 'info', 'dark']
         # years = []
         for record in records:
             # if record[5].split('/')[-1] in years:
@@ -428,7 +434,8 @@ def get_squareProjects_ByWord(keyword):
                     'pro_career':     record[2],
                     'pro_n_articles': record[3], 
                     'pro_n_process':  record[4],
-                    'pro_created':    record[5],
+                    'pro_user_name':  record[5].split(' ')[0],
+                    'pro_created':    record[6],
                     'pro_color':      secrets.choice(colors)
                     })
         cursor.close()
@@ -439,3 +446,34 @@ def get_squareProjects_ByWord(keyword):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return projects
+
+def get_userById(id):
+    # List of TOP 10
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'user'
+    user = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    SELECT email, name
+                    FROM "{table_name}"
+                    WHERE  id = "{id}"
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        record = cursor.fetchone()
+        user.append({
+                'user_email':  record[0],
+                'user_name':   record[1],
+            })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return user
