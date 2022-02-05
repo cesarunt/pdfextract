@@ -167,10 +167,6 @@ def upload_form():
     if current_user.is_authenticated:
         list_universities = get_listUniversities()
         list_keywords = get_listKeywords()
-
-        # print("LIST KEYWORDS")
-        # print(list_keywords)
-        # keywords_form = SearchForm(request.form)
         return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords)
     else:
         return render_template('upload_form.html')
@@ -222,8 +218,8 @@ def thesis_one():
     else:
         return render_template('thesis_one.html')
 
-@main.route('/thesis_mul')
-def thesis_mul():
+@main.route('/thesis_mul/<id>')
+def thesis_mul(id):
     if current_user.is_authenticated:
         return render_template('thesis_mul.html', name=current_user.name.split()[0])
     else:
@@ -300,6 +296,31 @@ def save_upload():
             print(msg_project)
             print(msg_pkdetail)
             return redirect('/upload/home/'+str(id))
+
+
+@main.route("/add_variable", methods=["POST"])
+def add_variable():
+    id = 0
+    msg_variable = ""
+    action = request.values.get("action")
+
+    if request.method == 'POST' and action == 'add':
+        current_date = date.today().strftime("%d/%m/%Y")
+        value = request.values.get("value")
+
+        try:
+            response_key = put_newKeyword(value, current_date)
+            if response_key is True:
+                msg_variable = "Variable registrada con éxito"
+        except:
+            msg_variable = "Error en registro de variable"
+        
+        finally:
+            print(msg_variable)
+            list_universities = get_listUniversities()
+            list_keywords = get_listKeywords()
+            title = request.values.get("title")
+            return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords, title=title)
 
 """
     FORM SEARCH DATABASES
@@ -441,6 +462,7 @@ def save_paper_one():
 def thesis_one_load():
     global file_pdf
     active_show = "active show"
+    print("TESIS ONE ....!!!!!!!!!!!!!!!!!!!!!!!!!!")
     # _analytic = request.form.get('analytic')
     # 
     if request.method == "POST":
@@ -486,9 +508,7 @@ def action_thesis_one():
     global file_pdf
     global pdf_id
 
-    if request.method == "POST":         
-        # result_save = None
-        # process = request.values.get("process") 
+    if request.method == "POST":
         result_cpu = False
         action = None
         text = None
@@ -512,24 +532,37 @@ def action_thesis_one():
                         'w': int(request.values.get("w")),
                         'h': int(request.values.get("h"))
                     }
+
+                print("page ............")
+                page = int(request.values.get("page"))
+                print(page)
+                
                 image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
-                text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
 
-                if text :
-                    pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, 1, rect)
-                print("text")
-                print(text)
+                print("ROI len", str(len(ROI)))
+                print("pdf_ID", pdf_id)
+                text = ""
+                # if len(ROI)
+                try:
+                    text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                    print(type(text))
+                except:
+                    print("Error generate text")
+                
+                if text is None or text == "":
+                    text = "..."
+                pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
                 result_split = 1
             # else:
             # document = Document()
             # 1. SPLIT PDF
             # print("\n------------------- START SPLIT PROCESS -------------------")
             if action is None:
-                pdf_remove(fname, app.config['SINGLE_SPLIT'])       # Call pdf remove function
-                result_split = img_splitter(path, app.config['SINGLE_SPLIT'])      # Call pdf splitter function
+                pdf_remove(fname, app.config['SINGLE_SPLIT'])                   # Call pdf remove function
+                result_split = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
             
             if result_split == 0:
                 result_save = 0
@@ -537,18 +570,10 @@ def action_thesis_one():
             
             if result_split == 1:
                 # print("\n------------------ START EXTRACT PROCESS ------------------")
-                # VALIDACION ... EL PDF NO TIENE TODOS LOS COMPONENTES DETECTADOS .. LEER BD
-                pdf_file = {
-                        'name': file_pdf,
-                        'path_upload': "http://127.0.0.1:5000/files/single/upload/"+file_pdf,
-                        'path_images': app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg' #+'.jpg'
-                        }
+                
+                # get data for "pdf"
                 pdf = get_thesisByName(file_pdf)
                 pdf_id = pdf['id']
-                # print("Detail from pdf_detail : "+path)
-                # print("len pdf found yes: " + str(len(pdf['foundlistY'])))
-                # print("len pdf_found no: " + str(len(pdf['foundlistN'])))
-
                 """Verificar pdf_details, encontrados y no encontradps"""
                 if len(pdf['foundlistN']): select = None 
                 else: select = "."
@@ -556,12 +581,159 @@ def action_thesis_one():
                 list_npages = [str(int) for int in list_npages]
                 pdf['listnpages'] = list_npages
                 pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
+
+                # get data for pdf_file
+                pdf_file = {
+                        'name': file_pdf,
+                        'path_upload': "http://127.0.0.1:5000/files/single/upload/" + file_pdf,
+                        'path_page':   app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg',
+                        'num_pages' :      int(pdf['npages']),
+                        }
         else:
             result_cpu = True
             pdf_text = {'result': "Servidor Ocupado", 'found': "", 'not_found': ""}
             # result_file_text = "El servidor está procesando, debe esperar un momento."
     
     return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
+
+
+@main.route('/thesis_mul', methods=['POST'])
+def thesis_mul_load():
+    global file_pdfs
+    upload = False
+    file_pdfs = []
+    result_split = []
+    print("TESIS MUL ....!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    if request.method == "POST":
+        pro_id = request.form.get('pro_id')
+        print("PRO_ID", pro_id)
+        # Code for multiple pdfs
+        if 'files[]' not in request.files:
+            print('No file part')
+            return redirect(request.url)
+
+        files = request.files.getlist('files[]')
+
+        for file in files:
+            file_pdfs.append(file.filename)
+            if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['MULTIPLE_UPLOAD'], filename))
+                upload = True
+        
+        if (upload == True):
+            print('File(s) successfully uploaded')
+            return render_template('thesis_mul.html', resultLoad=upload, pro_id=pro_id)
+
+
+# @main.route("/action_thesis_mul", methods=["POST"])
+# def action_thesis_mul():
+#     global file_pdfs
+#     text_pdf = []
+
+#     if request.method == "POST":
+#         global file_pdf, document
+#         resultCPU = False
+#         result_save = None
+#         result_file_text = "None"
+#         result_invalid_text = ""
+#         result_file_down = "None"
+#         result_valid = 0
+#         result_invalid = 0
+#         result_invalid_process = []
+#         # result_invalid_numpages = []
+#         pro_id = request.form.get('pro_id')
+#         # print("IDDDDDDDDDDDDDDDDDDDD")
+#         # print(pro_id)
+
+#         # Verify if posible to process
+#         if get_viewProcess_CPU() is True :
+
+#             document = Document() 
+            
+#             print("NumPDFs Cargados")
+#             print(len(file_pdfs))
+#             for filename in file_pdfs :
+#                 filename = fold(filename)
+
+#                 fname = os.listdir(app.config['MULTIPLE_SPLIT'])
+#                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],file_pdf)
+#                 action = request.values.get("action")
+
+#                 if action :
+#                     det_id =        int(request.values.get("det_id"))
+#                     det_attribute = int(request.values.get("det_attribute"))
+#                     rect = {
+#                             'x': int(request.values.get("x")),
+#                             'y': int(request.values.get("y")),
+#                             'w': int(request.values.get("w")),
+#                             'h': int(request.values.get("h"))
+#                         }
+
+#                     print("page ............")
+#                     page = int(request.values.get("page"))
+#                     print(page)
+                    
+#                     print(page)
+#                     image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
+#                     image = cv2.imread(image, 0)
+#                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+#                     ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
+
+#                     print("ROI len", str(len(ROI)))
+#                     print("pdf_ID", pdf_id)
+#                     text = ""
+#                     # if len(ROI)
+#                     try:
+#                         text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+#                         print(type(text))
+#                     except:
+#                         print("Error generate text")
+                    
+#                     if text is None or text == "":
+#                         text = "..."
+#                     pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
+#                     result_split = 1
+#                 # else:
+#                 # document = Document()
+#                 # 1. SPLIT PDF
+#                 # print("\n------------------- START SPLIT PROCESS -------------------")
+#                 if action is None:
+#                     pdf_remove(fname, app.config['SINGLE_SPLIT'])                   # Call pdf remove function
+#                     result_split = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
+                
+#                 if result_split == 0:
+#                     result_save = 0
+#                     pdf_text = {'result': "Procesamiento Incompleto"}
+                
+#                 if result_split == 1:
+#                     # print("\n------------------ START EXTRACT PROCESS ------------------")
+                    
+#                     # get data for "pdf"
+#                     pdf = get_thesisByName(file_pdf)
+#                     pdf_id = pdf['id']
+#                     """Verificar pdf_details, encontrados y no encontradps"""
+#                     if len(pdf['foundlistN']): select = None 
+#                     else: select = "."
+#                     list_npages = list(range(1, int(pdf['npages']+1)))
+#                     list_npages = [str(int) for int in list_npages]
+#                     pdf['listnpages'] = list_npages
+#                     pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
+
+#                     # get data for pdf_file
+#                     pdf_file = {
+#                             'name': file_pdf,
+#                             'path_upload': "http://127.0.0.1:5000/files/single/upload/" + file_pdf,
+#                             'path_page':   app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg',
+#                             'num_pages' :      int(pdf['npages']),
+#                             }
+#                     render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
+                    
+#         else:
+#             result_file_text = "El servidor está procesando, espere un momento."
+    
+#     return render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
 
 
 @main.route("/action_thesis_search", methods=["POST"])

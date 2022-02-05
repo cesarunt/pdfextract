@@ -121,7 +121,7 @@ def get_listThesisByWord(keyword):
             print("The SQLite connection is closed")
         return pdfs
 
-def upd_detailByIds(det_id, det_info, det_attribute, text, npage=1, rect=dict):
+def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     # table_colnames = None
@@ -190,6 +190,32 @@ def put_newPKdetail(id, key, current_date):
         query = f"""
                     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
                     VALUES ("{id} ", "{key}", "{current_date}")                
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
+def put_newKeyword(key_name, current_date):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'key_info'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    INSERT INTO "{table_name}" (key_name, key_active, key_created)
+                    VALUES ("{key_name}", "1", "{current_date}")                
                 """
         print(query)
         sqlite_select_query = query
@@ -331,11 +357,12 @@ def get_projectById(id):
                 'pro_title':      record[0],
                 'pro_uni':        record[1],
                 'pro_career':     record[2],
-                'pro_type':       record[3],
-                'pro_n_articles': record[4],
-                'pro_n_process':  record[5],
-                'pro_user':       record[6],
-                'pro_date':       record[7],
+                'pro_type_a':     record[3],
+                'pro_type_m':     record[4],
+                'pro_n_articles': record[5],
+                'pro_n_process':  record[6],
+                'pro_user':       record[7],
+                'pro_created':    record[8],
             })
         cursor.close()
     except sqlite3.Error as error:

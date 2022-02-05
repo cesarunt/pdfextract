@@ -13,11 +13,28 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title-form">Formulario de Registro</h5>
+                        <h5 class="card-title-form" style="margin:0.5rem 0 1rem 0">Formulario de Registro</h5>
                         <form class="needs-validation" action="{{ url_for('main.save_upload') }}" method="POST" accept-charset="utf-8">
+                            <div class="row g-2">
+                                <input id="keywords_out" name="keywords_out" type="hidden" value="">
+                                <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
+                                <!-- <input id="keyids" name="keyids" type="hidden" value="{{ keyids }}"> -->
+                                <div class="col-md-4">
+                                    <!-- <label for="city" class="form-label">Palabras claves</label> -->
+                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" autocomplete="off" onkeyup="showResults(this.value)">
+                                    <span class="fa-fw select-all fas" onclick="addVariable()"></span>
+                                    <div id="result" style="margin-bottom: 0.5rem;"></div>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese palabra clave</div>
+                                </div>
+                                <div class="col-md-8">
+                                    <label id="keywords_label" class="form-label d-none" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas <a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" onclick="clearKeywords()" href="#"> (limpiar)</a></label>
+                                    <div id="keywords_select" class="form-label"></div>
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <!-- <label for="address" class="form-label">Título</label> -->
-                                <input type="text" class="form-control" name="title" placeholder="Ingrese el título" required>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="Ingrese el título" value="{{ title }}" required>
                                 <div class="valid-feedback">OK!</div>
                                 <div class="invalid-feedback">Ingrese el título</div>
                             </div>
@@ -38,22 +55,6 @@
                                     <input type="text" class="form-control" name="career" placeholder="Ingrese la carrera" required>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese la carrera</div>
-                                </div>
-                            </div>
-                            <div class="row g-2">
-                                <input id="keywords_out" name="keywords_out" type="hidden" value="">
-                                <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
-                                <!-- <input id="keyids" name="keyids" type="hidden" value="{{ keyids }}"> -->
-                                <div class="col-md-4">
-                                    <!-- <label for="city" class="form-label">Palabras claves</label> -->
-                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" onkeyup="showResults(this.value)">
-                                    <div id="result"></div>
-                                    <div class="valid-feedback">OK!</div>
-                                    <div class="invalid-feedback">Ingrese palabra clave</div>
-                                </div>
-                                <div class="col-md-8" id="keywords_select" style="margin-top: 10px;">
-                                    <label id="keywords_label" class="form-label d-none" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas &nbsp;<a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" href="#"> (limpiar)</a>  </label><br>
-                                    </div>
                                 </div>
                             </div>
 

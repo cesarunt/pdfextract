@@ -110,21 +110,12 @@ def pdf_process(files_split, files_output):
             # 2. GET THE LANGUAGE
             # ============================================================================================
 
-            # document level language detection. Think of it like average language of document!
-            print("Language ...")
-            # print(translator)
-            # input(" .... language ....")
-
             if language_band == False:
                 if page == 0:
                     language = lang_getLanguage(text_page)
-                # elif title_text != "":
-                #     language = lang_getLanguage(title_text)
+                    print("Language ...", language)
                     language_band = True
-                # - Getting the language of text, with NLP
-                # language = lang_getLanguage(text_page)
-                # language_band = True
-                # language = "en"
+
                 lib_spacy, patterns, patterns_level, patterns_approach = lang_loadPatterns(language)
                 BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_RESUM, PATTERN_INTRO, PATTERN_ABST, PATTERN_METHOD, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns
                 PATTERN_LEVE_APPL, PATTERN_LEVE_PRED, PATTERN_LEVE_EXPI, PATTERN_LEVE_RELA, PATTERN_LEVE_DESC, PATTERN_LEVE_EXPO = patterns_level
@@ -138,6 +129,8 @@ def pdf_process(files_split, files_output):
                 page_soup = soup(text_html, 'html.parser')
                 patt = re.compile("font-size:(\d+)")
                 text_parser = [(tag.text.strip(), int(patt.search(tag["style"]).group(1))) for tag in page_soup.select("[style*=font-size]")]
+
+                # print("text_parser", text_parser)
 
                 # title_font_max  = max(text_parser, key=lambda x:x[1] )[1] 
                 title_font_max = title_font
@@ -159,7 +152,6 @@ def pdf_process(files_split, files_output):
                 for key,value in text_parser :
                     num_SpacesByWord = key.count(' ')
                     if num_SpacesByWord >= len(key)/3 :
-                        # print("\nspace ..." + str(num_SpacesByWord) + " - " + key + " - " + str(len(key)/2))
                         key_on = key.replace(' ', '')
                     else:
                         key_on = key
@@ -337,20 +329,6 @@ def pdf_process(files_split, files_output):
                         if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
                     resumen_text = str(' '.join(resumen_text_list))
                     resumen_text = resumen_text.replace("\n", " ")
-            
-            # if introduction_title=="":
-                # introduction_title = getData_TitleIntroduction(text_page, PATTERN_INTRO, 2, intro_font)
-                # print("\nIntroduction Title:")
-                # print(introduction_title)
-                # if introduction_title != "" :
-                    # introduction_mode = getData_ResultIntroduction(pagelines_list, introduction_title)
-                    # introduction_text, _ = getData_ResultResumen(pagelines_list, introduction_title, PATTERN_INTRO, 2, True)
-            
-            # print("\nLanguage: " + language)
-            # print("Title: \n"+title_text)
-            # print("Title font: "+str(title_font))
-            # print("\nResumen OK: \n" + resumen_text)
-            # input(".................... resumen ....................")
 
             # print("\INTRO FONT: " + str(intro_font))
             
@@ -588,6 +566,8 @@ def pdf_process(files_split, files_output):
                 reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
                 addText_background("B", '\nREFERENCIAS')
                 addText_background("N", reference_text)
+
+                # input("page ...")
                 # break
     
     return is_article, text_pdf, language

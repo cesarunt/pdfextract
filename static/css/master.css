@@ -307,6 +307,14 @@ body {
     background: #eee;
   }
 
+  canvas{
+    border: 1px solid black;
+    position: relative;
+  }
+  /* #canvasWrapper{
+    position:absolute;
+  } */
+
 /*------------------------------------------------------------------
 [8. Miscellaneous ] 
 */

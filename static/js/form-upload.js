@@ -29,7 +29,7 @@ if (keywords){
     });
   }
 
-  const var_list = []
+  var var_list = []
   
   function showResults(val) {
     res = document.getElementById("result");
@@ -44,11 +44,6 @@ if (keywords){
         list += '<li id="'+variable+'" data_id="'+data_item[0]+'" data_value="'+data_item[1]+'">' + data_item[1] + '</li>';
       }
     }
-    // if (list != ''){
-    //   list += '<li class="line" style="margin: 1px auto;"></li>'
-    //   list += '<li id="0" data_id="0" data_value="Agregar">Agregar ...</li>';
-    // }
-
     res.innerHTML = '<ul id="keywords_found">' + list + '</ul>';
 
     var listul = document.getElementById ("keywords_found");
@@ -58,6 +53,7 @@ if (keywords){
       // liTags[i].value = i + 3;
       var variable = "key_" + i.toString()
       document.getElementById(variable).onclick = function(event) {
+        variables_label.classList.remove("d-none");
         let current_id = $(this).attr('data_id')
         if (var_list.indexOf(current_id) < 0){
           var_list.push(current_id)
@@ -71,4 +67,70 @@ if (keywords){
   }
 }
 
-// FUNCTIONS FOR 
+// CANCEL ATTRIBUTE FUNCTION
+function clearKeywords() {
+  var_list = []
+  variables_label.classList.add("d-none");
+  variables_select.innerHTML = ""
+  keywords_out.value = var_list
+}
+
+// ADD VARIABLE FUNCTION
+// --------------------------------------------------------------------------------------------------------
+function addVariable() {
+  var value = document.getElementById("keyword").value;
+
+  // Reject if the file input is empty & throw alert
+  if (!value) {
+    alert("Ingresar texto de la variable", "warning")
+    return;
+  }
+  if (!value.match("^[A-Za-z]{1,30}")) {
+    alert("Ingrese caracteres de texto", "warning")
+    return;
+  }
+  if (value.length < 4) {
+    alert("Ingresar texto de la variable", "warning")
+    return;
+  }
+
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+
+  // Set the response type
+  request.responseType = "json";
+
+  var action = "add";
+  var title = document.getElementById("title").value
+  data.append("action", action);
+  data.append("title", title)
+  data.append("value", value);
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      
+      alert(`Registro Exitoso`, "success");
+      location.reload();
+    }
+    else {
+      alert(`Alerta en registro`, "warning");
+    }
+    if (request.status == 300) {
+      alert(`${request.response.message}`, "warning");
+    }
+    
+  });
+
+  // request error handler
+  request.addEventListener("error", function (e) {
+    alert(`Error procesando la imagen`, "warning");
+  });
+
+  // Open and send the request
+  request.open("POST", "/add_variable");
+  request.send(data);
+
+}

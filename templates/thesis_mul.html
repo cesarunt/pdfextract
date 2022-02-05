@@ -18,9 +18,10 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     {% if not resultLoad %}
-                                    <form method="post" action="/paper_mul" enctype="multipart/form-data">
+                                    <form method="post" action="/thesis_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
                                             <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
+                                            <input type="hidden" id="pro_id" name="pro_id" value="{{ pro_id }}" />
                                             <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
                                             <div class="line"></div>
                                             
@@ -35,7 +36,7 @@
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
                                         <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
                                     </div> -->
-                                    <form method="POST" action="action_paper_mul" enctype="multipart/form-data">
+                                    <form method="POST" action="action_thesis_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
                                             <img class="card-img-logo" src="{{ url_for('static', filename='img/pdf-upload.png') }}">
                                             <!-- ../static/img/doc-word.png -->
