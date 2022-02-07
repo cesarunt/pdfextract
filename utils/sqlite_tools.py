@@ -121,6 +121,7 @@ def get_listThesisByWord(keyword):
             print("The SQLite connection is closed")
         return pdfs
 
+# SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
 def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
@@ -148,6 +149,33 @@ def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict
         
         return result
 
+# SAVE DATA WHEN DRAW RECTANGLE (TEXT)
+def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_details'
+    # table_colnames = None
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    UPDATE pdf_details SET det_value="{text}"
+                    WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to update data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
 
 # ----------------------------------- FORM UPLOAD -----------------------------------
 def put_newProject(project=dict):

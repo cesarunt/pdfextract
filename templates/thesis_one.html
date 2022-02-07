@@ -71,7 +71,7 @@
                                     <!-- <div class="mb-6"> -->
                                     <div class="pagination" style="text-align: left;">
                                         <!-- <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold;">Atributos&nbsp;</label> -->
-                                        <select onchange="on_select_attributes();" id="select_attributes" name="select_attributes" class="form-select" style="display: inline-block; margin: 5px 0 10px;" required>
+                                        <select onchange="on_select_attributes();" id="select_attributes" name="select_attributes" class="form-select" style="display: inline-block; margin: 0 0 5px;" required>
                                             {% if not _pdf.foundtitle.select %}
                                             <option value="notfound" selected>{{_pdf.foundtitle.titleN}}</option>
                                             <option value="found">{{_pdf.foundtitle.titleY}}</option>
@@ -88,23 +88,28 @@
                                             {% for detail in _pdf.foundlistN %}
                                             <li style="padding:4px 0 0 0;">
                                                 <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
-                                                <label for="state" class="form-label">
+                                                <label for="state" class="form-label" style="margin-bottom: 0.25rem;">
                                                     <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-left: 0.5rem; padding-right: 2.0rem;" required onchange="selectPage(this.value)" disabled>
                                                         {% for x in _pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </label>
-                                                <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id)" style="opacity: 0.5;">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeCanvas(this.id)" style="opacity: 0.5;">
+                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id)" style="opacity: 0.5;">
                                                     <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                     <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
                                                     <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
                                                     <input type="hidden" id="det_height-{{detail.det_name}}" value="{{detail.det_height}}" />
                                                     <i class="fas fa-vector-square"></i>
                                                 </button>
+
+                                                <button type="button" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="closeAttribute(this.id)" style="opacity: 0.5;">
+                                                    <i class="fas fa-window-close"></i>
+                                                </button>
+                                                <!-- <button type="submit" id="btn_close_att" class="btn btn-secondary mb-2" onclick="closeAttribute(this.id)" disabled>
+                                                    <i class="fas fa-window-close"></i>
+                                                </button> -->
+                                                
                                             </li>
                                             {% endfor %}
                                         </div> 
@@ -114,25 +119,35 @@
                                              -->
                                             {% for detail in _pdf.foundlistY %}
                                             <li style="padding:4px 0 0 0;">
-                                                <label for="state" class="form-label" style="width: 105px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
-                                                <label for="state" class="form-label">
-                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small;" required onchange="selectPage(this.value)" disabled>
+                                                <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
+                                                <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
+                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding: 0.35rem 2.75re,  ;" required onchange="selectPage(this.value)" disabled>
                                                         {% for x in _pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
                                                         <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
                                                     </select>
                                                 </label>
-                                                <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" disabled onclick="activeAttribute(this.id)">
+                                                <!-- <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" disabled onclick="activeAttribute(this.id)">
                                                     <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" disabled>
+                                                </button> -->
+                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id)" style="opacity: 0.5;">
                                                     <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                     <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
                                                     <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
                                                     <input type="hidden" id="det_height-{{detail.det_name}}" value="{{detail.det_height}}" />
-                                                    <!-- <i class="fas fa-vector-square"></i> -->
+                                                    <i class="fas fa-vector-square"></i>
                                                 </button>
+                                                <button type="button" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="closeAttribute(this.id)" style="opacity: 0.5;">
+                                                    <i class="fas fa-window-close"></i>
+                                                </button>
+                                                {% if detail.det_value %}
+                                                <div id="divtext_{{detail.det_name}}" class="d-none">
+                                                    <textarea id="text_{{detail.det_name}}" class="text_area"> {{ detail.det_value }} </textarea><br>
+                                                    <button type="submit" id="btn_save_text" class="btn btn-sm btn-primary" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">Guardar</button>    
+                                                </div>
+                                                
+                                                {% endif %}
                                             </li>
                                             {% endfor %}
                                         </div>
@@ -140,28 +155,33 @@
                                         
                                         <li style="margin: 20px 0 10px; padding:20px 0 10px; border-top:#CCC 1px solid; text-align: center;">
                                             <!-- Buttons on finish uploading -->
-                                            <form method="POST" action="action_thesis_one" enctype="multipart/form-data">
-                                                <button class="btn btn-secondary d-none" type="button" id="cancelPDF_btn">Cancelar</button>
+                                            <!-- <form method="POST" action="action_thesis_one" enctype="multipart/form-data"> -->
+                                                <!-- <button class="btn btn-secondary d-none" type="button" id="cancelPDF_btn">Cancelar</button>
                                                 <button class="btn btn-success" id="updatePDF_btn" onclick="" type="submit">
                                                     <i class="fas fa-play"></i> &nbsp;Actualizar
-                                                </button>
-                                            </form>
+                                                </button> -->
+                                            <!-- </form> -->
                                         </li>
                                     </div>  
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
-                                        <div id="buttons-close" style="width: 43%; display: inline-block; text-align: left;">
-                                            <button type="submit" id="btn_update_att" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}', this.id)" disabled>
+                                        <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.25rem;">
+                                            <!-- 
+                                                BUTTONS - ACTIONS
+                                            -->
+                                            <!-- id="btn_cancel_att"      onclick="cancelAttribute(this.id)" -->
+                                            <!-- <button type="submit" id="btn_edit_att" class="btn btn-secondary mb-2" onclick="editText(this.id)" disabled>
+                                                <i class="fas fa-edit"></i>
+                                            </button> -->
+
+                                            <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
                                                 <i class="fas fa-save"></i>
-                                            </button>
-                                            <button type="submit" id="btn_cancel_att" class="btn btn-secondary mb-2" onclick="cancelAttribute(this.id)" disabled>
-                                                <i class="fas fa-window-close"></i>
                                             </button>
                                         </div>
                                         <span>Page</span>&nbsp;
                                         <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span>
-                                        <div id="buttons-actions" style="width: 43%; display: inline-block; text-align: right; margin: 0 0 0 0.5rem;">
+                                        <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.5rem;">
                                             <input type="hidden" id="num_pages" value="{{ _pdf_file.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-primary mb-2" onclick="movePage(this, 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-primary mb-2" onclick="movePage(this, 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
@@ -171,9 +191,6 @@
                                             <!-- <canvas id="canvas_pdf"
                                                 style="border:1px solid black; position: relative; background-size: 100% 100%; background-image: url('{{ _pdf_file.path_page }}'); width: 700px; height: 1000px;">
                                             </canvas> -->
-                                            <!-- <canvas id="canvas_pdf" class="" width="680" height="800" style="border:1px solid black; background-image: url('../files/single/split/page_0.jpg');"></canvas> -->
-                                            <!-- <iframe id="iframe_pdf" src="{{ _pdf_file.path_upload }}" class="" style="width:600px; height:900px;" frameborder="0"> -->
-                                            <!-- </iframe> -->
                                             <div id = "canvasWrapper">
                                                 <canvas id="canvas" style="background-image: url('{{ _pdf_file.path_page }}');" width=700 height=1000></canvas>
                                             </div>

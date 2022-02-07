@@ -25,8 +25,8 @@ var updatePDF_btn = document.getElementById("updatePDF_btn");
 var div_notfound = document.getElementById("div_notfound");
 var div_found = document.getElementById("div_found");
 
-var update_att = document.getElementById("btn_update_att")
-var cancel_att = document.getElementById("btn_cancel_att");
+// var update_att = document.getElementById("btn_update_att")
+// var cancel_att = document.getElementById("btn_close_att");
 var pages = document.getElementById('num_pages')
 var _page = 1
 
@@ -224,24 +224,6 @@ function on_select_attributes() {
   }
 }
 
-
-// CANCEL ATTRIBUTE FUNCTION
-function cancelAttribute(edit_id) {
-  // Disabled select option
-  var select_att = document.getElementById('page_'+_det_id+'-'+_det_attribute)
-  select_att.disabled = true
-  select_att.style.border = '1px solid #ced4da'
-  // Abled edit button
-  document.getElementById('edit_'+_det_id+'-'+_det_attribute+'-'+_det_name).disabled = false
-  // Disabled vector button
-  document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).disabled = true
-  // Disabled updated button (blue color), and opacity 1
-  update_att.style.opacity = 0.1;
-  update_att.disabled = true
-  // Disabled cancel button
-  cancel_att.disabled = true
-}
-
 // ACTIVATE PAGE FUNCTION
 function activePage(val) {
   _page = val - 1
@@ -311,79 +293,4 @@ function cancelCanvas(edit_id) {
   _det_id = detail_edit[0]
   _det_attribute = detail_edit[1]
   ctx.clearRect(0, 0, canvas_pdf.width, canvas_pdf.height);
-}
-
-// Function to save over canvas and hide/show buttons
-function saveCanvas_(save_id) {
-  // Hide save_id
-  // Show edit_id
-  let edit_id = "edit-"+save_id.split("-")[1]
-  var save_btn = document.getElementById(save_id);
-  var edit_btn = document.getElementById(edit_id);
-  save_btn.classList.add("d-none")
-  edit_btn.classList.remove("d-none");
-
-  // Print rectangle values (X,Y, width, heigth)
-  console.log("Coordenadas")
-  console.log(_x, _y, _w, _h)
-
-}
-
-// --------------------------------------------------------------------------------------------------------
-function saveCanvas(url, save_id) {
-
-  // Reject if the file input is empty & throw alert
-  if (!_x && !_y) {
-    alert("Debe seleccionar texto de la imagen", "warning")
-    return;
-  }
-
-  // Create a new FormData instance
-  var data = new FormData();
-  // Create a XMLHTTPRequest instance
-  var request = new XMLHttpRequest();
-
-  // Set the response type
-  request.responseType = "json";
-
-  var action = "save";
-  data.append("action", action);
-  data.append("det_id", _det_id);
-  data.append("det_attribute", _det_attribute);
-  data.append("x", _x);
-  data.append("y", _y);
-  data.append("w", _w);
-  data.append("h", _h);
-  data.append("page", _page);
-
-  // request load handler (transfer complete)
-  request.addEventListener("load", function (e) {
-    if (request.status == 200) {
-      /// Disabled updated button (blue color), and opacity 1
-      update_att.style.opacity = 0.1;
-      update_att.disabled = true
-      // Disabled cancel button
-      cancel_att.disabled = true
-      
-      alert(`Registro Exitoso`, "success");
-      location.reload();
-    }
-    else {
-      alert(`Alerta en registro`, "warning");
-    }
-    if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
-    }
-    
-  });
-
-  // request error handler
-  request.addEventListener("error", function (e) {
-    alert(`Error procesando la imagen`, "warning");
-  });
-
-  // Open and send the request
-  request.open("POST", url);
-  request.send(data);
-
 }

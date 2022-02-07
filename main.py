@@ -523,7 +523,7 @@ def action_thesis_one():
             path = os.path.join(app.config['SINGLE_UPLOAD'],file_pdf)
             action = request.values.get("action")
 
-            if action :
+            if action == "save_canvas":
                 det_id =        int(request.values.get("det_id"))
                 det_attribute = int(request.values.get("det_attribute"))
                 rect = {
@@ -532,23 +532,17 @@ def action_thesis_one():
                         'w': int(request.values.get("w")),
                         'h': int(request.values.get("h"))
                     }
-
-                print("page ............")
-                page = int(request.values.get("page"))
-                print(page)
-                
+                page = int(request.values.get("page"))                
                 image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
 
                 print("ROI len", str(len(ROI)))
-                print("pdf_ID", pdf_id)
                 text = ""
-                # if len(ROI)
                 try:
                     text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
-                    print(type(text))
+                    print(text)
                 except:
                     print("Error generate text")
                 
@@ -556,8 +550,17 @@ def action_thesis_one():
                     text = "..."
                 pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
                 result_split = 1
-            # else:
-            # document = Document()
+            
+            if action == "save_text":
+                det_id =        int(request.values.get("det_id"))
+                det_attribute = int(request.values.get("det_attribute"))
+                det_value =     request.values.get("det_value")
+                
+                if text is None or text == "":
+                    text = "..."
+                pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
+                result_split = 1
+
             # 1. SPLIT PDF
             # print("\n------------------- START SPLIT PROCESS -------------------")
             if action is None:
@@ -587,13 +590,14 @@ def action_thesis_one():
                         'name': file_pdf,
                         'path_upload': "http://127.0.0.1:5000/files/single/upload/" + file_pdf,
                         'path_page':   app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg',
-                        'num_pages' :      int(pdf['npages']),
+                        'num_pages':   int(pdf['npages']),
                         }
         else:
             result_cpu = True
             pdf_text = {'result': "Servidor Ocupado", 'found': "", 'not_found': ""}
             # result_file_text = "El servidor está procesando, debe esperar un momento."
     
+    print(pdf)
     return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
 
 
