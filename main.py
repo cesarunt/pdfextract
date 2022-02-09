@@ -218,8 +218,8 @@ def thesis_one():
     else:
         return render_template('thesis_one.html')
 
-@main.route('/thesis_mul/<id>')
-def thesis_mul(id):
+@main.route('/thesis_mul')
+def thesis_mul():
     if current_user.is_authenticated:
         return render_template('thesis_mul.html', name=current_user.name.split()[0])
     else:
@@ -533,7 +533,7 @@ def action_thesis_one():
                         'h': int(request.values.get("h"))
                     }
                 page = int(request.values.get("page"))                
-                image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
+                image = app.config['SINGLE_SPLIT_WEB'] + "/page_" + str(page-1) + ".jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
@@ -560,6 +560,43 @@ def action_thesis_one():
                     text = "..."
                 pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
                 result_split = 1
+            
+            if action == "save_attribute":
+                current_date = date.today().strftime("%d/%m/%Y")
+                att_value =  request.values.get("new_att")
+
+                try:
+                    response_att, id = put_newPDFattribute(att_value, current_date)
+                    if response_att is True:
+                        msg_att = "Atributo registrado con éxito"
+                except:
+                    msg_att = "Error en registro del atributo"
+                
+                try:
+                    response_pdf = put_newPDFdetail(pdf_id, id)
+                    if response_pdf is True:
+                        msg_pdf = "PDF detail registrado con éxito"
+                except:
+                    msg_pdf = "Error en registro de PDFdetail"
+                
+                finally:
+                    print(msg_att)
+                    print(msg_pdf)
+                    result_split = 1
+            
+            if action == "remove_attribute":
+                det_id = int(request.values.get("det_id"))
+                
+                try:
+                    response_pdf = del_itemPDFdetail(det_id)
+                    if response_pdf is True:
+                        msg_pdf = "PDF detail eliminado con éxito"
+                except:
+                    msg_pdf = "Error en eliminación de PDFdetail"
+                
+                finally:
+                    print(msg_pdf)
+                    result_split = 1
 
             # 1. SPLIT PDF
             # print("\n------------------- START SPLIT PROCESS -------------------")
@@ -578,12 +615,12 @@ def action_thesis_one():
                 pdf = get_thesisByName(file_pdf)
                 pdf_id = pdf['id']
                 """Verificar pdf_details, encontrados y no encontradps"""
-                if len(pdf['foundlistN']): select = None 
+                if len(pdf['foundlist']): select = None 
                 else: select = "."
                 list_npages = list(range(1, int(pdf['npages']+1)))
                 list_npages = [str(int) for int in list_npages]
                 pdf['listnpages'] = list_npages
-                pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
+                # pdf['foundtitle'] = {'select': select, 'title': "Atributos Encontrados"}
 
                 # get data for pdf_file
                 pdf_file = {
@@ -597,7 +634,8 @@ def action_thesis_one():
             pdf_text = {'result': "Servidor Ocupado", 'found': "", 'not_found': ""}
             # result_file_text = "El servidor está procesando, debe esperar un momento."
     
-    print(pdf)
+    print("SQL report")
+    print(json.dumps(pdf))
     return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
 
 
@@ -607,7 +645,6 @@ def thesis_mul_load():
     upload = False
     file_pdfs = []
     result_split = []
-    print("TESIS MUL ....!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     if request.method == "POST":
         pro_id = request.form.get('pro_id')
@@ -812,8 +849,6 @@ def action_paper_mul():
         result_invalid_process = []
         # result_invalid_numpages = []
         pro_id = request.form.get('pro_id')
-        # print("IDDDDDDDDDDDDDDDDDDDD")
-        # print(pro_id)
 
         # Verify if posible to process
         if get_viewProcess_CPU() is True :

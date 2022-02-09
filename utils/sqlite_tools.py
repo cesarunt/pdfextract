@@ -25,8 +25,7 @@ def get_thesisByName(file_pdf):
     table_name = 'pdf_attributes'
     table_colnames = None
     pdf = dict()
-    pdf_foundlistY = []      #   Atributos Encontrados SI
-    pdf_foundlistN = []      #   Atributos Encontrados NO
+    pdf_foundlist = []      #   Atributos
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
@@ -44,33 +43,25 @@ def get_thesisByName(file_pdf):
         records = cursor.fetchall()
         
         for record in records:
-            if record[3] :
-                pdf_foundlistY.append({
-                                'det_id':       record[0],
-                                'det_attribute':record[1],
-                                'det_name':     record[2], 
-                                'det_value':    record[3],
-                                'det_npage':    record[4],
-                                'det_x':        record[5],
-                                'det_y':        record[6],
-                                'det_width':    record[7],
-                                'det_height':   record[8]
-                                })
-            else:
-                pdf_foundlistN.append({
-                                'det_id':       record[0],
-                                'det_attribute':record[1],
-                                'det_name':     record[2]
-                                })
+            pdf_foundlist.append({
+                            'det_id':       record[0],
+                            'det_attribute':record[1],
+                            'det_name':     record[2], 
+                            'det_value':    record[3],
+                            'det_npage':    record[4],
+                            'det_x':        record[5],
+                            'det_y':        record[6],
+                            'det_width':    record[7],
+                            'det_height':   record[8]
+                            })
 
         pdf = {
-            'id':           pdf_id,
-            'name':         pdf_name,
-            'npages':       pdf_npages,
-            'foundlistY':   pdf_foundlistY,
-            'foundlistN':   pdf_foundlistN,
+            'id':          pdf_id,
+            'name':        pdf_name,
+            'npages':      pdf_npages,
+            'foundlist':   pdf_foundlist,
         }
-        # print(json.dumps(pdf))
+        
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -532,3 +523,84 @@ def get_userById(id):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return user
+
+
+def put_newPDFattribute(name, current_date):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_attributes'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+
+        print("Connected to SQLite")
+        query = f"""
+                    INSERT INTO "{table_name}" (att_name, att_fecha) 
+                    VALUES ("{name} ", "{current_date}")
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        id = cursor.lastrowid
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result, id
+
+def put_newPDFdetail(det_info, det_attribute):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
+                    VALUES ("{det_info} ", "{det_attribute}", "", "")                
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
+def del_itemPDFdetail(det_id):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    DELETE FROM "{table_name}"
+                    WHERE det_id = "{det_id}"            
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to delete data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result

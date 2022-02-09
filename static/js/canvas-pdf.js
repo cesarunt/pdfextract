@@ -48,7 +48,9 @@ function activeAttribute(edit_id) {
   // Abled vector button
   document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 1
   // Abled close button
-  document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 1
+  // document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 1
+  document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.remove("d-none")
+  document.getElementById('remove_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.add("d-none")
   // Abled edit button, opacity 1
   var divtext_area = document.getElementById("divtext_"+_det_name)
   if (divtext_area) {
@@ -57,13 +59,17 @@ function activeAttribute(edit_id) {
 
   // Abled updated button (blue color), and opacity 1
   document.getElementById("btn_save_canvas").disabled = false
-
   document.getElementById('current_page').innerHTML = (select_att.value).toString()
-  goPage(select_att.value)
-  loadCanvas()
 
+  if (!select_att.value){
+    alert("Debe seleccionar la página")
+    goPage(1)
+  }
+  else {
+    goPage(select_att.value)
+  }
+  loadCanvas()
   // Active values for canvas ...
-  // Verify data x, y
   var det_x = document.getElementById('det_x-'+_det_name).value
   var det_y = document.getElementById('det_y-'+_det_name).value
   var det_width = document.getElementById('det_width-'+_det_name).value
@@ -72,6 +78,7 @@ function activeAttribute(edit_id) {
   if (det_x != null && det_y != null) {
     ctx.strokeRect(det_x, det_y, det_width, det_height);
   }
+  
 }
 
 // CLOSE ATTRIBUTE FUNCTION CANCEL
@@ -88,7 +95,9 @@ function closeAttribute(edit_id) {
   // Disabled vector button
   document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 0.5
   // Disabled close button
-  document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 0.5
+  // document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 0.5
+  document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.add("d-none")
+  document.getElementById('remove_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.remove("d-none")
   // Disabled edit button, opacity 1
   var divtext_area = document.getElementById("divtext_"+_det_name)
   if (divtext_area) {
@@ -103,16 +112,79 @@ function closeAttribute(edit_id) {
   isDown = false
 }
 
+// ADD ATTRIBUTE
+function addAttribute(edit_id) {
+  // Abled div attribute
+  document.getElementById('div_attribute').classList.remove("d-none")
+}
+
+// CANCEL ATTRIBUTE
+function cancelAttribute(edit_id) {
+  // Abled div attribute
+  document.getElementById('div_attribute').classList.add("d-none")
+  document.getElementById('new_attribute').value = ""
+}
+
+// REMOVE ATTRIBUTE
+function delAttribute(url, edit_id) {
+  // Disabled select option
+  let detail_id = edit_id.split("_")
+  let detail_edit = detail_id[1].split("-")
+  _det_id = detail_edit[0]
+  console.log(_det_id)
+  
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+
+  // Set the response type
+  request.responseType = "json";
+
+  var action = "remove_attribute";
+  data.append("action", action);
+  data.append("det_id", _det_id);
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      /// Disabled updated button (blue color), and opacity 1
+      // update_att.style.opacity = 0.5;
+      update_att.disabled = true
+      
+      alert(`Eliminación Exitosa`, "success");
+      location.reload();
+    }
+    else {
+      alert(`Alerta en eliminación`, "warning");
+    }
+    if (request.status == 300) {
+      alert(`${request.response.message}`, "warning");
+    }
+    
+  });
+
+  // request error handler
+  request.addEventListener("error", function (e) {
+    alert(`Error eliminando el atributo`, "warning");
+  });
+
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
+
+}
+
 // --------------------------------------------------------------------------------------------------------
 function saveCanvas(url) {
   console.log("saveCanvas")
-  console.log(_x)
 
   // Reject if the file input is empty & throw alert
   if (!_x && !_y) {
     alert("Debe seleccionar texto de la imagen", "warning")
     return;
   }
+  console.log(_page)
 
   // Create a new FormData instance
   var data = new FormData();
@@ -190,6 +262,63 @@ function saveText(url, det_name) {
   data.append("det_id", _det_id);
   data.append("det_attribute", _det_attribute);
   data.append("det_value", text_area.value);
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      /// Disabled updated button (blue color), and opacity 1
+      // update_att.style.opacity = 0.5;
+      update_att.disabled = true
+      
+      alert(`Registro Exitoso`, "success");
+      location.reload();
+    }
+    else {
+      alert(`Alerta en registro`, "warning");
+    }
+    if (request.status == 300) {
+      alert(`${request.response.message}`, "warning");
+    }
+    
+  });
+
+  // request error handler
+  request.addEventListener("error", function (e) {
+    alert(`Error procesando el texto`, "warning");
+  });
+
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
+
+}
+
+// --------------------------------------------------------------------------------------------------------
+function saveAttribute(url) {
+  console.log("saveAttribute")
+  // let text = "text_" + det_name
+  var new_att = document.getElementById('new_attribute')
+  console.log(new_att.value)
+
+  // Reject if the file input is empty & throw alert
+  if (!new_att.value) {
+    alert("Debe ingresar atributo", "warning")
+    return;
+  }
+
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+
+  // Set the response type
+  request.responseType = "json";
+  console.log(_det_id)
+  console.log(_det_attribute)
+
+  var action = "save_attribute";
+  data.append("action", action);
+  data.append("new_att", new_att.value);
 
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {

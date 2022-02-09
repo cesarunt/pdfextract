@@ -20,7 +20,7 @@
                                     {% if not resultLoad %}
                                     <form method="post" action="/thesis_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
-                                            <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
+                                            <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar múltiples PDFs</label><br>
                                             <input type="hidden" id="pro_id" name="pro_id" value="{{ pro_id }}" />
                                             <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
                                             <div class="line"></div>
