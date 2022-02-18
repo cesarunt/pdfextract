@@ -44,7 +44,7 @@
                                     <select name="university" class="form-select" required>
                                         <option value="" selected>Seleccione la universidad</option>
                                         {% for university in universities %}
-                                        <option value="{{university.uni_id}}">{{university.uni_name}} - ({{university.uni_nickname}})</option>
+                                        <option value="{{university.uni_id}}">{{university.uni_nickname}} - {{university.uni_name}}</option>
                                         {% endfor %}
                                     </select>
                                     <div class="valid-feedback">OK!</div>

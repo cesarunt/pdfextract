@@ -218,10 +218,10 @@ def thesis_one():
     else:
         return render_template('thesis_one.html')
 
-@main.route('/thesis_mul')
-def thesis_mul():
+@main.route('/thesis_mul/<id>')
+def thesis_mul(id):
     if current_user.is_authenticated:
-        return render_template('thesis_mul.html', name=current_user.name.split()[0])
+        return render_template('thesis_mul.html', name=current_user.name.split()[0], pro_id=id)
     else:
         return render_template('thesis_mul.html')
 
@@ -668,113 +668,88 @@ def thesis_mul_load():
             return render_template('thesis_mul.html', resultLoad=upload, pro_id=pro_id)
 
 
-# @main.route("/action_thesis_mul", methods=["POST"])
-# def action_thesis_mul():
-#     global file_pdfs
-#     text_pdf = []
+@main.route("/action_thesis_mul", methods=["POST"])
+def action_thesis_mul():
+    global file_pdfs
+    text_pdf = []
 
-#     if request.method == "POST":
-#         global file_pdf, document
-#         resultCPU = False
-#         result_save = None
-#         result_file_text = "None"
-#         result_invalid_text = ""
-#         result_file_down = "None"
-#         result_valid = 0
-#         result_invalid = 0
-#         result_invalid_process = []
-#         # result_invalid_numpages = []
-#         pro_id = request.form.get('pro_id')
-#         # print("IDDDDDDDDDDDDDDDDDDDD")
-#         # print(pro_id)
+    if request.method == "POST":
+        global file_pdf, document
+        resultCPU = False
+        result_save = None
+        result_file_text = "None"
+        result_invalid_text = ""
+        result_file_down = "None"
+        result_valid = 0
+        result_invalid = 0
+        result_invalid_process = []
+        # result_invalid_numpages = []
+        pro_id = request.form.get('pro_id')
 
-#         # Verify if posible to process
-#         if get_viewProcess_CPU() is True :
+        # Verify if posible to process
+        if get_viewProcess_CPU() is True :
 
-#             document = Document() 
+            document = Document() 
             
-#             print("NumPDFs Cargados")
-#             print(len(file_pdfs))
-#             for filename in file_pdfs :
-#                 filename = fold(filename)
+            print("NumPDFs Cargados")
+            print(len(file_pdfs))
+            for filename in file_pdfs :
+                filename = fold(filename)
+                path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
+                path = validate_path(path)
+                path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
+                fname = os.listdir(app.config['MULTIPLE_SPLIT'])
 
-#                 fname = os.listdir(app.config['MULTIPLE_SPLIT'])
-#                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],file_pdf)
-#                 action = request.values.get("action")
-
-#                 if action :
-#                     det_id =        int(request.values.get("det_id"))
-#                     det_attribute = int(request.values.get("det_attribute"))
-#                     rect = {
-#                             'x': int(request.values.get("x")),
-#                             'y': int(request.values.get("y")),
-#                             'w': int(request.values.get("w")),
-#                             'h': int(request.values.get("h"))
-#                         }
-
-#                     print("page ............")
-#                     page = int(request.values.get("page"))
-#                     print(page)
-                    
-#                     print(page)
-#                     image = app.config['SINGLE_SPLIT_WEB'] + "/page_0.jpg"
-#                     image = cv2.imread(image, 0)
-#                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-#                     ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
-
-#                     print("ROI len", str(len(ROI)))
-#                     print("pdf_ID", pdf_id)
-#                     text = ""
-#                     # if len(ROI)
-#                     try:
-#                         text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
-#                         print(type(text))
-#                     except:
-#                         print("Error generate text")
-                    
-#                     if text is None or text == "":
-#                         text = "..."
-#                     pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
-#                     result_split = 1
-#                 # else:
-#                 # document = Document()
-#                 # 1. SPLIT PDF
-#                 # print("\n------------------- START SPLIT PROCESS -------------------")
-#                 if action is None:
-#                     pdf_remove(fname, app.config['SINGLE_SPLIT'])                   # Call pdf remove function
-#                     result_split = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
+                pdf_remove(fname, app.config['MULTIPLE_SPLIT'])                   # Call pdf remove function
+                result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT'])   # Call pdf splitter function
                 
-#                 if result_split == 0:
-#                     result_save = 0
-#                     pdf_text = {'result': "Procesamiento Incompleto"}
+                if result_split == 0:
+                    # result_save = False
+                    result_invalid += 1
+                    result_invalid_process.append(filename + " ...NO se procesó")
+                    # result_file_text = "No se logró procesar"
+                if result_split == 2:
+                    # result_save = False
+                    result_invalid += 1
+                    result_invalid_process.append(filename + " ...supera el Nro páginas")
                 
-#                 if result_split == 1:
-#                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    
-#                     # get data for "pdf"
-#                     pdf = get_thesisByName(file_pdf)
-#                     pdf_id = pdf['id']
-#                     """Verificar pdf_details, encontrados y no encontradps"""
-#                     if len(pdf['foundlistN']): select = None 
-#                     else: select = "."
-#                     list_npages = list(range(1, int(pdf['npages']+1)))
-#                     list_npages = [str(int) for int in list_npages]
-#                     pdf['listnpages'] = list_npages
-#                     pdf['foundtitle'] = {'select': select, 'titleY': "Atributos Encontrados", 'titleN': "Atributos Pendientes"}
+                if result_split == 1:
+                    # 2. Process PDF
+                    # print("\n------------------ START EXTRACT PROCESS ------------------")
+                    _, text_pdf, language = pdf_process(app.config['MULTIPLE_SPLIT'], app.config['MULTIPLE_OUTPUT'])  # Call pdf process function
+                    # print("Out web: " + app.config['MULTIPLE_FORWEB'])
 
-#                     # get data for pdf_file
-#                     pdf_file = {
-#                             'name': file_pdf,
-#                             'path_upload': "http://127.0.0.1:5000/files/single/upload/" + file_pdf,
-#                             'path_page':   app.config['SINGLE_SPLIT_WEB'] + '/page_0.jpg',
-#                             'num_pages' :      int(pdf['npages']),
-#                             }
-#                     render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
+                    if len(text_pdf) > 1 :
+                        now = datetime.now()
+                        document = build_document(filename, text_pdf, language)
+                        file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+                        document.save(file_save)
+                        result_valid += 1
+                        result_file_text = "Antecedente Múltiple"
+                        result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+                
+                if result_valid > 0 :
+                    result_save = True
+                
+                if result_invalid > 0 and result_valid == 0 :
+                    result_save = False
+                    result_file_text = "No fue posible procesar"
+                
+                if len(result_invalid_process) > 0 :
+                    # result_save = False
+                    result_invalid_text = (',  \n'.join(result_invalid_process))
+            
+            # Save resutls on database
+            project = get_projectById(pro_id)
+            n_process = int(project[0]["pro_n_process"]) + 1
+            saveDB = upd_projectById(pro_id, result_valid, n_process)
+            if saveDB is True:
+                print("Se actualizó con éxito project_info")
                     
-#         else:
-#             result_file_text = "El servidor está procesando, espere un momento."
+        else:
+            result_file_text = "El servidor está procesando, espere un momento."
     
-#     return render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
+    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
 
 
 @main.route("/action_thesis_search", methods=["POST"])
@@ -847,7 +822,6 @@ def action_paper_mul():
         result_valid = 0
         result_invalid = 0
         result_invalid_process = []
-        # result_invalid_numpages = []
         pro_id = request.form.get('pro_id')
 
         # Verify if posible to process
@@ -867,7 +841,6 @@ def action_paper_mul():
                 # 1. SPLIT PDF
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 pdf_remove(fname, app.config['MULTIPLE_SPLIT'])       # Call pdf remove function
-
                 result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT'])      # Call pdf splitter function
 
                 if result_split == 0:
@@ -891,7 +864,6 @@ def action_paper_mul():
                         document = build_document(filename, text_pdf, language)
                         file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                         document.save(file_save)
-                        # result_save = True
                         result_valid += 1
                         result_file_text = "Antecedente Múltiple"
                         result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
@@ -918,13 +890,12 @@ def action_paper_mul():
             saveDB = upd_projectById(pro_id, result_valid, n_process)
             if saveDB is True:
                 print("Se actualizó con éxito project_info")
-                    
         else:
             result_file_text = "El servidor está procesando, espere un momento."
     
     return render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
 
-
+# CLOSE PAPER
 @main.route("/<source>")
 def close_paper_mul(source):
     url = "/" + source
@@ -937,6 +908,18 @@ def save_paper_mul():
         
     return send_file(down_image, as_attachment=True)
 
+# CLOSE THESIS
+@main.route("/<source>")
+def close_thesis_mul(source):
+    url = "/" + source
+    return redirect(url)
+
+@main.route("/save_paper_mul", methods=["POST"])
+def save_thesis_mul():
+    if request.method == "POST":
+        down_image = request.form.get('down_image')
+        
+    return send_file(down_image, as_attachment=True)
 
 # INIT PROJECT
 if __name__ == '__main__':

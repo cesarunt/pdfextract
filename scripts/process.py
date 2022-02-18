@@ -559,7 +559,7 @@ def pdf_process(files_split, files_output):
                 else:
                     addText_background("N", conclusion_text)
 
-                # Create la REFERENCE
+                # Create the REFERENCE
                 doi_print = ""
                 if doi_band :   doi_print = doi_text
                 elif URL_band : doi_print = 'Obtenido de: ' + URL_text

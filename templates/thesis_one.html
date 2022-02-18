@@ -66,16 +66,18 @@
                                 </div>
                             </div>
                             {% else %}
+                            <div id="alert_wrapper"></div>
+                            <!-- <div id="alert_page" class="alert alert-success" role="alert" style="padding: 5px 15px;">Se guardaron correctamente los cambios</div> -->
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-3" style="padding: 0;">
                                     <!-- <div class="mb-6"> -->
                                     <div class="pagination" style="text-align: left;">
-
-                                        <li style="margin: 5px 0 10px; padding:5px 0 5px; border-bottom:#CCC 1px solid; text-align: right;">
+                                        
+                                        <li style="margin: 4px 0 5px; padding: 4px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <div id="add_attribute">
                                                 <button type="submit" id="btn_add_att" class="btn btn-sm btn-primary" onclick="addAttribute()">Agregar Atributo</button>
                                             </div>
-                                            <div id="div_attribute" style="margin: 5px 0 0; padding:5px 0 0; text-align: center;" class="d-none">
+                                            <div id="div_attribute" style="text-align: center;" class="d-none">
                                                 <input style="width: 85%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="Ingrese atributo" class="form-control">
                                                 <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
                                                     <i class="fas fa-window-close"></i>
@@ -83,7 +85,7 @@
                                                 <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">Guardar</button>
                                             </div>
                                         </li>
-                                        
+
                                         <div id="div_found" class="text-center">
                                             <!-- 
                                                 ATRIBUTOS ENCONTRADOS

@@ -34,6 +34,22 @@ var _w = null
 var _h = null
 var _page = 1
 
+// Get a reference to the alert wrapper
+var alert_wrapper = document.getElementById("alert_wrapper");
+
+// Function to show alerts
+function showAlertPage(message, alert) {
+  alert_wrapper.innerHTML = `
+    <div id="alert_page" style="padding: 0.5rem 1rem;" class="alert alert-${alert} alert-dismissible fade show" role="alert" style="line-height:15px;">
+      <small>${message}</small>
+    </div>
+  `
+  setTimeout(function () {
+    // Closing the alert
+    $('#alert_page').alert('close');
+  }, 5000);
+}
+
 // ACTIVATE ATTRIBUTE FUNCTION
 function activeAttribute(edit_id) {
   // Abled select option
@@ -114,15 +130,19 @@ function closeAttribute(edit_id) {
 
 // ADD ATTRIBUTE
 function addAttribute(edit_id) {
+  // Disabled add attribute
+  document.getElementById('add_attribute').classList.add("d-none")
   // Abled div attribute
   document.getElementById('div_attribute').classList.remove("d-none")
 }
 
 // CANCEL ATTRIBUTE
 function cancelAttribute(edit_id) {
-  // Abled div attribute
+  // Disbled div attribute
   document.getElementById('div_attribute').classList.add("d-none")
   document.getElementById('new_attribute').value = ""
+  // Abled add attribute
+  document.getElementById('add_attribute').classList.remove("d-none")
 }
 
 // REMOVE ATTRIBUTE
@@ -152,21 +172,25 @@ function delAttribute(url, edit_id) {
       // update_att.style.opacity = 0.5;
       update_att.disabled = true
       
-      alert(`Eliminación Exitosa`, "success");
+      // alert(`Eliminación Exitosa`, "success");
+      showAlertPage('Atributo eliminado con éxito', 'success')
       location.reload();
     }
     else {
-      alert(`Alerta en eliminación`, "warning");
+      // alert(`Alerta en eliminación`, "warning");
+      showAlertPage('Atributo no fue eliminado', 'warning')
     }
     if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
+      // alert(`${request.response.message}`, "warning");
+      showAlertPage(`${request.response.message}`, 'warning')
     }
     
   });
 
   // request error handler
   request.addEventListener("error", function (e) {
-    alert(`Error eliminando el atributo`, "warning");
+    // alert(`Error eliminando el atributo`, "danger");
+    showAlertPage('Error eliminando atributo', 'danger')
   });
 
   // Open and send the request
@@ -211,21 +235,27 @@ function saveCanvas(url) {
       // update_att.style.opacity = 0.5;
       update_att.disabled = true
       
-      alert(`Registro Exitoso`, "success");
+      // alert(`Registro Exitoso`, "success");
+      showAlertPage('Canvas actualizado con éxito', 'success')
       location.reload();
     }
     else {
-      alert(`Alerta en registro`, "warning");
+      // alert(`Alerta en registro`, "warning");
+      showAlertPage('Canvas no fue actualizado', 'warning')
+      location.reload();
     }
     if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
+      // alert(`${request.response.message}`, "warning");
+      showAlertPage(`${request.response.message}`, 'warning')
+      location.reload();
     }
     
   });
 
   // request error handler
   request.addEventListener("error", function (e) {
-    alert(`Error procesando la imagen`, "warning");
+    // alert(`Error procesando la imagen`, "danger");
+    showAlertPage('Error actualizando canvas', 'danger')
   });
 
   // Open and send the request
@@ -270,21 +300,25 @@ function saveText(url, det_name) {
       // update_att.style.opacity = 0.5;
       update_att.disabled = true
       
-      alert(`Registro Exitoso`, "success");
+      // alert(`Registro Exitoso`, "success");
+      showAlertPage('Texto actualizado con éxito', 'success')
       location.reload();
     }
     else {
-      alert(`Alerta en registro`, "warning");
+      // alert(`Alerta en registro`, "warning");
+      showAlertPage('Texto no fue actualizado', 'warning')
     }
     if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
+      // alert(`${request.response.message}`, "warning");
+      showAlertPage(`${request.response.message}`, 'warning')
     }
     
   });
 
   // request error handler
   request.addEventListener("error", function (e) {
-    alert(`Error procesando el texto`, "warning");
+    // alert(`Error procesando el texto`, "warning");
+    showAlertPage('Error actualizando texto', 'danger')
   });
 
   // Open and send the request
@@ -327,21 +361,25 @@ function saveAttribute(url) {
       // update_att.style.opacity = 0.5;
       update_att.disabled = true
       
-      alert(`Registro Exitoso`, "success");
+      // alert(`Registro Exitoso`, "success");
+      showAlertPage('Atributo registrado con éxito', 'success')
       location.reload();
     }
     else {
-      alert(`Alerta en registro`, "warning");
+      // alert(`Alerta en registro`, "warning");
+      showAlertPage('Atributo no fue registrado', 'warning')
     }
     if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
+      // alert(`${request.response.message}`, "warning");
+      showAlertPage(`${request.response.message}`, 'warning')
     }
     
   });
 
   // request error handler
   request.addEventListener("error", function (e) {
-    alert(`Error procesando el texto`, "warning");
+    // alert(`Error procesando el texto`, "danger");
+    showAlertPage('Error registrando atributo', 'danger')
   });
 
   // Open and send the request
