@@ -51,7 +51,7 @@ function showAlertPage(message, alert) {
 }
 
 // ACTIVATE ATTRIBUTE FUNCTION
-function activeAttribute(edit_id) {
+function activeAttribute(edit_id, pdf_id) {
   // Abled select option
   let detail_id = edit_id.split("_")
   let detail_edit = detail_id[1].split("-")
@@ -79,10 +79,10 @@ function activeAttribute(edit_id) {
 
   if (!select_att.value){
     alert("Debe seleccionar la página")
-    goPage(1)
+    goPage(1, pdf_id)
   }
   else {
-    goPage(select_att.value)
+    goPage(select_att.value, pdf_id)
   }
   loadCanvas()
   // Active values for canvas ...

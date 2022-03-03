@@ -7,8 +7,10 @@ import numpy as np
 import spacy
 from scipy import stats as s
 from bs4 import BeautifulSoup as soup
+from sqlalchemy import true
 from utils.process_pdf import *
 from utils.process_data import *
+from utils.sqlite_tools import *
 from utils.config import PATTERN_METHOD_EN, cfg
 
 def clear_report(files_output):
@@ -17,18 +19,28 @@ def clear_report(files_output):
 def addText_background(type, line):
     if line != "":
         text_pdf.append(tuple([type, line]))
-        # text_pdf.append(line + '\n')
+
+def addText_view(line, att_id, page):
+    try:    
+        _ = put_newPDFdetail(pdf_id, att_id, line, page)
+    except:
+        print("Error en registro del PDF details")
 
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, files_output):
+def pdf_process(files_split, files_output, pdf_info_id):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
     length = len(fname)
 
     global text_pdf
+    global pdf_id
+    global attributes
+
+    attributes = []
+    pdf_id = pdf_info_id
     text_pdf = []
     is_article = True
 
@@ -38,33 +50,35 @@ def pdf_process(files_split, files_output):
     text_page = ""
 
     # Title
-    title_band = False
     title_font = 7
     title_font_last = 10
     title_font_max = 33
     title_text = ""
+    title_ctrl = False
+    title_band = False
+
     # Authors
     authors_list = []
     authors_name = []
     authors_text = ""
+    authors_band = False
     # Resumen
     resumen_font = 0
     resumen_title = ""
     resumen_text = ""
     resumen_res = False
+    resumen_band = False
 
     font_max = 0
     font_subtitle = 0
 
     # Introduction
     intro_font = 0
-    introduction_title = ""
-    introduction_text = ""
-    introduction_mode = 0
 
     # Methodology
     methodology_text = ""
     methodology_title = ""
+    methodology_band = False
     
     # Article
     article_band = False
@@ -74,16 +88,21 @@ def pdf_process(files_split, files_output):
     URL_band = False
     URL_text = ""
     year = 0                # 03. FIND THE PUBLISHING YEAR
+    year_band = False
     objective = ""          # 04. FIND THE PATTERN OBJECTIVE
+    objective_band = False
     type_level = ""         #  -. FIND THE PATTERN TYPE 
     design = ""             #  -. FIND THE PATTERN DESIGN
     approach = ""           #  -. FIND THE PATTERN APPROACH
     samples = ""            # 06. FIND THE PATTERN SAMPLES
+    samples_band = False
     result_text = ""
+    result_band = False
     result_title = ""
 
     # Conslusion
     conclusion_text = ""
+    conclusion_band = False
     conclusion_title = ""
     pagefonts_mode = 0
 
@@ -124,7 +143,7 @@ def pdf_process(files_split, files_output):
 
             # 3. FIND THE TITLE TEXT
             # ============================================================================================
-            if text_page != "" : #and title_band == False: # and page < 2:
+            if text_page != "" :
                 # - Using BeautifulSoup to parse the text
                 page_soup = soup(text_html, 'html.parser')
                 patt = re.compile("font-size:(\d+)")
@@ -197,10 +216,10 @@ def pdf_process(files_split, files_output):
                     title_text_list = [key for key, value in text_parser if value == title_font]
                     title_text_line = [line for key, value, line in pagelines_list if value == title_font]
                     title_text = (' '.join(title_text_list))
-                    title_band = True
+                    title_ctrl = True
                 if len(title_text_line)==0: title_text_line=[1]
 
-                if (authors_text == "" and language != "" and title_band == True) or (authors_text!="" and title_font>title_font_last) :
+                if (authors_text == "" and language != "" and title_ctrl == True) or (authors_text!="" and title_font>title_font_last) :
                     title_font_last = title_font
                     
                     patt_band = False
@@ -429,11 +448,39 @@ def pdf_process(files_split, files_output):
                 # print(conclusion_text)
                 # input(".................. conclusiones ..................")
             
+            if resumen_text and resumen_band == False:
+                addText_view(resumen_text, 5, page+1)
+                resumen_band = True
+            if authors_text and authors_band == False:
+                addText_view(authors_text, 1, page+1)
+                authors_band = True
+            if title_text and title_band == False:
+                addText_view(title_text, 2, page+1)
+                title_band = True
+            if year and year_band == False:
+                addText_view(year, 3, page+1)
+                year_band = True
+            if objective and objective_band == False:
+                addText_view(objective, 4, page+1)
+                objective_band = True
+            if len(methodology_text)>0 and methodology_band == False:
+                addText_view(methodology_text, 6, page+1)
+                methodology_band = True
+            if len(samples)>0 and samples == False:
+                addText_view(samples, 9, page+1)
+                samples_band = True
+            if len(result_text)>0 and result_band == False:
+                addText_view(result_text, 11, page+1)
+                result_band = True
+            if len(conclusion_text)>0 and conclusion_band == False:
+                addText_view(conclusion_text, 12, page+1)
+                conclusion_band = True
+
             # print("\nTitle_band ... "+ str(title_band))
             # print("Authors_text ... "+authors_text)
             # print("Year... " + str(year))
 
-            if title_band == True and authors_text!="" and year!="" and page == length-1 :
+            if title_ctrl == True and authors_text!="" and year!="" and page == length-1 :
                 # RESUMEN ...........
                 resumen_text_list = resumen_text.split("\n")
                 for item in resumen_text_list :
@@ -443,12 +490,13 @@ def pdf_process(files_split, files_output):
                 # print("\nRESUMEN")
                 # print(resumen_text_list)
                 resumen_text = (' '.join(resumen_text_list))
+
                 addText_background("B", "\nRESUMEN")
                 resumen_text = resumen_text.replace("\n\n", "#")
                 resumen_text = resumen_text.replace("\n", " ")
                 resumen_text = resumen_text.replace("#", "\n\n")
                 addText_background("N", resumen_text)
-
+                
                 # print("AUTORES ...")
                 # print(type(authors_text))
                 # print("\n01._ AUTHORs NAME \n" + authors_text)
@@ -487,15 +535,12 @@ def pdf_process(files_split, files_output):
                 if level_expo == False :    level_expo = getLevel_Result(methodology_text, PATTERN_LEVE_EXPO)
                 
                 addText_background("B", "\nMETODOLOGIA")
-                # methodology_text = methodology_text.replace("\n\n", "#")
-                # methodology_text = methodology_text.replace("\n", "")
-                # methodology_text = methodology_text.replace(".   ", ".\n\n")
-                # methodology_text = methodology_text.replace("#", "\n\n")
 
                 if methodology_text=="":
                     addText_background("N", "No existe información específica sobre Metodología o Métodos.")
                 else:
                     addText_background("N", methodology_text)
+
                     # print("\n06._ METHODOLOGY :\n" + methodology_text, end="")
                     method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
                     # for key, value in method_list.items() : 
@@ -522,7 +567,7 @@ def pdf_process(files_split, files_output):
                     if level_rela : methodology_det += methodology_det + "Relacional, ";   print("Relacional", end=", ")
                     if level_desc : methodology_det += methodology_det + "Descriptivo, ";  print("Descriptivo", end=", ")
                     if level_expo : methodology_det += methodology_det + "Exploratorio"; print("Exploratorio", end="")
-                    addText_background("N", "Metodología Detalles:\n" + methodology_det)
+                    # addText_background("N", "Metodología Detalles:\n" + methodology_det, page)
 
                 tools_text = ""
                 # print("\n07._ TOOLS : Tecnica(s) de recoleccion de datos empleada(s): ")
@@ -532,7 +577,7 @@ def pdf_process(files_split, files_output):
                 if len(listQual) > 0 : 
                     tools_text = tools_text + ", Cualitativos: " + str(listQual)
                     # print("  " + str(listQual))
-                addText_background("N", "Herramientas\nTécnica(s) de recolección de datos:\n" + tools_text)
+                # addText_background("N", "Herramientas\nTécnica(s) de recolección de datos:\n" + tools_text, "")
 
                 if samples == "":     samples = getData_LongText(methodology_text, PATTERN_SAMP, 'E', '. ')
                 if samples == "":     samples = getData_LongText(resumen_text, PATTERN_SAMP, 'E', '. ')
@@ -548,26 +593,23 @@ def pdf_process(files_split, files_output):
                     addText_background("N", "No existe información específica sobre Resultados.")
                 else:
                     addText_background("N", result_text)
+                    
 
                 addText_background("B", "\nCONCLUSIONES")
-                ## conclusion_text = conclusion_text.replace("\n", "#")
-                # conclusion_text = conclusion_text.replace("\n", "")
-                # conclusion_text = conclusion_text.replace(".  ", ".\n\n")
-                ## conclusion_text = conclusion_text.replace("#", "\n")
                 if conclusion_text=="":
                     addText_background("N", "No existe información específica sobre Conclusiones.")
                 else:
                     addText_background("N", conclusion_text)
-
+                    
                 # Create the REFERENCE
-                doi_print = ""
-                if doi_band :   doi_print = doi_text
-                elif URL_band : doi_print = 'Obtenido de: ' + URL_text
-                reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
-                addText_background("B", '\nREFERENCIAS')
-                addText_background("N", reference_text)
+                # doi_print = ""
+                # if doi_band :   doi_print = doi_text
+                # elif URL_band : doi_print = 'Obtenido de: ' + URL_text
+                # reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
+                # addText_background("B", '\nREFERENCIAS')
+                # addText_background("N", reference_text)
 
                 # input("page ...")
                 # break
     
-    return is_article, text_pdf, language
+    return is_article, text_pdf, language, title_text

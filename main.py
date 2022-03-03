@@ -32,10 +32,12 @@ app.config['SINGLE_SPLIT']       = cfg.FILES.SINGLE_SPLIT
 app.config['SINGLE_OUTPUT']      = cfg.FILES.SINGLE_OUTPUT
 app.config['SINGLE_FORWEB']      = cfg.FILES.SINGLE_FORWEB
 app.config['MULTIPLE_UPLOAD']    = cfg.FILES.MULTIPLE_UPLOAD
-app.config['MULTIPLE_SPLIT']     = cfg.FILES.MULTIPLE_SPLIT
+app.config['MULTIPLE_SPLIT_PDF'] = cfg.FILES.MULTIPLE_SPLIT_PDF
+app.config['MULTIPLE_SPLIT_IMG'] = cfg.FILES.MULTIPLE_SPLIT_IMG
 app.config['MULTIPLE_OUTPUT']    = cfg.FILES.MULTIPLE_OUTPUT
 app.config['MULTIPLE_FORWEB']    = cfg.FILES.MULTIPLE_FORWEB
-app.config['SINGLE_SPLIT_WEB']    = cfg.FILES.SINGLE_SPLIT_WEB
+app.config['SINGLE_SPLIT_WEB']   = cfg.FILES.SINGLE_SPLIT_WEB
+app.config['MULTIPLE_SPLIT_WEB'] = cfg.FILES.MULTIPLE_SPLIT_WEB
 
 # Allowed extension you can set your own
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
@@ -501,6 +503,9 @@ def thesis_upload(filename):
 def thesis_split(filename):
     return send_from_directory(app.config['SINGLE_SPLIT'], filename)
 
+@app.route('/files/multiple/split_img/<filename>')
+def thesis_split_img(filename):
+    return send_from_directory(app.config['MULTIPLE_SPLIT_IMG'], filename)
 
 @main.route("/action_thesis_one", methods=["POST"])
 def action_thesis_one():
@@ -522,6 +527,7 @@ def action_thesis_one():
             fname = os.listdir(app.config['SINGLE_SPLIT'])
             path = os.path.join(app.config['SINGLE_UPLOAD'],file_pdf)
             action = request.values.get("action")
+            print("Action", action)
 
             if action == "save_canvas":
                 det_id =        int(request.values.get("det_id"))
@@ -602,7 +608,7 @@ def action_thesis_one():
             # print("\n------------------- START SPLIT PROCESS -------------------")
             if action is None:
                 pdf_remove(fname, app.config['SINGLE_SPLIT'])                   # Call pdf remove function
-                result_split = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
+                result_split, npages = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
             
             if result_split == 0:
                 result_save = 0
@@ -620,8 +626,6 @@ def action_thesis_one():
                 list_npages = list(range(1, int(pdf['npages']+1)))
                 list_npages = [str(int) for int in list_npages]
                 pdf['listnpages'] = list_npages
-                # pdf['foundtitle'] = {'select': select, 'title': "Atributos Encontrados"}
-
                 # get data for pdf_file
                 pdf_file = {
                         'name': file_pdf,
@@ -667,7 +671,12 @@ def thesis_mul_load():
             print('File(s) successfully uploaded')
             return render_template('thesis_mul.html', resultLoad=upload, pro_id=pro_id)
 
+#
+# FUNCTION TO GET DATA 
 
+# 
+# FUNCTION TO PROCESS PDF 
+# 
 @main.route("/action_thesis_mul", methods=["POST"])
 def action_thesis_mul():
     global file_pdfs
@@ -676,6 +685,7 @@ def action_thesis_mul():
     if request.method == "POST":
         global file_pdf, document
         resultCPU = False
+        action = None
         result_save = None
         result_file_text = "None"
         result_invalid_text = ""
@@ -683,41 +693,136 @@ def action_thesis_mul():
         result_valid = 0
         result_invalid = 0
         result_invalid_process = []
-        # result_invalid_numpages = []
         pro_id = request.form.get('pro_id')
 
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
 
             document = Document() 
-            
             print("NumPDFs Cargados")
             print(len(file_pdfs))
             for filename in file_pdfs :
                 filename = fold(filename)
+                fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
-                fname = os.listdir(app.config['MULTIPLE_SPLIT'])
+                action = request.values.get("action")
+                print("Action", action)
 
-                pdf_remove(fname, app.config['MULTIPLE_SPLIT'])                   # Call pdf remove function
-                result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT'])   # Call pdf splitter function
+                if action == "save_canvas":
+                    det_id =        int(request.values.get("det_id"))
+                    det_attribute = int(request.values.get("det_attribute"))
+                    rect = {
+                            'x': int(request.values.get("x")),
+                            'y': int(request.values.get("y")),
+                            'w': int(request.values.get("w")),
+                            'h': int(request.values.get("h"))
+                        }
+                    page = int(request.values.get("page"))                
+                    image = app.config['SINGLE_SPLIT_WEB'] + "/page_" + str(page-1) + ".jpg"
+                    image = cv2.imread(image, 0)
+                    thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+                    ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
+
+                    print("ROI len", str(len(ROI)))
+                    text = ""
+                    try:
+                        text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                        print(text)
+                    except:
+                        print("Error generate text")
+                    
+                    if text is None or text == "":
+                        text = "..."
+                    pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
+                    result_split = 1
                 
+                if action == "save_text":
+                    det_id =        int(request.values.get("det_id"))
+                    det_attribute = int(request.values.get("det_attribute"))
+                    det_value =     request.values.get("det_value")
+                    
+                    if text is None or text == "":
+                        text = "..."
+                    pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
+                    result_split = 1
+                
+                if action == "save_attribute":
+                    current_date = date.today().strftime("%d/%m/%Y")
+                    att_value =  request.values.get("new_att")
+
+                    try:
+                        response_att, id = put_newPDFattribute(att_value, current_date)
+                        if response_att is True:
+                            msg_att = "Atributo registrado con éxito"
+                    except:
+                        msg_att = "Error en registro del atributo"
+                    
+                    try:
+                        response_pdf = put_newPDFdetail(pdf_id, id)
+                        if response_pdf is True:
+                            msg_pdf = "PDF detail registrado con éxito"
+                    except:
+                        msg_pdf = "Error en registro de PDFdetail"
+                    
+                    finally:
+                        print(msg_att)
+                        print(msg_pdf)
+                        result_split = 1
+                
+                if action == "remove_attribute":
+                    det_id = int(request.values.get("det_id"))
+                    
+                    try:
+                        response_pdf = del_itemPDFdetail(det_id)
+                        if response_pdf is True:
+                            msg_pdf = "PDF detail eliminado con éxito"
+                    except:
+                        msg_pdf = "Error en eliminación de PDFdetail"
+                    
+                    finally:
+                        print(msg_pdf)
+                        result_split = 1
+
+                # 1. SPLIT PDF
+                # print("\n------------------- START SPLIT PROCESS -------------------")
+                if action is None:
+                    print("filename", filename)
+                    print("fname", fname)
+                    # 1. Remove and split PDF
+                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
+                    # pdf_remove(fname, app.config['MULTIPLE_SPLIT_IMG']
+                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
+                
+                print("result_split", result_split)
                 if result_split == 0:
-                    # result_save = False
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...NO se procesó")
-                    # result_file_text = "No se logró procesar"
                 if result_split == 2:
-                    # result_save = False
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...supera el Nro páginas")
                 
                 if result_split == 1:
+                    # Put data on pdf_info
+                    pdf_size = os.path.getsize(path)
+                    current_date = date.today().strftime("%d/%m/%Y")
+                    pdf = {
+                        'name' :     filename,
+                        'npages' :   pdf_npages,
+                        'size' :     pdf_size,
+                        'created' :  current_date
+                    }
+                    try:
+                        _, pdf_info_id = put_newPDF(pdf)
+                        img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                    except:
+                        print("Error en registro del PDF info")
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language = pdf_process(app.config['MULTIPLE_SPLIT'], app.config['MULTIPLE_OUTPUT'])  # Call pdf process function
+                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id)  # Call pdf process function
                     # print("Out web: " + app.config['MULTIPLE_FORWEB'])
+                    print("title_text", title_text)
 
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -728,9 +833,15 @@ def action_thesis_mul():
                         result_file_text = "Antecedente Múltiple"
                         result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                 
+                print("result_valid", result_valid)
                 if result_valid > 0 :
                     result_save = True
-                
+
+                    try:
+                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, current_date)
+                    except:
+                        print("Error en registro de PRO PDF detail")
+                    
                 if result_invalid > 0 and result_valid == 0 :
                     result_save = False
                     result_file_text = "No fue posible procesar"
@@ -740,8 +851,13 @@ def action_thesis_mul():
                     result_invalid_text = (',  \n'.join(result_invalid_process))
             
             # Save resutls on database
+            # Get data from project_info
             project = get_projectById(pro_id)
             n_process = int(project[0]["pro_n_process"]) + 1
+
+            # Put data on pro_pdf_details
+
+            # Update data on project_info
             saveDB = upd_projectById(pro_id, result_valid, n_process)
             if saveDB is True:
                 print("Se actualizó con éxito project_info")
@@ -751,6 +867,181 @@ def action_thesis_mul():
     
     return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
 
+"""
+    PROJECT PDF 
+    =====================
+"""
+#   AQUI ME QUEDE ... 
+#   SOLUCION: ENVIAR DATOS POR GET OR POST HACIA ESTA FUNCION, PARA ACTIVAR LA PAG SELECCIONADA .. 
+
+@main.route('/project/pdfs/<id>')
+def project_pdfs(id):
+    global pro_id
+    pro_id = id
+    if current_user.is_authenticated:
+        project = get_projectById(id)
+        pdfs = get_projectPDFById(id)
+        # pdfs = get_pdfDetailById(id)
+        # pdf = get_thesisByName(file_pdf)
+        for pdf in pdfs:
+            # revisar esto ... luego de hacer el input pdf_details
+            # pdf_id = pdf['id']
+            # pdf_id = pdf['pdf_id']
+            """Verificar pdf_details, encontrados y no encontradps"""
+            # if len(pdf['foundlist']): select = None 
+            # else: select = "."
+            list_npages = list(range(1, int(pdf['pdf_npages']+1)))
+            list_npages = [str(int) for int in list_npages]
+            pdf['listnpages'] = list_npages
+
+            # get data for pdf_file
+            pdf_path = {
+                    'name': pdf['pdf_name'],
+                    # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['pdf_name'],
+                    # 'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
+                    'num_pages':   int(pdf['pdf_npages']),
+                    }
+            pdf['pdf_path'] = pdf_path
+        # return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
+        
+        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
+        # project = one_project
+    else:
+        return render_template('project_pdfs.html')
+
+
+@main.route('/<pdf_id>')
+def project_pdf(pdf_id):
+    if current_user.is_authenticated:
+        project = get_projectById(pro_id)
+        pdfs = get_projectPDFById(pro_id)
+        pdf = get_pdfDetailById(pdf_id)
+        print("NEW PDFs")
+        """Verificar pdf_details, encontrados y no encontradps"""
+        list_npages = list(range(1, int(pdf['npages']+1)))
+        list_npages = [str(int) for int in list_npages]
+        pdf['listnpages'] = list_npages
+
+        # get data for pdf_file
+        pdf_path = {
+                'name':        pdf['name'],
+                # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['name'],
+                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
+                'num_pages':   int(pdf['npages']),
+                }
+        pdf['pdf_path'] = pdf_path
+
+        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
+        # project = one_project
+    else:
+        return render_template('project_pdfs.html')
+
+
+@main.route("/<pdf_id>", methods=["POST"])
+def pdf_post(pdf_id):
+    global file_pdfs
+    text_pdf = []
+
+    if request.method == "POST":
+        action = request.values.get("action")
+        print("Action", action)
+
+        if action == "save_canvas":
+            det_id =        int(request.values.get("det_id"))
+            det_attribute = int(request.values.get("det_attribute"))
+            rect = {
+                    'x': int(request.values.get("x")),
+                    'y': int(request.values.get("y")),
+                    'w': int(request.values.get("w")),
+                    'h': int(request.values.get("h"))
+                }
+            page = int(request.values.get("page"))                
+            image = app.config['SINGLE_SPLIT_WEB'] + "/page_" + str(page-1) + ".jpg"
+            image = cv2.imread(image, 0)
+            thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+            ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
+
+            print("ROI len", str(len(ROI)))
+            text = ""
+            try:
+                text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                print(text)
+            except:
+                print("Error generate text")
+            
+            if text is None or text == "":
+                text = "..."
+            pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
+            result_split = 1
+        
+        if action == "save_text":
+            det_id =        int(request.values.get("det_id"))
+            det_attribute = int(request.values.get("det_attribute"))
+            det_value =     request.values.get("det_value")
+            
+            if text is None or text == "":
+                text = "..."
+            pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
+            result_split = 1
+        
+        if action == "save_attribute":
+            current_date = date.today().strftime("%d/%m/%Y")
+            att_value =  request.values.get("new_att")
+
+            try:
+                response_att, id = put_newPDFattribute(att_value, current_date)
+                if response_att is True:
+                    msg_att = "Atributo registrado con éxito"
+            except:
+                msg_att = "Error en registro del atributo"
+            
+            try:
+                response_pdf = put_newPDFdetail(pdf_id, id)
+                if response_pdf is True:
+                    msg_pdf = "PDF detail registrado con éxito"
+            except:
+                msg_pdf = "Error en registro de PDFdetail"
+            
+            finally:
+                print(msg_att)
+                print(msg_pdf)
+                result_split = 1
+        
+        if action == "remove_attribute":
+            det_id = int(request.values.get("det_id"))
+            
+            try:
+                response_pdf = del_itemPDFdetail(det_id)
+                if response_pdf is True:
+                    msg_pdf = "PDF detail eliminado con éxito"
+            except:
+                msg_pdf = "Error en eliminación de PDFdetail"
+            
+            finally:
+                print(msg_pdf)
+                result_split = 1
+
+        if current_user.is_authenticated and result_split == 1:
+            project = get_projectById(pro_id)
+            pdfs = get_projectPDFById(pro_id)
+            pdf = get_pdfDetailById(pdf_id)
+            print("NEW PDFs")
+            """Verificar pdf_details, encontrados y no encontradps"""
+            list_npages = list(range(1, int(pdf['npages']+1)))
+            list_npages = [str(int) for int in list_npages]
+            pdf['listnpages'] = list_npages
+
+            # get data for pdf_file
+            pdf_path = {
+                    'name':        pdf['name'],
+                    # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['name'],
+                    'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
+                    'num_pages':   int(pdf['npages']),
+                    }
+            pdf['pdf_path'] = pdf_path
+
+            return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
+        
 
 @main.route("/action_thesis_search", methods=["POST"])
 def action_thesis_search():
@@ -815,6 +1106,7 @@ def action_paper_mul():
     if request.method == "POST":
         global file_pdf, document
         resultCPU = False
+        action = None
         result_save = None
         result_file_text = "None"
         result_invalid_text = ""
@@ -828,20 +1120,21 @@ def action_paper_mul():
         if get_viewProcess_CPU() is True :
 
             document = Document() 
-            
             print("NumPDFs Cargados")
             print(len(file_pdfs))
             for filename in file_pdfs :
                 filename = fold(filename)                
+                fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
-                fname = os.listdir(app.config['MULTIPLE_SPLIT'])
+                action = request.values.get("action")
+                print("Action", action)
 
-                # 1. SPLIT PDF
-                # print("\n------------------- START SPLIT PROCESS -------------------")
-                pdf_remove(fname, app.config['MULTIPLE_SPLIT'])       # Call pdf remove function
-                result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT'])      # Call pdf splitter function
+                if action is None:
+                    # 1. Remove and split PDF
+                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])                     # Call pdf remove function
+                    result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])     # Call pdf splitter function
 
                 if result_split == 0:
                     # result_save = False
@@ -856,8 +1149,9 @@ def action_paper_mul():
                 if result_split == 1:
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language = pdf_process(app.config['MULTIPLE_SPLIT'], app.config['MULTIPLE_OUTPUT'])  # Call pdf process function
+                    _, text_pdf, language = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'])  # Call pdf process function
                     # print("Out web: " + app.config['MULTIPLE_FORWEB'])
+                    print("len text_pdf", str(len(text_pdf)))
 
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -868,11 +1162,6 @@ def action_paper_mul():
                         result_file_text = "Antecedente Múltiple"
                         result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
 
-                        # # Save resutls on database
-                        # saveDB = upd_projectById(pro_id, result_valid, 1)
-                        # if saveDB is True:
-                        #     print("Se actualizó con éxito project_info")
-                
                 if result_valid > 0 :
                     result_save = True
                 

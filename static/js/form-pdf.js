@@ -225,18 +225,17 @@ function on_select_attributes() {
 }
 
 // ACTIVATE PAGE FUNCTION
-function activePage(val) {
-  _page = val - 1
-  path_page = 'files/single/split/page_' + _page.toString() + '.jpg'
-  $("canvas").css("background-image", "url("+path_page+")");
-}
+// function activePage(val) {
+//   _page = val - 1
+//   path_page = 'files/multiple/split_img/page_' + _page.toString() + '.jpg'
+//   $("canvas").css("background-image", "url("+path_page+")");
+// }
 
 // SELECT PAGE FUNCTION
-function goPage(val) {
+function goPage(val, pdf_id) {
   console.log(val)
-  path_page = 'files/single/split/page_' + (val-1).toString() + '.jpg'
+  path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
-  // document.getElementById("canvas").css("background-image","url("+path_page+")");
   _page = val
 }
 

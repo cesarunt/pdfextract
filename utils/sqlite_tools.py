@@ -13,6 +13,16 @@ def get_pdf_info(cursor, tablename, file_pdf):
     cursor.execute(query)
     return cursor.fetchone()
 
+def get_pdfById(cursor, tablename, pdf_id):
+    """Get column names of main table, given its name and a cursor (or connection) to the database.
+    """
+    query = f"""
+                SELECT pdf_name, pdf_npages FROM {tablename}
+                WHERE pdf_id = "{pdf_id}" 
+            """
+    cursor.execute(query)
+    return cursor.fetchone()
+
 def get_col_names(cursor, tablename):
     """Get column names of a table, given its name and a cursor
        (or connection) to the database.
@@ -524,7 +534,6 @@ def get_userById(id):
             print("The SQLite connection is closed")
         return user
 
-
 def put_newPDFattribute(name, current_date):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_attributes'
@@ -553,7 +562,7 @@ def put_newPDFattribute(name, current_date):
         
         return result, id
 
-def put_newPDFdetail(det_info, det_attribute):
+def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     result = False
@@ -563,7 +572,7 @@ def put_newPDFdetail(det_info, det_attribute):
         print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
-                    VALUES ("{det_info} ", "{det_attribute}", "", "")                
+                    VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}")                
                 """
         print(query)
         sqlite_select_query = query
@@ -604,3 +613,173 @@ def del_itemPDFdetail(det_id):
             print("The SQLite connection is closed")
         
         return result
+
+# ----------------------------------- SAVE AFTER PROCESS -----------------------------------
+def put_newPDF(pdf=dict):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_info'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+
+        print("Connected to SQLite")
+        query = f"""
+                    INSERT INTO "{table_name}" (pdf_name, pdf_npages, pdf_size, pdf_created) 
+                    VALUES ("{pdf['name']} ", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        id = cursor.lastrowid
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result, id
+
+# def put_newPDFdetail(pdf_id, att_id, det_value, det_npage):
+#     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+#     table_name = 'pdf_details'
+#     result = False
+#     try:
+#         sqliteConnection = sqlite3.connect(data_base)
+#         cursor = sqliteConnection.cursor()
+#         print("Connected to SQLite")
+#         query = f"""
+#                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
+#                     VALUES ("{pdf_id} ", "{att_id}", "{det_value}", "{det_npage}")
+#                 """
+#         print(query)
+#         sqlite_select_query = query
+#         cursor.execute(sqlite_select_query)
+#         sqliteConnection.commit()
+#         result = True
+#     except sqlite3.Error as error:
+#         print("Failed to insert data from sqlite table", error)
+#     finally:
+#         if sqliteConnection:
+#             sqliteConnection.close()
+#             print("The SQLite connection is closed")
+        
+#         return result
+
+def put_newPPdetail(id, pdf, name, current_date):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pro_pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pro_pdf_created)
+                    VALUES ("{id} ", "{pdf}", "{name}", "{current_date}")
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
+def get_projectPDFById(id):
+    # List of TOP 10
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pro_pdf_details'
+    pp_details = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    SELECT b.pro_id, b.pdf_id, b.pdf_name, a.pdf_name, a.pdf_npages, a.pdf_size
+                    FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
+                    WHERE  b.pro_id = "{id}"
+                """
+        print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+
+        for record in records:
+            pp_details.append({
+                'pro_id':     record[0],
+                'pdf_id':     record[1],
+                'pdf_name':   record[2],
+                'pdf_file':   record[3],
+                'pdf_npages': record[4],
+                'pdf_size':   record[5],
+            })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return pp_details
+
+def get_pdfDetailById(pdf_id):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pdf_details'
+    pdf = dict()
+    pdf_foundlist = []      #   Atributos
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        pdf_info = get_pdfById(cursor, 'pdf_info', pdf_id)
+        pdf_name, pdf_npages = pdf_info
+        query = f"""
+                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
+                    FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+                    WHERE  a.pdf_id = "{pdf_id}"
+                    ORDER BY b.det_id ASC
+                """ 
+        print('pdfDetail', query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        
+        for record in records:
+            pdf_foundlist.append({
+                    'det_id':       record[0],
+                    'det_attribute':record[1],
+                    'det_name':     record[2], 
+                    'det_value':    record[3],
+                    'det_npage':    record[4],
+                    'det_x':        record[5],
+                    'det_y':        record[6],
+                    'det_width':    record[7],
+                    'det_height':   record[8]
+                    })
+
+        pdf = {
+            'id':          pdf_id,
+            'name':        pdf_name,
+            'npages':      pdf_npages,
+            'foundlist':   pdf_foundlist,
+        }
+        
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return pdf

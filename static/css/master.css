@@ -250,7 +250,7 @@ body {
 }
 
 .card-title-info {
-    margin: 0.25rem 0 1.5rem;
+    margin: 0.25rem 0 0.75rem;
     font-weight: bold;
     text-align: center;
 }
@@ -271,7 +271,7 @@ body {
 }
 
 .card-text-info {
-    margin: 0.25rem 1rem;
+    margin: 0 1rem;
     font-size: medium;
     text-align: center;
 }
