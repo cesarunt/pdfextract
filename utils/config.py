@@ -124,11 +124,13 @@ __C.FILES.SINGLE_OUTPUT      = GLOBAL_PATH + '/files/single/output'
 __C.FILES.SINGLE_FORWEB      = 'files/single/output'
 
 __C.FILES.MULTIPLE_UPLOAD    = GLOBAL_PATH + '/files/multiple/upload'
-__C.FILES.MULTIPLE_SPLIT     = GLOBAL_PATH + '/files/multiple/split'
+__C.FILES.MULTIPLE_SPLIT_PDF = GLOBAL_PATH + '/files/multiple/split_pdf'
+__C.FILES.MULTIPLE_SPLIT_IMG = GLOBAL_PATH + '/files/multiple/split_img'
 __C.FILES.MULTIPLE_OUTPUT    = GLOBAL_PATH + '/files/multiple/output'
 __C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
-__C.FILES.SINGLE_SPLIT_WEB   = 'files/single/split'
 
+__C.FILES.SINGLE_SPLIT_WEB   = 'files/single/split'
+__C.FILES.MULTIPLE_SPLIT_WEB = 'files/multiple/split_img'
 
 # List
 __C.LIST = edict()

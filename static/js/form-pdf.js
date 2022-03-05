@@ -25,123 +25,10 @@ var updatePDF_btn = document.getElementById("updatePDF_btn");
 var div_notfound = document.getElementById("div_notfound");
 var div_found = document.getElementById("div_found");
 
-
-// var iframe_pdf = document.getElementById("iframe_pdf");
-
-// get references to the canvas and context
-var canvas_pdf = document.getElementById("canvas_pdf");
-var ctx = canvas_pdf.getContext("2d");
-
-// style the context
-ctx.strokeStyle = "blue";
-ctx.lineWidth = 2;
-
-// calculate where the canvas is on the window
-// (used to help calculate mouseX/mouseY)
-var canvasOffset = canvas_pdf.getBoundingClientRect();
-var offsetX = canvasOffset.left;
-var offsetY = canvasOffset.top;
-
-// this flage is true when the user is dragging the mouse
-var isDown = false;
-
-// these vars will hold the starting mouse position
-var startX;
-var startY;
-
-var _det_id = null
-var _det_attribute = null
-var _x = null
-var _y = null
-var _w = null
-var _h = null
-
-// Canvas Functions
-// ---------------------------------------------------------------------------------------------------------------------
-function handleMouseDown(e) {
-  console.log('handleMouseDown')
-  console.log(e)
-  e.preventDefault();
-  e.stopPropagation();
-
-  // save the starting x/y of the rectangle
-  startX = parseInt(e.clientX - offsetX);
-  startY = parseInt(e.clientY - offsetY);
-
-  // set a flag indicating the drag has begun
-  isDown = true;
-}
-
-function handleMouseUp(e) {
-  console.log('handleMouseUp')
-  console.log(e)
-  e.preventDefault();
-  e.stopPropagation();
-
-  console.log(_x, _y, _w, _h)
-  // the drag is over, clear the dragging flag
-  isDown = false;
-}
-
-function handleMouseOut(e) {
-  // console.log('handleMouseOut')
-  // console.log(e)
-  e.preventDefault();
-  e.stopPropagation();
-
-  // console.log(_x, _y, _w, _h)
-  // the drag is over, clear the dragging flag
-  isDown = false; 
-}
-
-function handleMouseMove(e) {
-  // console.log('handleMouseMove')
-  // console.log(e)
-  e.preventDefault();
-  e.stopPropagation();
-
-  // if we're not dragging, just return
-  if (!isDown) {
-      return;
-  }
-
-  // get the current mouse position
-  mouseX = parseInt(e.clientX - offsetX);
-  mouseY = parseInt(e.clientY - offsetY);
-
-  // Put your mousemove stuff here
-
-  // clear the canvas
-  ctx.clearRect(0, 0, canvas_pdf.width, canvas_pdf.height);
-
-  // calculate the rectangle width/height based
-  // on starting vs current mouse position
-  var width = mouseX - startX;
-  var height = mouseY - startY;
-
-  // draw a new rect from the start position 
-  // to the current mouse position
-  ctx.strokeRect(startX, startY, width, height);
-  _x = startX
-  _y = startY
-  _w = width
-  _h = height
-}
-
-document.getElementById('canvas_pdf').addEventListener('mousedown', function(e) {
-handleMouseDown(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mousemove', function(e) {
-handleMouseMove(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mouseup', function(e) {
-handleMouseUp(e);
-});
-document.getElementById('canvas_pdf').addEventListener('mouseout', function(e) {
-handleMouseOut(e);
-});
-
-// ---------------------------------------------------------------------------------------------------------------------
+// var update_att = document.getElementById("btn_update_att")
+// var cancel_att = document.getElementById("btn_close_att");
+var pages = document.getElementById('num_pages')
+var _page = 1
 
 // Function to show alerts
 function showPDFAlert(message, alert) {
@@ -224,6 +111,7 @@ function uploadPDF(url) {
   document.cookie = `filesize=${filesize}`;
   // Append the file to the FormData instance
   data.append("file", file);
+  
   // Append identifier of process IMAGE on media value
 //   data.append("process", process);
 
@@ -336,125 +224,72 @@ function on_select_attributes() {
   }
 }
 
+// ACTIVATE PAGE FUNCTION
+// function activePage(val) {
+//   _page = val - 1
+//   path_page = 'files/multiple/split_img/page_' + _page.toString() + '.jpg'
+//   $("canvas").css("background-image", "url("+path_page+")");
+// }
+
+// SELECT PAGE FUNCTION
+function goPage(val, pdf_id) {
+  console.log(val)
+  path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
+  $("canvas").css("background-image", "url("+path_page+")");
+  _page = val
+}
+
+// SELECT PAGE FUNCTION
+function selectPage(val) {
+  document.getElementById('btn_arrow_left').disabled = false
+  document.getElementById('btn_arrow_right').disabled = false
+  if (val == 1){
+    document.getElementById('btn_arrow_left').disabled = true
+  }
+  if (val == pages.value){
+    document.getElementById('btn_arrow_right').disabled = true
+  }
+  document.getElementById('current_page').innerHTML = (parseInt(val)).toString()
+  goPage(parseInt(val))
+}
+
+// MOVE PAGE FUNCTION
+function movePage(_this, direct) {
+  if (direct == "up"){
+    val = parseInt(_page) + 1
+    document.getElementById('btn_arrow_left').disabled = false
+    document.getElementById('btn_arrow_right').disabled = false
+    if (val == pages.value){
+      _this.disabled = true
+    }
+  }
+  else{
+    val = parseInt(_page) - 1
+    document.getElementById('btn_arrow_left').disabled = false
+    document.getElementById('btn_arrow_right').disabled = false
+    if (val == 1){
+      _this.disabled = true
+    }
+  }
+  document.getElementById('current_page').innerHTML = (val).toString()
+  goPage(val)
+}
 
 // Function to active canvas and hide/show buttons
 function activeCanvas(edit_id) {
-  canvas_pdf.style.opacity = 1;
-  // Hide edit_id
-  // Show save_id
-  let detail_id = edit_id.split("_")
-  var save_name = document.getElementById("save_name");
-  save_name.classList.remove("d-none");
-  var cancel_name = document.getElementById("cancel_name");
-  cancel_name.classList.remove("d-none");
-
-  let detail_edit = detail_id[1].split("-")
-  _det_id = detail_edit[0]
-  _det_attribute = detail_edit[1]
-  // Verify data x, y
-  var det_x =      document.getElementById('det_x-'+detail_edit[2]).value
-  var det_y =      document.getElementById('det_y-'+detail_edit[2]).value
-  var det_width =  document.getElementById('det_width-'+detail_edit[2]).value
-  var det_height = document.getElementById('det_height-'+detail_edit[2]).value
-
-  if (det_x != null && det_y != null) {
-    ctx.strokeRect(det_x, det_y, det_width, det_height);
-  }
+  // 
 }
 
 // Function to inactive canvas and hide/show buttons
 function cancelCanvas(edit_id) {
-  canvas_pdf.style.opacity = 0.5;
-  var save_name = document.getElementById("save_name");
-  save_name.classList.add("d-none");
-  var cancel_name = document.getElementById("cancel_name");
-  cancel_name.classList.add("d-none");
+  update_att.style.opacity = 0.1
+  update_att.disabled = true
+  cancel_att.disabled = true
+  document.getElementById("cancel_att").disabled = true
 
+  let detail_id = edit_id.split("_")
+  let detail_edit = detail_id[1].split("-")
+  _det_id = detail_edit[0]
+  _det_attribute = detail_edit[1]
   ctx.clearRect(0, 0, canvas_pdf.width, canvas_pdf.height);
-}
-
-// Function to save over canvas and hide/show buttons
-function saveCanvas_(save_id) {
-  // Hide save_id
-  // Show edit_id
-  let edit_id = "edit-"+save_id.split("-")[1]
-  var save_btn = document.getElementById(save_id);
-  var edit_btn = document.getElementById(edit_id);
-  save_btn.classList.add("d-none")
-  edit_btn.classList.remove("d-none");
-
-  // Print rectangle values (X,Y, width, heigth)
-  console.log("Coordenadas")
-  console.log(_x, _y, _w, _h)
-
-}
-
-// --------------------------------------------------------------------------------------------------------
-function saveCanvas(url, save_id) {
-
-  // Reject if the file input is empty & throw alert
-  if (!_x && !_y) {
-    alert("Debe seleccionar texto de la imagen", "warning")
-    return;
-  }
-
-  // Create a new FormData instance
-  var data = new FormData();
-  // Create a XMLHTTPRequest instance
-  var request = new XMLHttpRequest();
-
-  // let detail_id = save_id.split("_")
-  // let detail_save = detail_id[1].split("-")
-  // // let detail = save_id.split("-")
-  // _det_id = detail_save[0]
-  // _det_attribute = detail_save[1]
-
-
-  // Set the response type
-  request.responseType = "json";
-
-  var action = "save";
-  data.append("action", action);
-  data.append("det_id", _det_id);
-  data.append("det_attribute", _det_attribute);
-  data.append("x", _x);
-  data.append("y", _y);
-  data.append("w", _w);
-  data.append("h", _h);
-
-  // request load handler (transfer complete)
-  request.addEventListener("load", function (e) {
-    if (request.status == 200) {
-      // Hide save_id
-      // Show edit_id
-      var save_name = document.getElementById(save_id);
-      save_name.classList.add("d-none");
-      var cancel_name = document.getElementById("cancel_name");
-      cancel_name.classList.add("d-none");
-      
-      alert(`Registro Exitoso`, "warning");
-      canvas_pdf.style.opacity = 0.5;
-      location.reload();
-    }
-    else {
-      alert(`Registro Exitoso 500`, "warning");
-      canvas_pdf.style.opacity = 0.5;
-    }
-
-    if (request.status == 300) {
-      alert(`${request.response.message}`, "warning");
-    }
-    
-  });
-
-  // request error handler
-  request.addEventListener("error", function (e) {
-    // resetImageUpload();
-    alert(`Error procesando la imagen`, "warning");
-  });
-
-  // Open and send the request
-  request.open("POST", url);
-  request.send(data);
-
 }

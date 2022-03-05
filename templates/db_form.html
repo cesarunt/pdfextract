@@ -1,0 +1,101 @@
+{% extends "layout_home.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container">
+        <div class="page-title"></div>
+        <div class="row">
+            <div class="col-md-12 page-header" style="text-align: right; font-size: smaller; margin: 5px auto;">                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title-form">Buscador de Proyectos</h5>
+                        <form class="needs-validation" action="{{ url_for('main.search_db') }}" method="POST" accept-charset="utf-8">
+                            <div class="row" style="margin: 1rem 0 0;">
+                                <div class="col-md-3 mb-3">
+                                    <select name="findBy" class="form-select" required>
+                                        <option value="1" selected>Texto Libre</option>
+                                        <option value="2">Título del proyecto</option>
+                                        <option value="3">Variables del proyecto</option>
+                                    </select>
+                                    <div class="valid-feedback">OK!</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" id="keyword" name="keyword" class="form-control" value="{{ keyword }}" required>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese el texto</div>
+                                </div>
+                                <div class="col-md-3 text-center" style="height: auto; margin: 0.5rem 0 0; font-size: smaller;">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="type" value="A" id="radio1" checked>
+                                        <label class="form-check-label" for="radio1">Antecedentes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="type" value="M" id="radio2">
+                                        <label class="form-check-label" for="radio2">Marco Teórico</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12 d-none">
+                                <div class="card">
+                                    <div class="card-body" id="keywords" style="text-align: center;">
+                                        <input id="keyword_1" name="keyword_1" type="hidden" value="">
+                                        <input id="keyword_2" name="keyword_2" type="hidden" value="">
+                                        <input id="keyword_3" name="keyword_3" type="hidden" value="">
+                                        <input id="n_keywords" name="n_keywords" type="hidden" value="{{ n_keywords }}">
+                                        <p class="card-title-form" style="margin-bottom: 0.75rem;">Por variable</p>
+                                        {% for keyword in keywords %}
+                                        <button id="key_{{keyword.key_id}}" type="button" value="{{keyword.key_name}}" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">{{keyword.key_name}} </button>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 0.5rem;">
+                                <button type="submit" id="save_upload" class="btn btn-primary" style="font-size: medium;" onclick="validateFormUpload()"> &nbsp; Buscar &nbsp;
+                                </button>
+                            </div>
+                        </form>
+                        {% if keyword %}
+                            {% if n_projects > 0 %}
+                            <div class="card-body" style="text-align: left;">
+                                {% for project in projects %}
+                                <!-- <div class="row" style="margin: 1rem 0 0;">
+                                    <div class="col-md-1 mb-3">
+                                        <p>2022</p>
+                                    </div>
+                                    <div class="col-md-11 mb-3">
+                                        <a href="{{ url_for('main.upload_home', id=project.pro_id) }}">
+                                            <button type="button" class="btn btn-square btn-{{ project.pro_color }} mb-2" style="width: 180px;">{{project.pro_title}}<br>{{project.pro_created}} </button><br>
+                                        </a>
+                                    </div>
+                                </div> -->
+                                <a href="{{ url_for('main.upload_home', id=project.pro_id) }}">
+                                    <button type="button" class="btn btn-square btn-{{ project.pro_color }} mb-2" style="width: 99%;">
+                                        <div class="row">
+                                            <div class="col-md-10" style="text-align: left;">{{project.pro_title}}</div>
+                                            <div class="col-md-2" style="font-size: smaller;" >Por: <b>{{project.pro_user_name}}</b> - {{project.pro_created}}</div>
+                                        </div>
+                                    </button>
+                                    <br>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="card-body" style="text-align: center; margin: 3rem 0;">
+                                <p>No se encontraron resultados</p>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- <img class="card-img-land" src="../static/img/home-upload.jpg"> -->
+        </div>
+    </div>
+</div>
+{% endblock %}

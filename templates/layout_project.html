@@ -33,45 +33,42 @@
                         <option value="marco_teorico">MARCO TEORICO</option>
                     </select>
                 </li>
-                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
+                <li style="margin:10px 0 0; border-top: 1px solid #e6ecf5;"></li>
                 
                 {% if current_user.is_authenticated %}
-                <li>
-                    <a href="#"><i class="fas fa-cog"></i> ARTÍCULOS</a>
-                </li>
-                <!-- <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.paper_one') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf"></i>Único PDF</a>
-                </li> -->
-                <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.paper_mul', id=pro_id) }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> Múltiples PDFs</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fas fa-cog"></i> TESIS</a>
-                </li>
-                <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_one') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf"></i>Único PDF</a>
-                </li>
-                <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_mul', id=pro_id) }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> Múltiples PDFs</a>
-                </li>
-                <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_search') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-search-plus"></i> Búsqueda PDFs</a>
-                </li>
+                    <li>
+                        <a style="padding-left: 1rem;" href="#"><b>PDFs</b></a>
+                    </li>
+                    {% for pdf in pdfs %}
+                    <li style="padding:0 0 0 5px;">
+                        <span>
+                        <a style="font-size: 0.75rem; padding: 0.25rem 0.1rem 0.25rem 0.5rem; display: inline-flex; width: 88%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                            <i class="fas fa-copy" style="margin-right: 0;"></i>
+                            {{ pdf.pdf_name }}
+                        </a>
+                        </span>
+                        <button type="button" id="close_{{pdf.det_id}}" style="padding: 0;" class="btn" onclick="closeAttribute(this.id)">
+                            <i class="fas fa-window-close" style="color:firebrick;"></i>
+                        </button>
+                            <!-- <i class="fa-fw select-all fas"></i> -->
+                        
+                    </li>
+                    {% endfor %}
                 {% endif %}
 
                 {% if not current_user.is_authenticated %}
-                <li style="text-align: center; font-size: smaller; padding: 5px 0;">
-                    <p style="color: #444; margin: 0 auto;">Procesa PDFs, ingresando aquí</p>
-                </li>
-                <p style="color: #1c80c2; text-align: center; font-size: medium; padding: 5px 10px;">
-                    <a href="{{ url_for('auth.login') }}" style="font-weight: 600; padding: 5px 0;">Iniciar Sesión</a>
-                </p>
+                    <li style="text-align: center; font-size: smaller; padding: 5px 0;">
+                        <p style="color: #444; margin: 0 auto;">Procesa PDFs, ingresando aquí</p>
+                    </li>
+                    <p style="color: #1c80c2; text-align: center; font-size: medium; padding: 5px 10px;">
+                        <a href="{{ url_for('auth.login') }}" style="font-weight: 600; padding: 5px 0;">Iniciar Sesión</a>
+                    </p>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
-                <p style="color: #6d1e1c; text-align: center; font-size: medium; padding: 5px 10px;">
-                    <a href="{{ url_for('auth.logout') }}" style="font-weight: 600; padding: 5px 0;">Cerrar Sesión</a>
-                </p>
+                    <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
+                    <p style="color: #6d1e1c; text-align: center; font-size: medium; padding: 5px 10px;">
+                        <a href="{{ url_for('auth.logout') }}" style="font-weight: 600; padding: 5px 0;">Cerrar Sesión</a>
+                    </p>
                 {% endif %}
             </ul>
         </nav>

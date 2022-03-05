@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_project.html" %}
 
 {% block content %}
 <!-- BLOCK CONTENT -->
@@ -11,68 +11,19 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <h5 class="card-header">Tesis: 
-                        {% if _pdf_file %}
-                        <span style="font-size:small;">{{ _pdf_file.name }}</span>
+                    <h6 class="card-header"><b>Proyecto</b>: 
+                        {% if project %}
+                        <span style="font-size:medium;">{{ project.pro_title }}</span>
                         {% endif %}
-                    </h5>
+                    </h6>
                     <div class="card-body">
-                        <!-- <form class=""> -->
-                            {% if not _pdf %}
-                            <div class="row" style="padding: 0 1rem;">
-                                <div class="col-sm-12">
-                                    <div class="mb-3 text-center">
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar único PDF</label><br>
-                                        <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" oninput="input_pdf_file();">
-                                          <!-- <button class="btn btn-primary" type="button" id="button-addon2">Seleccionar</button> -->
-                                    </div>
-                                </div>
-                                <div class="line"></div><br>
-
-                                <div class="col-sm-12 text-center">
-                                    <div class="mb-3">
-                                        <!-- Buttons at start -->
-                                        <button onclick="uploadPDF('{{ request.url }}');" id="uploadPDF_btn" class="btn btn-primary" type="submit">
-                                            Cargar PDF
-                                        </button>
-                                        <!-- Buttons on start uploading -->
-                                        <button class="btn btn-primary d-none" id="loadingPDF_btn" type="button" disabled>
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Cargando...
-                                        </button>
-                                        <!-- Buttons on finish uploading -->
-                                        <form method="POST" action="action_thesis_one" enctype="multipart/form-data">
-                                            <button class="btn btn-secondary d-none" type="button" id="cancelPDF_btn">Cancelar</button>
-                                            <button class="btn btn-success d-none" id="processPDF_btn" onclick="clicPDFProcess()" type="submit">
-                                                <i class="fas fa-play"></i> &nbsp;Procesar
-                                            </button>
-                                        </form>
-                                        <!-- <button type="submit" class="btn btn-secondary d-none"><i class="fas fa-times"></i> Cancelar</button>
-                                        <button type="submit" class="btn btn-primary"><i class="fas fa-play"></i> Procesar</button> -->
-                                    </div>
-                                    <div id="processPDF_wrapper" class="text-center d-none">
-                                        <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
-                                        <p style="margin:0 auto;">
-                                            <small style="color:gray;" lass="text-muted">procesando pdf</small>
-                                        </p>
-                                    </div>
-                                    <div id="progressPDF_wrapper" class="d-none">
-                                        <label id="progressPDF_status"></label>
-                                        <div class="progress mb-3">
-                                            <div id="progressPDF" class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                    <div id="alertPDF_wrapper">
-                                    </div>
-                                </div>
-                            </div>
-                            {% else %}
+                        {% if pdf %}   
                             <div id="alert_wrapper"></div>
                             <!-- <div id="alert_page" class="alert alert-success" role="alert" style="padding: 5px 15px;">Se guardaron correctamente los cambios</div> -->
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-3" style="padding: 0;">
                                     <!-- <div class="mb-6"> -->
                                     <div class="pagination" style="text-align: left;">
-                                        
                                         <li style="margin: 4px 0 5px; padding: 4px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <div id="add_attribute">
                                                 <button type="submit" id="btn_add_att" class="btn btn-sm btn-primary" onclick="addAttribute()">Agregar Atributo</button>
@@ -85,26 +36,24 @@
                                                 <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">Guardar</button>
                                             </div>
                                         </li>
-
+                                        <!-- ...... -->
                                         <div id="div_found" class="text-center">
                                             <!-- 
                                                 ATRIBUTOS ENCONTRADOS
                                              -->
-                                            {% for detail in _pdf.foundlist %}
+                                            {% for detail in pdf.foundlist %}
                                             <li style="padding:3px 0 0 0;">
                                                 <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
                                                 <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
-                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding: 0.35rem 2.75re,  ;" required onchange="selectPage(this.value)" disabled>
-                                                        {% for x in _pdf.listnpages %}
+                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-right: 1.80rem;" required onchange="selectPage(this.value)" disabled>
+                                                        {% for x in pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
                                                         <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
                                                     </select>
                                                 </label>
-                                                <!-- <button type="button" id="edit_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" disabled onclick="activeAttribute(this.id)">
-                                                    <i class="fas fa-edit"></i>
-                                                </button> -->
-                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id)" style="opacity: 0.5;">
+
+                                                <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{ pdf.id }}')" style="opacity: 0.5;">
                                                     <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                     <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
                                                     <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
@@ -143,24 +92,21 @@
                                         <span>Page</span>&nbsp;
                                         <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span>
                                         <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.5rem;">
-                                            <input type="hidden" id="num_pages" value="{{ _pdf_file.num_pages }}" />
+                                            <!-- ...... -->
+                                            <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        
                                         <div id="content" class="text-center" style="width: 100%;">
-                                            <!-- <canvas id="canvas_pdf"
-                                                style="border:1px solid black; position: relative; background-size: 100% 100%; background-image: url('{{ _pdf_file.path_page }}'); width: 700px; height: 1000px;">
-                                            </canvas> -->
+                                            
                                             <div id = "canvasWrapper">
-                                                <canvas id="canvas" style="background-image: url('{{ _pdf_file.path_page }}');" width=700 height=1000></canvas>
+                                                <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}');" width=700 height=1000></canvas>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% endif %}
-                        <!-- </form> -->
+                            {% endif %}   
                     </div>
                 </div>
             </div>

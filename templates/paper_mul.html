@@ -6,12 +6,9 @@
     <div class="container">
         <div class="page-title">    </div>
         <div class="row">
-            <div class="col-md-12 page-header"></div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <h5 class="card-header">Extraer Múltiples Artículos</h5>
+                    <h6 class="card-header">Extraer Múltiples Artículos</h6>
                     <div class="card-body">
                         <!-- <form class=""> -->
                             {% if not result_file_text %}
@@ -22,12 +19,11 @@
                                         <div class="mb-3 text-center">
                                             <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
                                             <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
+                                            <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
                                             <div class="line"></div>
-                                            
                                             <p style="margin: 10px auto;">
                                                 <input type="submit" class="btn btn-primary" value="Cargar PDFs">
                                             </p>
-
                                         </div>
                                     </form>
                                     {% else %}
@@ -35,11 +31,12 @@
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
                                         <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
                                     </div> -->
-                                    <form method="POST" action="action_paper_mul" enctype="multipart/form-data">
+                                    <form method="POST" action="/action_paper_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
                                             <img class="card-img-logo" src="{{ url_for('static', filename='img/pdf-upload.png') }}">
                                             <!-- ../static/img/doc-word.png -->
                                             <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">PDFs cargados con éxito.</label>
+                                            <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
                                         </div>
                                         <div class="mb-3 text-center" style="margin: 1rem 0;">
                                             <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button>
@@ -94,9 +91,9 @@
                                         <form method="POST" action="save_paper_mul" enctype="multipart/form-data">
                                             <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
                                             <p style="text-align: center; margin: 15px 0 0 0;">
-                                                <a href="{{ url_for('close_paper_mul', source='paper_mul') }}" class="btn btn-secondary">Cerrar</a>
+                                                <a href="{{ url_for('main.close_paper_mul', source='upload/home/'+pro_id) }}" class="btn btn-secondary">Cerrar</a>
                                                 {% if result_save %}
-                                                <button class="btn btn-primary" id="saveImage_btn" type="submit">Guardar</button>
+                                                <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: medium;">Guardar</button>
                                                 {% endif %}
                                             </p>
                                         </form>
@@ -106,7 +103,6 @@
                             {% endif %}
                         <!-- </form> -->
                     </div>
-
                 </div>
             </div>
         </div>
