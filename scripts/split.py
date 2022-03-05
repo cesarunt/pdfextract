@@ -48,18 +48,9 @@ def img_splitter(path, files_split, pdf_info_id):
     result = 0
     images = convert_from_path(path, size=(700,1000))
     img_npages = len(images)
-    # Create directory for each pdf
-    # dir_pdf = files_split+"/"+str(pdf_info_id)
-    # try:
-    #     os.mkdir(dir_pdf)
-    #     print("mkdir-OK")
-    # except OSError:
-    #     print("La creación del directorio %s falló" % dir_pdf)
-    # else:
-    #     print("Se ha creado el directorio: %s " % dir_pdf)
 
-    for i in range(img_npages):
     # Save pages as images in the pdf
+    for i in range(img_npages):
         images[i].save(files_split + '/' + str(pdf_info_id) + 'page_'+ str(i) +'.jpg', 'JPEG')
         result = 1
 

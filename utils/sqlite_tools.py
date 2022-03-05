@@ -641,7 +641,7 @@ def put_newPDF(pdf=dict):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         
-        return result, id
+        return id
 
 # def put_newPDFdetail(pdf_id, att_id, det_value, det_npage):
 #     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'

@@ -45,7 +45,7 @@
                                             <li style="padding:3px 0 0 0;">
                                                 <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
                                                 <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
-                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding: 0.35rem 2.75re,  ;" required onchange="selectPage(this.value)" disabled>
+                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-right: 1.80rem;" required onchange="selectPage(this.value)" disabled>
                                                         {% for x in pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}

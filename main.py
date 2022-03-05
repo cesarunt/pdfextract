@@ -608,7 +608,7 @@ def action_thesis_one():
             # print("\n------------------- START SPLIT PROCESS -------------------")
             if action is None:
                 pdf_remove(fname, app.config['SINGLE_SPLIT'])                   # Call pdf remove function
-                result_split, npages = img_splitter(path, app.config['SINGLE_SPLIT'])   # Call pdf splitter function
+                result_split, npages = img_splitter(path, app.config['SINGLE_SPLIT'], 1)   # Call pdf splitter function
             
             if result_split == 0:
                 result_save = 0
@@ -791,8 +791,7 @@ def action_thesis_mul():
                     print("filename", filename)
                     print("fname", fname)
                     # 1. Remove and split PDF
-                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
-                    # pdf_remove(fname, app.config['MULTIPLE_SPLIT_IMG']
+                    # pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
                 
                 print("result_split", result_split)
@@ -814,8 +813,10 @@ def action_thesis_mul():
                         'created' :  current_date
                     }
                     try:
-                        _, pdf_info_id = put_newPDF(pdf)
+                        pdf_info_id = put_newPDF(pdf)
                         img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                        print(img_split)
+                        print("Number IMG_pages", img_npages)
                     except:
                         print("Error en registro del PDF info")
                     # 2. Process PDF
