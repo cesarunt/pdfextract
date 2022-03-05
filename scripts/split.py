@@ -44,7 +44,6 @@ def pdf_splitter(path, files_split):
 
 
 def img_splitter(path, files_split, pdf_info_id):
-    # fname = os.path.splitext(os.path.basename(path))[0]
     result = 0
     images = convert_from_path(path, size=(700,1000))
     img_npages = len(images)

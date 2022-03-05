@@ -814,11 +814,13 @@ def action_thesis_mul():
                     }
                     try:
                         pdf_info_id = put_newPDF(pdf)
+                    except:
+                        print("Error en registro del PDF info")
+
+                    if pdf_info_id:
                         img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
                         print(img_split)
                         print("Number IMG_pages", img_npages)
-                    except:
-                        print("Error en registro del PDF info")
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id)  # Call pdf process function
