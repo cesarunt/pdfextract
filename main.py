@@ -791,7 +791,7 @@ def action_thesis_mul():
                     print("filename", filename)
                     print("fname", fname)
                     # 1. Remove and split PDF
-                    # pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
+                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
                 
                 print("result_split", result_split)
@@ -929,7 +929,7 @@ def project_pdf(pdf_id):
         pdf_path = {
                 'name':        pdf['name'],
                 # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['name'],
-                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
+                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + 'page_0.jpg',
                 'num_pages':   int(pdf['npages']),
                 }
         pdf['pdf_path'] = pdf_path
@@ -959,7 +959,7 @@ def pdf_post(pdf_id):
                     'h': int(request.values.get("h"))
                 }
             page = int(request.values.get("page"))                
-            image = app.config['SINGLE_SPLIT_WEB'] + "/page_" + str(page-1) + ".jpg"
+            image = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(page-1) + ".jpg"
             image = cv2.imread(image, 0)
             thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
             ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
