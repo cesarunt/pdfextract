@@ -2,6 +2,8 @@
 var update_att = document.getElementById("btn_save_canvas");
 // var text_area = document.getElementById("text_area");
 
+var iframe_pdf = document.getElementById("iframe_pdf");
+
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -292,6 +294,7 @@ function saveText(url, det_name) {
   data.append("det_id", _det_id);
   data.append("det_attribute", _det_attribute);
   data.append("det_value", text_area.value);
+  data.append("page", _page);
 
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {

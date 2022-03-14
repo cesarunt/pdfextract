@@ -10,6 +10,12 @@ def pdf_remove (file, files_split):
     for i in range(length): 
         os.remove(files_split+"/{}".format(file[i])) #Remove existed pdf documents in folder.
 
+def pdf_getNpages(path):
+    pdf = PdfFileReader(path)
+    pdf_npages = pdf.getNumPages()
+
+    return pdf_npages
+
 def pdf_splitter(path, files_split):
     # fname = os.path.splitext(os.path.basename(path))[0]
     # 0: No results

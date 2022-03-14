@@ -3,7 +3,7 @@ from flask import Blueprint, Response, render_template, request, redirect, make_
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
-from scripts.split import pdf_remove, pdf_splitter, img_splitter
+from scripts.split import pdf_remove, pdf_splitter, img_splitter, pdf_getNpages
 from scripts.process import pdf_process
 from datetime import datetime
 from datetime import date
@@ -38,6 +38,7 @@ app.config['MULTIPLE_OUTPUT']    = cfg.FILES.MULTIPLE_OUTPUT
 app.config['MULTIPLE_FORWEB']    = cfg.FILES.MULTIPLE_FORWEB
 app.config['SINGLE_SPLIT_WEB']   = cfg.FILES.SINGLE_SPLIT_WEB
 app.config['MULTIPLE_SPLIT_WEB'] = cfg.FILES.MULTIPLE_SPLIT_WEB
+app.config['MULTIPLE_UPLOAD_WEB'] = cfg.FILES.MULTIPLE_UPLOAD_WEB
 
 # Allowed extension you can set your own
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
@@ -659,17 +660,46 @@ def thesis_mul_load():
             return redirect(request.url)
 
         files = request.files.getlist('files[]')
+        current_date = date.today().strftime("%d/%m/%Y")
+        pdfs = []
 
         for file in files:
             file_pdfs.append(file.filename)
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['MULTIPLE_UPLOAD'], filename))
+                path = os.path.join(app.config['MULTIPLE_UPLOAD'], filename)
+                file.save(path)
                 upload = True
+
+                # Put data on pdf_info
+                pdf_size = os.path.getsize(path)
+                pdf_npages = pdf_getNpages(path)
+                
+                pdf = {
+                    'name' :     filename,
+                    'npages' :   pdf_npages,
+                    'size' :     pdf_size,
+                    'created' :  current_date
+                }
+                try:
+                    pdf_info_id = put_newPDF(pdf)
+                except:
+                    print("Error en registro del PDF info")
+
+                if pdf_info_id:
+                    img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                    pdf['pdf_id'] = pdf_info_id
+                    pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
+                    # print(img_split)
+                    # print("Number IMG_pages", img_npages)
+                    pdfs.append(pdf)
+        
+        print("PDFs: ", pdfs)
+
         
         if (upload == True):
             print('File(s) successfully uploaded')
-            return render_template('thesis_mul.html', resultLoad=upload, pro_id=pro_id)
+            return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, pro_id=pro_id)
 
 #
 # FUNCTION TO GET DATA 
@@ -803,24 +833,29 @@ def action_thesis_mul():
                     result_invalid_process.append(filename + " ...supera el Nro páginas")
                 
                 if result_split == 1:
-                    # Put data on pdf_info
-                    pdf_size = os.path.getsize(path)
-                    current_date = date.today().strftime("%d/%m/%Y")
-                    pdf = {
-                        'name' :     filename,
-                        'npages' :   pdf_npages,
-                        'size' :     pdf_size,
-                        'created' :  current_date
-                    }
-                    try:
-                        pdf_info_id = put_newPDF(pdf)
-                    except:
-                        print("Error en registro del PDF info")
+                    
+                    # -----------
+                    # # Put data on pdf_info
+                    # pdf_size = os.path.getsize(path)
+                    # current_date = date.today().strftime("%d/%m/%Y")
+                    # pdf = {
+                    #     'name' :     filename,
+                    #     'npages' :   pdf_npages,
+                    #     'size' :     pdf_size,
+                    #     'created' :  current_date
+                    # }
+                    # try:
+                    #     pdf_info_id = put_newPDF(pdf)
+                    # except:
+                    #     print("Error en registro del PDF info")
 
-                    if pdf_info_id:
-                        img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
-                        print(img_split)
-                        print("Number IMG_pages", img_npages)
+                    # if pdf_info_id:
+                    #     img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                    #     print(img_split)
+                    #     print("Number IMG_pages", img_npages)
+
+                    pdf_info_id = 1
+                    #     ---------
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id)  # Call pdf process function
@@ -928,7 +963,7 @@ def project_pdf(pdf_id):
         # get data for pdf_file
         pdf_path = {
                 'name':        pdf['name'],
-                # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['name'],
+                'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
                 'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + 'page_0.jpg',
                 'num_pages':   int(pdf['npages']),
                 }
@@ -939,6 +974,9 @@ def project_pdf(pdf_id):
     else:
         return render_template('project_pdfs.html')
 
+@app.route('/files/multiple/upload/<filename>')
+def thesis_upload_img(filename):
+    return send_from_directory(app.config['MULTIPLE_UPLOAD'], filename)
 
 @main.route("/<pdf_id>", methods=["POST"])
 def pdf_post(pdf_id):
@@ -982,8 +1020,6 @@ def pdf_post(pdf_id):
             det_attribute = int(request.values.get("det_attribute"))
             det_value =     request.values.get("det_value")
             
-            if text is None or text == "":
-                text = "..."
             pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
             result_split = 1
         
@@ -1038,6 +1074,7 @@ def pdf_post(pdf_id):
             pdf_path = {
                     'name':        pdf['name'],
                     # 'path_upload': "http://127.0.0.1:5000/files/multiple/upload/" + pdf['name'],
+                    'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
                     'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
                     'num_pages':   int(pdf['npages']),
                     }

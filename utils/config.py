@@ -131,6 +131,7 @@ __C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
 
 __C.FILES.SINGLE_SPLIT_WEB   = 'files/single/split'
 __C.FILES.MULTIPLE_SPLIT_WEB = 'files/multiple/split_img'
+__C.FILES.MULTIPLE_UPLOAD_WEB = 'files/multiple/upload'
 
 # List
 __C.LIST = edict()

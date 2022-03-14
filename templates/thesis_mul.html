@@ -6,9 +6,6 @@
     <div class="container">
         <div class="page-title">    </div>
         <div class="row">
-            <div class="col-md-12 page-header"></div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <h5 class="card-header">Extraer Múltiples Tesis</h5>
@@ -30,24 +27,81 @@
                                         </div>
                                     </form>
                                     {% else %}
-                                    <!-- <div class="mb-3 text-center">
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
-                                        <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
-                                    </div> -->
-                                    <form method="POST" action="action_thesis_mul" enctype="multipart/form-data">
-                                        <div class="mb-3 text-center">
-                                            <img class="card-img-logo" src="{{ url_for('static', filename='img/pdf-upload.png') }}">
-                                            <!-- ../static/img/doc-word.png -->
-                                            <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">PDFs cargados con éxito.</label>
-                                            <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
-                                        </div>
-                                        <div class="mb-3 text-center" style="margin: 1rem 0;">
-                                            <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button>
-                                            <button class="btn btn-success" id="processPDF_btn" onclick="clicPDFProcessMul()" type="submit">
-                                                <i class="fas fa-play"></i> &nbsp;Procesar
-                                            </button>
-                                        </div>
-                                    </form>
+                                        <!-- <div class="mb-3 text-center">
+                                            <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar PDFs</label><br>
+                                            <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
+                                        </div> -->
+                                        <form method="POST" action="action_thesis_mul" enctype="multipart/form-data">
+                                           
+                                            <!-- PROCESAMIENTO CON FILTRO X ATRIBUTOS -->
+                                            <div class="card">
+                                                <div class="card-body" style="padding-bottom: 0.2rem;">
+                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                    {% for pdf in pdfs %}
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span></a>
+                                                        </li>
+                                                        
+                                                    {% endfor %}
+                                                    </ul>
+
+                                                    <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
+                                                        {% for pdf in pdfs %}
+                                                        <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
+                                                            <div class="col-sm-12">
+                                                                {% for i in range(pdf.npages) %}
+                                                                <div class="form-check form-check-inline" style="padding-left: 0; margin-right: 2px; font-size:small; color: #666;">
+                                                                    <div style="border: 1px solid #CCC; margin-top: 10px;">
+                                                                        <span class="fa-fw select-all fas" style="width: 100px">
+                                                                            <img class="card-img-land" style="width: 110px;" src='{{pdf.pdf_path}}{{i}}.jpg'>
+                                                                        </span>
+                                                                    </div>
+                                                                    <input class="form-check-input" style="margin-left: 0;" type="checkbox" id="page_{{pdf.pdf_id}}_{{i}}" value="page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                    <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
+                                                                        <span id="myPopup" class="fa-fw select-all fas"></span>
+                                                                    </button> -->
+                                                                    <!-- Button to launch a modal -->
+                                                                    <button type="button" class="btn btn-secondary" style="padding: 0 2px;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}">
+                                                                        <span id="popup" class="fa-fw select-all fas"></span>
+                                                                    </button>
+
+                                                                    <!-- Modal -->
+                                                                    <div class="modal fade" id="exampleModal_{{pdf.pdf_id}}_{{i}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document" style="max-width: 700px;">
+                                                                            <div class="modal-content" style="background-color: #CCC; width: 735px;">
+                                                                                <!-- Add image inside the body of modal -->
+                                                                                <div class="modal-body">
+                                                                                    <img id="image" src="{{pdf.pdf_path}}{{i}}.jpg" alt="Click on button" />
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3 text-center">
+                                                <!-- <img class="card-img-logo" style="width: 15%;" src="{{ url_for('static', filename='img/pdf-upload.png') }}"> -->
+                                                <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">PDFs cargados con éxito.</label>
+                                                <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
+                                            </div>
+                                            <div class="mb-3 text-center" style="margin: 1rem 0;">
+                                                <!-- <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" /> -->
+                                                <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button>
+                                                <button class="btn btn-success" id="processPDF_btn" onclick="clicPDFProcessMul()" type="submit">
+                                                    <i class="fas fa-play"></i> &nbsp;Procesar
+                                                </button>
+                                            </div>
+                                        </form>
                                     {% endif %}
                                 </div>
 

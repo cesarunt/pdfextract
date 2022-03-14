@@ -30,6 +30,14 @@ var div_found = document.getElementById("div_found");
 var pages = document.getElementById('num_pages')
 var _page = 1
 
+// Function to show Popup
+// function clicPDFPreview() {
+//   console.log("Popup")
+//   var popup = document.getElementById("myPopup");
+//   console.log(popup)
+//   popup.classList.toggle("show");
+// }
+
 // Function to show alerts
 function showPDFAlert(message, alert) {
   alertPDF_wrapper.innerHTML = `
@@ -234,6 +242,7 @@ function on_select_attributes() {
 // SELECT PAGE FUNCTION
 function goPage(val, pdf_id) {
   console.log(val)
+  console.log(pdf_id)
   path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
   _page = val
@@ -250,11 +259,11 @@ function selectPage(val) {
     document.getElementById('btn_arrow_right').disabled = true
   }
   document.getElementById('current_page').innerHTML = (parseInt(val)).toString()
-  goPage(parseInt(val))
+  goPage(parseInt(val), pdf_id)
 }
 
 // MOVE PAGE FUNCTION
-function movePage(_this, direct) {
+function movePage(_this, pdf_id, direct) {
   if (direct == "up"){
     val = parseInt(_page) + 1
     document.getElementById('btn_arrow_left').disabled = false
@@ -271,8 +280,9 @@ function movePage(_this, direct) {
       _this.disabled = true
     }
   }
+  // console.log("movePage")
   document.getElementById('current_page').innerHTML = (val).toString()
-  goPage(val)
+  goPage(val, pdf_id)
 }
 
 // Function to active canvas and hide/show buttons

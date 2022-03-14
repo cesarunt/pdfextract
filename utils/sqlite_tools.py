@@ -95,7 +95,7 @@ def get_listThesisByWord(keyword):
                     FROM  ((pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_key_details c ON a.pdf_id = c.pdf_id) INNER JOIN key_info d ON c.key_id = d.key_id
                     WHERE d.key_name LIKE "%{keyword}%" AND b.det_attribute = 2
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -123,7 +123,7 @@ def get_listThesisByWord(keyword):
         return pdfs
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
-def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict):
+def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict()):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     # table_colnames = None
@@ -133,7 +133,7 @@ def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    UPDATE pdf_details SET det_value="{text}", det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
+                    UPDATE pdf_details SET det_value={text}, det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
         # print(query)
@@ -179,7 +179,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
         return result
 
 # ----------------------------------- FORM UPLOAD -----------------------------------
-def put_newProject(project=dict):
+def put_newProject(project=dict()):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'project_info'
     result = False
@@ -193,7 +193,7 @@ def put_newProject(project=dict):
                     INSERT INTO "{table_name}" (pro_title, pro_uni, pro_career, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
                     VALUES ("{project['title']} ", "{project['university']}", "{project['career']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -220,7 +220,7 @@ def put_newPKdetail(id, key, current_date):
                     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
                     VALUES ("{id} ", "{key}", "{current_date}")                
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -246,7 +246,7 @@ def put_newKeyword(key_name, current_date):
                     INSERT INTO "{table_name}" (key_name, key_active, key_created)
                     VALUES ("{key_name}", "1", "{current_date}")                
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -274,7 +274,7 @@ def get_listUniversities():
                     FROM "{table_name}"
                     WHERE  uni_active = 1
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -342,7 +342,7 @@ def get_listProjects():
                     ORDER BY a.pro_id DESC
                     LIMIT 5
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -378,7 +378,7 @@ def get_projectById(id):
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
@@ -474,7 +474,7 @@ def get_squareProjects_ByWord(keyword):
                     WHERE a.pro_title LIKE "%{keyword}%" OR c.key_name LIKE "%{keyword}%"
                     ORDER BY a.pro_id DESC
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -547,7 +547,7 @@ def put_newPDFattribute(name, current_date):
                     INSERT INTO "{table_name}" (att_name, att_fecha) 
                     VALUES ("{name} ", "{current_date}")
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -574,7 +574,7 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
                     VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}")                
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -600,7 +600,7 @@ def del_itemPDFdetail(det_id):
                     DELETE FROM "{table_name}"
                     WHERE det_id = "{det_id}"            
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -615,7 +615,7 @@ def del_itemPDFdetail(det_id):
         return result
 
 # ----------------------------------- SAVE AFTER PROCESS -----------------------------------
-def put_newPDF(pdf=dict):
+def put_newPDF(pdf=dict()):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_info'
     result = False
