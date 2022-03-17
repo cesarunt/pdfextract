@@ -643,13 +643,17 @@ def action_thesis_one():
     print(json.dumps(pdf))
     return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
 
-
+# 
+# FUNCTION TO UPLOAD PDF 
+# 
 @main.route('/thesis_mul', methods=['POST'])
 def thesis_mul_load():
     global file_pdfs
+    global pdf_ids
+    # aqui hay que crear un nuevo ARRAY para almacenar los pdf_ids (pdf_info_id)
     upload = False
     file_pdfs = []
-    result_split = []
+    pdf_ids = []
 
     if request.method == "POST":
         pro_id = request.form.get('pro_id')
@@ -687,22 +691,19 @@ def thesis_mul_load():
                     print("Error en registro del PDF info")
 
                 if pdf_info_id:
+                    pdf_ids.append(pdf_info_id)
                     img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
                     pdf['pdf_id'] = pdf_info_id
                     pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
                     # print(img_split)
                     # print("Number IMG_pages", img_npages)
                     pdfs.append(pdf)
-        
         print("PDFs: ", pdfs)
 
-        
         if (upload == True):
             print('File(s) successfully uploaded')
             return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, pro_id=pro_id)
 
-#
-# FUNCTION TO GET DATA 
 
 # 
 # FUNCTION TO PROCESS PDF 
@@ -710,6 +711,7 @@ def thesis_mul_load():
 @main.route("/action_thesis_mul", methods=["POST"])
 def action_thesis_mul():
     global file_pdfs
+    global pdf_ids
     text_pdf = []
 
     if request.method == "POST":
@@ -720,6 +722,7 @@ def action_thesis_mul():
         result_file_text = "None"
         result_invalid_text = ""
         result_file_down = "None"
+        result_split = 0
         result_valid = 0
         result_invalid = 0
         result_invalid_process = []
@@ -731,6 +734,8 @@ def action_thesis_mul():
             document = Document() 
             print("NumPDFs Cargados")
             print(len(file_pdfs))
+            print(file_pdfs)
+            i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
                 fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
@@ -739,6 +744,7 @@ def action_thesis_mul():
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 action = request.values.get("action")
                 print("Action", action)
+                print("pdf_ids:", pdf_ids)
 
                 if action == "save_canvas":
                     det_id =        int(request.values.get("det_id"))
@@ -819,9 +825,10 @@ def action_thesis_mul():
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 if action is None:
                     print("filename", filename)
-                    print("fname", fname)
+                    print("Remove PDF")
                     # 1. Remove and split PDF
                     pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
+                    print("Splitter PDF")
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
                 
                 print("result_split", result_split)
@@ -833,11 +840,10 @@ def action_thesis_mul():
                     result_invalid_process.append(filename + " ...supera el Nro páginas")
                 
                 if result_split == 1:
-                    
                     # -----------
                     # # Put data on pdf_info
                     # pdf_size = os.path.getsize(path)
-                    # current_date = date.today().strftime("%d/%m/%Y")
+                    current_date = date.today().strftime("%d/%m/%Y")
                     # pdf = {
                     #     'name' :     filename,
                     #     'npages' :   pdf_npages,
@@ -853,8 +859,9 @@ def action_thesis_mul():
                     #     img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
                     #     print(img_split)
                     #     print("Number IMG_pages", img_npages)
-
-                    pdf_info_id = 1
+                    print("SPLIT ...")
+                    pdf_info_id = pdf_ids[i]
+                    print("pdf_info_id", pdf_info_id)
                     #     ---------
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
@@ -873,8 +880,11 @@ def action_thesis_mul():
                 
                 print("result_valid", result_valid)
                 if result_valid > 0 :
+                    # print("Datos")
+                    # print(pro_id)
+                    # print(pdf_info_id)
+                    # print(title_text)
                     result_save = True
-
                     try:
                         _ = put_newPPdetail(pro_id, pdf_info_id, title_text, current_date)
                     except:
@@ -887,8 +897,10 @@ def action_thesis_mul():
                 if len(result_invalid_process) > 0 :
                     # result_save = False
                     result_invalid_text = (',  \n'.join(result_invalid_process))
+                
+                i = i + 1
             
-            # Save resutls on database
+            # Save results on database
             # Get data from project_info
             project = get_projectById(pro_id)
             n_process = int(project[0]["pro_n_process"]) + 1
