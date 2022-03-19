@@ -229,7 +229,6 @@ def pdf_process(files_split, files_output, pdf_info_id):
                             for pattern in ['Autor', 'Autores']:
                                 patt = re.search(rf"\b{pattern}", key, re.IGNORECASE)
                                 if patt != None :
-                                    # print("AUTOR: " + pattern + " - " + str(patt.group(0)) + " - ") 
                                     patt_band = True
                                     break    
                             if patt_band :
@@ -257,7 +256,6 @@ def pdf_process(files_split, files_output, pdf_info_id):
                                 if patt_band : break
                                 else: authors_list.append(tuple([key, value]))
 
-                        # authors_text = ""
                         if len(authors_list) > 0 and title_text != "":
                             # 1er recorrido authors_list, para actualizar lista con "\n"
                             for key, value in authors_list :
@@ -291,10 +289,6 @@ def pdf_process(files_split, files_output, pdf_info_id):
                                         if word.label_ == "PER" :
                                             authors_name.append(key)
                                             authors_text += key + ", "
-                    
-                    # print("\nAuthors Names ...")
-                    # for item in authors_name:
-                    #     print(item)
 
                 # AUTORES (ANTECEDENTES) ............
                 if objective == "":     objective = getData_LongText(resumen_text, PATTERN_OBJE, 'E', '. ')#%%%%%%%%%%%%%%%%%%%%%%
@@ -542,7 +536,7 @@ def pdf_process(files_split, files_output, pdf_info_id):
                     addText_background("N", methodology_text)
 
                     # print("\n06._ METHODOLOGY :\n" + methodology_text, end="")
-                    method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
+                    # method_list = {'type_level':'tipo', 'design':'diseño', 'approach':'enfoque'}
                     # for key, value in method_list.items() : 
                     #     if (value in methodology_text) or (value.capitalize() in methodology_text):
                     #         print("\n   .-"+key.capitalize()+" : " + vars()[key])
@@ -566,7 +560,7 @@ def pdf_process(files_split, files_output, pdf_info_id):
                     if level_expi : methodology_det += methodology_det + "Explicativo, ";  print("Explicativo", end=", ")
                     if level_rela : methodology_det += methodology_det + "Relacional, ";   print("Relacional", end=", ")
                     if level_desc : methodology_det += methodology_det + "Descriptivo, ";  print("Descriptivo", end=", ")
-                    if level_expo : methodology_det += methodology_det + "Exploratorio"; print("Exploratorio", end="")
+                    if level_expo : methodology_det += methodology_det + "Exploratorio";   print("Exploratorio", end="")
                     # addText_background("N", "Metodología Detalles:\n" + methodology_det, page)
 
                 tools_text = ""
@@ -608,8 +602,5 @@ def pdf_process(files_split, files_output, pdf_info_id):
                 # reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
                 # addText_background("B", '\nREFERENCIAS')
                 # addText_background("N", reference_text)
-
-                # input("page ...")
-                # break
     
     return is_article, text_pdf, language, title_text

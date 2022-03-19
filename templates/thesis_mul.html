@@ -21,9 +21,12 @@
                                             <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
                                             <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
                                             <div class="line"></div>
-                                            <p style="margin: 10px auto;">
-                                                <input type="submit" class="btn btn-primary" value="Cargar PDFs">
-                                            </p>
+                                            <!-- <p style="margin: 10px auto;">
+                                                <input type="submit" class="btn btn-primary" onclick="clicPDFProgressMul()" value="Cargar PDFs">
+                                            </p> -->
+                                            <button class="btn btn-primary" id="progressPDF_btn" onclick="clicPDFProgressMul()" type="submit">
+                                                <i class="fas fa-file-upload"></i> &nbsp;Cargar PDFs
+                                            </button>
                                         </div>
                                     </form>
                                     {% else %}
@@ -112,15 +115,22 @@
                                     <div id="processPDF_wrapper" class="text-center d-none">
                                         <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
                                         <p style="margin:0 auto;">
-                                            <small style="color:gray;" lass="text-muted">procesando pdf</small>
+                                            <small style="color:gray;" lass="text-muted"><b>procesando PDF(s)</b></small>
                                         </p>
                                     </div>
-                                    <div id="progressPDF_wrapper" class="d-none">
+                                    <div id="progressPDF_wrapper" class="text-center d-none">
+                                        <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
+                                        <p style="margin:0 auto;">
+                                            <small style="color:gray;" lass="text-muted"><b>cargando PDF(s)</b></small>
+                                        </p>
+                                    </div>
+                                    <!-- <div id="progressPDF_wrapper" class="d-none">
                                         <label id="progressPDF_status"></label>
                                         <div class="progress mb-3">
                                             <div id="progressPDF" class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
-                                    </div>
+                                    </div> -->
+
                                     <div id="alertPDF_wrapper">
                                         
                                     </div>

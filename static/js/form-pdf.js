@@ -1,6 +1,5 @@
 // Get a reference to the progress bar, wrapper & status label
 var progressPDF = document.getElementById("progressPDF");
-var progressPDF_wrapper = document.getElementById("progressPDF_wrapper");
 var progressPDF_status = document.getElementById("progressPDF_status");
 
 // Get a reference to the 3 buttons
@@ -11,6 +10,8 @@ var cancelPDF_btn = document.getElementById("cancelPDF_btn");
 
 var processPDF_btn = document.getElementById("processPDF_btn");
 var processPDF_wrapper = document.getElementById("processPDF_wrapper");
+var progressPDF_btn = document.getElementById("progressPDF_btn");
+var progressPDF_wrapper = document.getElementById("progressPDF_wrapper");
 
 // Get a reference to the alert wrapper
 var alertPDF_wrapper = document.getElementById("alertPDF_wrapper");
@@ -80,6 +81,18 @@ function clicPDFProcessMul() {
 //   alertPDF_wrapper.innerHTML = "";
   // Show the load icon Process
   processPDF_wrapper.classList.remove("d-none");
+}
+
+// Function to upload file
+function clicPDFProgressMul() {
+  // Hide the Cancel button
+  // cancelPDF_btn.classList.add("d-none");
+  // Hide the Process button
+  progressPDF_btn.classList.add("d-none");
+  // Clear any existing alerts
+//   alertPDF_wrapper.innerHTML = "";
+  // Show the load icon Process
+  progressPDF_wrapper.classList.remove("d-none");
 }
 
 // Function to upload file ANALYTIC
