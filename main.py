@@ -652,6 +652,7 @@ def thesis_mul_load():
     global file_pdfs
     global pdf_ids
     # aqui hay que crear un nuevo ARRAY para almacenar los pdf_ids (pdf_info_id)
+    pdf_info_id = None
     upload = False
     file_pdfs = []
     pdf_ids = []
@@ -1033,11 +1034,11 @@ def pdf_post(pdf_id):
                 msg_att = "Error en registro del atributo"
             
             try:
-                response_pdf = put_newPDFdetail(pdf_id, id)
+                response_pdf = put_newPDFdetail(pdf_id, id, "", "")
                 if response_pdf is True:
                     msg_pdf = "PDF detail registrado con éxito"
             except:
-                msg_pdf = "Error en registro de PDFdetail"
+                msg_pdf = "Error en registro de PDFdetail ..."
             
             finally:
                 print(msg_att)

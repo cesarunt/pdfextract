@@ -2,7 +2,7 @@
 var update_att = document.getElementById("btn_save_canvas");
 // var text_area = document.getElementById("text_area");
 
-var iframe_pdf = document.getElementById("iframe_pdf");
+// var iframe_pdf = document.getElementById("iframe_pdf");
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -38,6 +38,11 @@ var _page = 1
 
 // Get a reference to the alert wrapper
 var alert_wrapper = document.getElementById("alert_wrapper");
+
+// function clicPDFPreview() {
+//   var popup = document.getElementById("myPopup");
+//   popup.classList.toggle("show");
+// }
 
 // Function to show alerts
 function showAlertPage(message, alert) {
@@ -409,7 +414,6 @@ function loadCanvas() {
 function handleMouseDown(e) {
   e.preventDefault();
   e.stopPropagation();
-
   // save the starting x/y of the rectangle
   startX = parseInt(e.clientX - offsetX);
   startY = parseInt(e.clientY - offsetY);
@@ -425,6 +429,10 @@ function handleMouseUp(e) {
   // the drag is over, clear the dragging flag
   isDown = false;
   ctx.strokeRect(prevStartX, prevStartY, prevWidth, prevHeight);
+  // console.log(prevStartX)
+  // console.log(prevStartY)
+  // console.log(prevWidth)
+  // console.log(prevHeight)
 
   _x = prevStartX;
   _y = prevStartY;
