@@ -22,7 +22,6 @@
                             <!-- <div id="alert_page" class="alert alert-success" role="alert" style="padding: 5px 15px;">Se guardaron correctamente los cambios</div> -->
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-3" style="padding: 0;">
-                                    <!-- <div class="mb-6"> -->
                                     <div class="pagination" style="text-align: left;">
                                         <li style="margin: 4px 0 5px; padding: 4px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <div id="add_attribute">
@@ -36,7 +35,6 @@
                                                 <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">Guardar</button>
                                             </div>
                                         </li>
-                                        <!-- ...... -->
                                         <div id="div_found" class="text-center">
                                             <!-- 
                                                 ATRIBUTOS ENCONTRADOS
@@ -76,7 +74,6 @@
                                             </li>
                                             {% endfor %}
                                         </div>
-                                        
                                     </div>  
                                 </div>
                                 <div class="col-sm-9">
@@ -97,13 +94,10 @@
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        <div id="content" class="text-center" style="width: 100%;">
-                                           
-                                            <!-- <iframe id="iframe_pdf" src="{{ pdf.pdf_path.path_pdf }}" class="" style="width:700px; height:1000px;" frameborder="0"> -->
-                                            <div id = "canvasWrapper">
+                                        <div id="content" class="text-center" style="width: 100%;">                                           
+                                            <div id = "canvasWrapper" style="max-height: 450px;max-width:700px;overflow: scroll;">
                                                 <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}');" width="700" height="1000"></canvas>
                                                 <!-- <iframe id="iframe_pdf" src="{{ pdf.pdf_path.path_pdf }}" class="" style="width:700px; height:1000px;" frameborder="0"></iframe> -->
-                                                
                                             </div>
                                         </div>
                                     </div>
