@@ -564,7 +564,8 @@ def action_thesis_mul():
                     try:
                         text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
                         print(text)
-                    except:
+                    except Exception as e:
+                        print(e)
                         print("Error generate text")
                     
                     if text is None or text == "":
@@ -802,8 +803,9 @@ def pdf_post(pdf_id):
             try:
                 text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
                 print(text)
-            except:
-                print("Error generate text")
+            except Exception as e:
+                    print(e)
+                    print("Error generate text")
             
             if text is None or text == "":
                 text = "..."
