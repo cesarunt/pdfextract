@@ -25,12 +25,11 @@
                         </p>
                         <p class="card-text-info" style="font-size: smaller;">({{ project.pro_created }})</p>
                         <p class="card-text-info" style="border-bottom:#CCC 1px solid; margin: 1.5rem 1rem 0.5rem;"></p>
-
                         {% if project.pro_n_process > 0 %}
                         <p class="card-text-info">Nº Procesamientos: <b>{{ project.pro_n_process }}</b></p>
                         <p class="card-text-info">PDFs Procesados: <b>{{ project.pro_n_articles }}</b></p>
                             <img class="card-img-land" style="width: 55%;" src="../../static/img/analisis-docs.jpg"><br>
-                            <span><a href="{{ url_for('main.project_pdfs', id=pro_id) }}" style="font-size: smaller; padding: 0.15rem 0.5rem;" class="btn btn-success">(ver PDFs)</a></span>
+                            <span><a href="{{ url_for('main.project_pdfs', id=pro_id) }}" style="font-size: smaller; padding: 0.3rem 1.25rem;" class="btn btn-success"><b>VER PDFs</b></a></span>
                         {% else %}
                         <p class="card-text-info" style="margin: 4.5rem 1rem 3rem; color:#222;">Este proyecto no registra procesamientos</p>
                         {% endif %}

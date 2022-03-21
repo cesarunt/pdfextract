@@ -149,12 +149,9 @@
                                         {% if result_invalid_text %}
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%; font-size: small; color: darkred;">{{ result_invalid_text }}</label>
                                         {% endif %}
-                                        <!-- ../static/img/doc-word.png -->
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">{{ result_file_text }}</label>
                                     </div>
                                     <div class="mb-3">
-                                        <!-- <div class="card-footer text-center" style="padding: 0;"> -->
-                                        <!-- <img class="card-img-top" src="{{ result_file_down }}" style="border: 1px solid #F55; margin: 0 auto;"> -->
                                         <form method="POST" action="save_paper_mul" enctype="multipart/form-data">
                                             <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
                                             <p style="text-align: center; margin: 15px 0 0 0;">

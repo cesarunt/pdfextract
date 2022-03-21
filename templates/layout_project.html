@@ -27,7 +27,6 @@
             </div>
             <ul class="list-unstyled components text-secondary">
                 <li>
-                    <!-- <a href="#"><i class="fas fa-home"></i> ANTECEDENTES <br></a> -->
                     <select name="type_global" class="form-select" style="width: 90%; margin: 0 1rem;" required disabled>
                         <option value="antecedentes" selected>ANTECEDENTES</option>
                         <option value="marco_teorico">MARCO TEORICO</option>
@@ -37,7 +36,7 @@
                 
                 {% if current_user.is_authenticated %}
                     <li>
-                        <a style="padding-left: 1rem;" href="#"><b>PDFs</b></a>
+                        <a style="padding-left: 1rem;" href="{{ url_for('main.project_pdfs', id=pro_id) }}"><b>PDFs</b></a>
                     </li>
                     {% for pdf in pdfs %}
                     <li style="padding:0 0 0 5px;">
@@ -49,9 +48,7 @@
                         </span>
                         <button type="button" id="close_{{pdf.det_id}}" style="padding: 0;" class="btn" onclick="closeAttribute(this.id)">
                             <i class="fas fa-window-close" style="color:firebrick;"></i>
-                        </button>
-                            <!-- <i class="fa-fw select-all fas"></i> -->
-                        
+                        </button>                        
                     </li>
                     {% endfor %}
                 {% endif %}
@@ -91,8 +88,6 @@
                                 <div class="dropdown-menu dropdown-menu-end nav-link-menu">
                                     <ul class="nav-list">
                                         <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Perfil</a></li>
-                                        <!-- <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a></li> -->
                                         <div class="dropdown-divider"></div>
                                         <li><a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Salir</a></li>
                                     </ul>
@@ -104,7 +99,6 @@
                 </div>
             </nav>
             <!-- end of navbar navigation -->
-            
             {% block content %}
 
             {% endblock %}
@@ -128,11 +122,10 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/fabric.min.js') }}"></script>
 
-    <!-- Canvas draw -->
-    <script src="{{ url_for('static', filename='js/canvas-pdf.js') }}"></script>
     <!-- Uploads files -->
     <script src="{{ url_for('static', filename='js/form-pdf.js') }}"></script>
-    
+    <!-- Canvas draw -->
+    <script src="{{ url_for('static', filename='js/canvas.js') }}"></script>
 </body>
 
 </html>

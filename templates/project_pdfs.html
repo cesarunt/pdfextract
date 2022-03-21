@@ -4,7 +4,7 @@
 <!-- BLOCK CONTENT -->
 <div class="content">
     <div class="container" id="container">
-        <div class="page-title">    </div>
+        <div class="page-title"> </div>
         <div class="row" style="height: 9px;">
             <div class="col-md-12 page-header"></div>
         </div>
@@ -19,14 +19,13 @@
                     <div class="card-body">
                         {% if pdf %}   
                             <div id="alert_wrapper"></div>
-                            <!-- <div id="alert_page" class="alert alert-success" role="alert" style="padding: 5px 15px;">Se guardaron correctamente los cambios</div> -->
                             <div class="row" style="padding: 0 1rem;">
                                 <div class="col-sm-3" style="padding: 0;">
                                     <div class="pagination" style="text-align: left;">
-                                        <li style="margin: 4px 0 5px; padding: 4px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
-                                            <div id="add_attribute">
-                                                <button type="submit" id="btn_add_att" class="btn btn-sm btn-primary" onclick="addAttribute()">Agregar Atributo</button>
-                                            </div>
+                                        <div id="add_attribute" style="width: 100%; height: 25px;">
+                                            <a href="#" onClick="addAttribute()" style="padding: 5px;">Agregar Atributo</a>
+                                        </div>
+                                        <li style="margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <div id="div_attribute" style="text-align: center;" class="d-none">
                                                 <input style="width: 85%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="Ingrese atributo" class="form-control">
                                                 <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
@@ -36,21 +35,18 @@
                                             </div>
                                         </li>
                                         <div id="div_found" class="text-center">
-                                            <!-- 
-                                                ATRIBUTOS ENCONTRADOS
-                                             -->
+                                            <!-- ATRIBUTOS ENCONTRADOS -->
                                             {% for detail in pdf.foundlist %}
                                             <li style="padding:3px 0 0 0;">
                                                 <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
                                                 <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
-                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-right: 1.80rem;" required onchange="selectPage(this.value)" disabled>
+                                                    <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-right: 1.80rem;" required onchange="selectPage(this.value, '{{ pdf.id }}')" disabled>
                                                         {% for x in pdf.listnpages %}
                                                         <option value="{{x}}">{{x}}</option>
                                                         {% endfor %}
                                                         <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
                                                     </select>
                                                 </label>
-
                                                 <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{ pdf.id }}')" style="opacity: 0.5;">
                                                     <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                     <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
@@ -61,7 +57,6 @@
                                                 <button type="button" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
                                                     <i class="fas fa-window-close"></i>
                                                 </button>
-                                                <!-- <span class="fa-fw select-all fas"></span> -->
                                                 <button type="submit" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
                                                     <i class="fas fa-backspace"></i>    
                                                 </button>
@@ -74,14 +69,21 @@
                                             </li>
                                             {% endfor %}
                                         </div>
+                                        <li style="margin: 10px 0 5px; border-bottom:#CCC 1px solid; text-align: center;"></li>
+                                        <div class="mb-3">
+                                            <form method="POST" action="export_paper_mul" enctype="multipart/form-data">
+                                                <input type="hidden" name="export_att" id="export_att" value="{{ result_file_down }}" />
+                                                <p style="text-align: center; margin: 15px 0 0 0;">
+                                                    <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: small;" disabled>Exportar</button>
+                                                </p>
+                                            </form>
+                                        </div>
+
                                     </div>  
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
                                         <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.25rem;">
-                                            <!-- 
-                                                BUTTONS - ACTIONS
-                                            -->
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
                                                 <i class="fas fa-save"></i>
                                             </button>
@@ -89,21 +91,21 @@
                                         <span>Page</span>&nbsp;
                                         <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span>
                                         <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.5rem;">
-                                            <!-- ...... -->
                                             <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        <div id="content" class="text-center" style="width: 100%;">                                           
-                                            <div id = "canvasWrapper" style="max-height: 450px;max-width:700px;overflow: scroll;">
-                                                <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}');" width="700" height="1000"></canvas>
-                                                <!-- <iframe id="iframe_pdf" src="{{ pdf.pdf_path.path_pdf }}" class="" style="width:700px; height:1000px;" frameborder="0"></iframe> -->
-                                            </div>
+                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 20px 0 25px;">
+                                            <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            {% endif %}   
+                        {% else %}
+                            <div class="row d-none" style="padding: 0 1rem;">
+                                <canvas id="canvas"></canvas>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -85,6 +85,12 @@ function clicPDFProcessMul() {
 
 // Function to upload file
 function clicPDFProgressMul() {
+
+  // Reject if the file input is empty & throw alert
+  if (!inputPDF.value) {
+    showPDFAlert("Seleccione un archivo PDF", "warning")
+    return;
+  }
   // Hide the Cancel button
   // cancelPDF_btn.classList.add("d-none");
   // Hide the Process button
@@ -262,7 +268,7 @@ function goPage(val, pdf_id) {
 }
 
 // SELECT PAGE FUNCTION
-function selectPage(val) {
+function selectPage(val, pdf_id) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
   if (val == 1){
@@ -293,7 +299,6 @@ function movePage(_this, pdf_id, direct) {
       _this.disabled = true
     }
   }
-  // console.log("movePage")
   document.getElementById('current_page').innerHTML = (val).toString()
   goPage(val, pdf_id)
 }

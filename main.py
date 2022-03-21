@@ -694,7 +694,7 @@ def action_thesis_mul():
         else:
             result_file_text = "El servidor está procesando, espere un momento."
     
-    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
+    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, pro_id=pro_id)
 
 """
     PROJECT PDF 
@@ -710,12 +710,8 @@ def project_pdfs(id):
     if current_user.is_authenticated:
         project = get_projectById(id)
         pdfs = get_projectPDFById(id)
-        # pdfs = get_pdfDetailById(id)
-        # pdf = get_thesisByName(file_pdf)
         for pdf in pdfs:
             # revisar esto ... luego de hacer el input pdf_details
-            # pdf_id = pdf['id']
-            # pdf_id = pdf['pdf_id']
             """Verificar pdf_details, encontrados y no encontradps"""
             # if len(pdf['foundlist']): select = None 
             # else: select = "."
@@ -763,6 +759,15 @@ def project_pdf(pdf_id):
         # project = one_project
     else:
         return render_template('project_pdfs.html')
+
+
+@main.route("/export_paper_mul", methods=["POST"])
+def export_paper_mul():
+    if request.method == "POST":
+        export_att = request.form.get('export_att')
+    
+    return send_file(export_att, as_attachment=True)
+
 
 @app.route('/files/multiple/upload/<filename>')
 def thesis_upload_img(filename):
@@ -1023,7 +1028,7 @@ def close_paper_mul(source):
 def save_paper_mul():
     if request.method == "POST":
         down_image = request.form.get('down_image')
-        
+    
     return send_file(down_image, as_attachment=True)
 
 # CLOSE THESIS
