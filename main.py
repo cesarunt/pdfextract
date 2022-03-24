@@ -14,7 +14,6 @@ from __init__ import create_app, db
 
 import cv2
 import pytesseract
-import unicodedata
 from docx import Document
 from docx.shared import Pt 
 from fold_to_ascii import fold
@@ -45,6 +44,7 @@ app.config['MULTIPLE_UPLOAD_WEB'] = cfg.FILES.MULTIPLE_UPLOAD_WEB
 # Allowed extension you can set your own
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
 ILLEGAL_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
+# pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 
 def strip_illegal_xml_characters(s, default, base=10):
@@ -139,15 +139,10 @@ def build_document(title, text_pdf, language):
                 html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
                 html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
                 html = ILLEGAL_XML_CHARS_RE.sub("", html)
-                # p = document.add_paragraph(str(html.encode('utf-8').decode("utf-8")))
-                # line = p.add_run(str(html.encode('utf-8').decode("utf-8")))
                 line = p.add_run(str(html))
 
             if key == "B": line.bold = True
             
-            # texts = []
-            # if key == "B":  p.add_run('bold').bold = True
-
     return document
 
 def allowed_files(filename):
@@ -157,7 +152,6 @@ class SearchForm(Form):
     autocomp = TextField('Busca palabras claves', id='keyword_autocomplete')
 
 # ------------------------------------ ROUTING ------------------------------------
-
 # Home
 @main.route('/home')
 def home():
@@ -280,7 +274,6 @@ def save_upload():
             'created' :     current_date
         }
         keywords = request.form['keywords_out'].split(',')
-        print("keywords", keywords)
         
         try:
             response_project, id = put_newProject(project)
@@ -298,8 +291,6 @@ def save_upload():
             msg_pkdetail = "Error en registro de PKdetail"
         
         finally:
-            print(msg_project)
-            print(msg_pkdetail)
             return redirect('/upload/home/'+str(id))
 
 
@@ -347,7 +338,6 @@ def search_db():
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword)
     else:
         return render_template('db_form.html', keyword = "")
-
     
 
 # ----------------------------------- PDF EXTRACT ONE -----------------------------------
@@ -367,11 +357,9 @@ def paper_one_load():
             filesize = request.cookies.get("filesize")
 
             if file.filename == "":
-                # print("No filename")
                 return redirect(request.url)
             if int(filesize) > 0 :
                 res = make_response(jsonify({"message": f"El PDF fue cargado con éxito."}), 200)
-                # print("File uploaded")
                 upload = True
             if allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
@@ -391,9 +379,7 @@ def paper_one_load():
 def thesis_one_load():
     global file_pdf
     active_show = "active show"
-    print("TESIS ONE")
-    # _analytic = request.form.get('analytic')
-    # 
+
     if request.method == "POST":
         # Code for One pdf
         if "filesize" in request.cookies:
@@ -433,7 +419,6 @@ def thesis_split(filename):
 @app.route('/files/multiple/split_img/<filename>')
 def thesis_split_img(filename):
     return send_from_directory(app.config['MULTIPLE_SPLIT_IMG'], filename)
-
 
 # 
 # FUNCTION TO UPLOAD PDF 
@@ -502,7 +487,6 @@ def thesis_mul_load():
             print('File(s) successfully uploaded')
             return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, pro_id=pro_id)
 
-
 # 
 # FUNCTION TO PROCESS PDF 
 # 
@@ -541,8 +525,6 @@ def action_thesis_mul():
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 action = request.values.get("action")
-                print("Action", action)
-                print("pdf_ids:", pdf_ids)
 
                 if action == "save_canvas":
                     det_id =        int(request.values.get("det_id"))
@@ -686,7 +668,6 @@ def action_thesis_mul():
             n_process = int(project[0]["pro_n_process"]) + 1
 
             # Put data on pro_pdf_details
-
             # Update data on project_info
             saveDB = upd_projectById(pro_id, result_valid, n_process)
             if saveDB is True:
@@ -701,9 +682,6 @@ def action_thesis_mul():
     PROJECT PDF 
     =====================
 """
-#   AQUI ME QUEDE ... 
-#   SOLUCION: ENVIAR DATOS POR GET OR POST HACIA ESTA FUNCION, PARA ACTIVAR LA PAG SELECCIONADA .. 
-
 @main.route('/project/pdfs/<id>')
 def project_pdfs(id):
     global pro_id
@@ -723,11 +701,9 @@ def project_pdfs(id):
             # get data for pdf_file
             pdf_path = {
                     'name': pdf['pdf_name'],
-                    # 'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
                     'num_pages':   int(pdf['pdf_npages']),
                     }
             pdf['pdf_path'] = pdf_path
-        # return render_template('thesis_one.html', _pdf_file = pdf_file, _pdf = pdf)
         
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
         # project = one_project
