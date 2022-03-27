@@ -63,8 +63,6 @@ function clicPDFProcess() {
   cancelPDF_btn.classList.add("d-none");
   // Hide the Process button
   processPDF_btn.classList.add("d-none");
-  // Clear any existing alerts
-//   alertPDF_wrapper.innerHTML = "";
   // Disable the input during upload
   inputPDF.disabled = true;
   // Show the load icon Process
@@ -77,33 +75,31 @@ function clicPDFProcessMul() {
   cancelPDF_btn.classList.add("d-none");
   // Hide the Process button
   processPDF_btn.classList.add("d-none");
-  // Clear any existing alerts
-//   alertPDF_wrapper.innerHTML = "";
   // Show the load icon Process
   processPDF_wrapper.classList.remove("d-none");
 }
 
-// Function to upload file
+// Function to Show Progress file
 function clicPDFProgressMul() {
-
   // Reject if the file input is empty & throw alert
   if (!inputPDF.value) {
     showPDFAlert("Seleccione un archivo PDF", "warning")
     return;
   }
   // Hide the Cancel button
-  // cancelPDF_btn.classList.add("d-none");
-  // Hide the Process button
   progressPDF_btn.classList.add("d-none");
-  // Clear any existing alerts
-//   alertPDF_wrapper.innerHTML = "";
   // Show the load icon Process
   progressPDF_wrapper.classList.remove("d-none");
 }
 
+// Function to Process Part
+function clicProcessPart() {
+  // Change value process hidden
+  document.getElementById("process").value = '0';
+}
+
 // Function to upload file ANALYTIC
 function uploadPDF(url) {
-
   // Reject if the file input is empty & throw alert
   if (!inputPDF.value) {
     showPDFAlert("Seleccione un archivo PDF", "warning")
@@ -117,8 +113,6 @@ function uploadPDF(url) {
 
   // Set the response type
   request.responseType = "json";
-  // Clear any existing alerts
-//   alertPDF_wrapper.innerHTML = "";
   // Disable the input during upload
   inputPDF.disabled = true;
   // reviewPDF_btn.classList.add("d-none");
@@ -133,14 +127,13 @@ function uploadPDF(url) {
   var file = inputPDF.files[0];
   // Get a reference to the filesize & set a cookie
   var filesize = file.size;
-//   var process = "image";
 
   document.cookie = `filesize=${filesize}`;
   // Append the file to the FormData instance
   data.append("file", file);
   
   // Append identifier of process IMAGE on media value
-//   data.append("process", process);
+  //   data.append("process", process);
 
   // request progress handler
   request.upload.addEventListener("progress", function (e) {
@@ -222,14 +215,10 @@ function resetImageStart() {
   // Clear the input
   inputPDF.value = null;
   inputPDF.disabled = false;
-  // Reset the input placeholder
-//   file_PDF_label.innerText = "Seleccionar archivo";
   // Hide the cancel button
   cancelPDF_btn.classList.add("d-none");
   // Hide the process button
   processPDF_btn.classList.add("d-none");
-  // Hide the alertVideo_wrapper alert
-//   alertPDF_wrapper.innerHTML = ``
   // Show the upload button
   uploadPDF_btn.classList.remove("d-none");
 }
@@ -250,13 +239,6 @@ function on_select_attributes() {
     div_found.classList.remove("d-none");
   }
 }
-
-// ACTIVATE PAGE FUNCTION
-// function activePage(val) {
-//   _page = val - 1
-//   path_page = 'files/multiple/split_img/page_' + _page.toString() + '.jpg'
-//   $("canvas").css("background-image", "url("+path_page+")");
-// }
 
 // SELECT PAGE FUNCTION
 function goPage(val, pdf_id) {

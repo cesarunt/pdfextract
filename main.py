@@ -438,16 +438,15 @@ def thesis_mul_load():
         print("PRO_ID", pro_id)
         # Code for multiple pdfs
         if 'files[]' not in request.files:
-            print('No file part')
             return redirect(request.url)
 
         files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d/%m/%Y")
         pdfs = []
-
         fname = os.listdir(app.config['MULTIPLE_SPLIT_IMG'])
+        
         # 1. Remove and split IMG
-        img_remove(fname, app.config['MULTIPLE_SPLIT_IMG'])
+        # img_remove(fname, app.config['MULTIPLE_SPLIT_IMG'])
 
         for file in files:
             file_pdfs.append(file.filename)
@@ -495,6 +494,7 @@ def action_thesis_mul():
     global file_pdfs
     global pdf_ids
     text_pdf = []
+    pdfs = {}
 
     if request.method == "POST":
         global file_pdf, document
@@ -508,11 +508,24 @@ def action_thesis_mul():
         result_valid = 0
         result_invalid = 0
         result_invalid_process = []
+        
         pro_id = request.form.get('pro_id')
-
+        process = request.form.get('process')
+        _pages = request.form.getlist('page')
+        # print(_pages)
+        if process == '0' and len(_pages) > 0:
+            temp_page = ""
+            for _page in _pages:
+                item = _page.split("_")
+                if temp_page != item[0]:
+                    pages = []
+                    temp_page = item[0]
+                pages.append(int(item[1]))
+                pdfs[item[0]] = pages
+            # print(pdfs)
+        
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
-
             document = Document() 
             print("NumPDFs Cargados")
             print(len(file_pdfs))
@@ -541,7 +554,7 @@ def action_thesis_mul():
                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                     ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
 
-                    print("ROI len", str(len(ROI)))
+                    print("ROI line 558", str(len(ROI)))
                     text = ""
                     try:
                         text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
@@ -552,7 +565,10 @@ def action_thesis_mul():
                     
                     if text is None or text == "":
                         text = "..."
-                    pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
+                    result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
+                    # print("Save and update")
+                    # result2 = upd_PPdetail(id, pro_id, pdf_id, text, current_date)
+
                     result_split = 1
                 
                 if action == "save_text":
@@ -605,9 +621,10 @@ def action_thesis_mul():
                 # 1. SPLIT PDF
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 if action is None:
-                    print("filename", filename)
+                    # print("filename", filename)
                     print("Remove PDF")
                     # 1. Remove and split PDF
+                    # input("........")
                     pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
                     print("Splitter PDF")
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
@@ -623,7 +640,6 @@ def action_thesis_mul():
                 if result_split == 1:
                     # -----------
                     # # Put data on pdf_info
-                    # pdf_size = os.path.getsize(path)
                     current_date = date.today().strftime("%d/%m/%Y")
                     print("SPLIT ...")
                     pdf_info_id = pdf_ids[i]
@@ -631,9 +647,9 @@ def action_thesis_mul():
                     #     ---------
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id)  # Call pdf process function
-                    # print("Out web: " + app.config['MULTIPLE_FORWEB'])
-                    print("title_text", title_text)
+                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id, pdfs)  # Call pdf process function
+                    
+                    # print("\ntitle_text", title_text)
 
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -676,6 +692,9 @@ def action_thesis_mul():
         else:
             result_file_text = "El servidor está procesando, espere un momento."
     
+    # print("Results")
+    # print("result_valid", result_valid)
+    # print("result_invalid_process", result_invalid_process)
     return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, pro_id=pro_id)
 
 """
@@ -760,8 +779,9 @@ def pdf_post(pdf_id):
         print("Action", action)
 
         if action == "save_canvas":
-            det_id =        int(request.values.get("det_id"))
+            det_id = int(request.values.get("det_id"))
             det_attribute = int(request.values.get("det_attribute"))
+            current_date = date.today().strftime("%d/%m/%Y")
             rect = {
                     'x': int(request.values.get("x")),
                     'y': int(request.values.get("y")),
@@ -774,7 +794,7 @@ def pdf_post(pdf_id):
             thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
             ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
 
-            print("ROI len", str(len(ROI)))
+            print("ROI line 798", str(len(ROI)))
             text = ""
             try:
                 text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
@@ -785,7 +805,11 @@ def pdf_post(pdf_id):
             
             if text is None or text == "":
                 text = "..."
-            pdf = upd_detailByIds(det_id, pdf_id, det_attribute, text, page, rect)
+            result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
+
+            # Solo guardar el titulo
+            if det_attribute == 2 and result1:
+                result2 = upd_PPdetail(det_id, pro_id, pdf_id, text, current_date)
             result_split = 1
         
         if action == "save_text":
@@ -830,7 +854,7 @@ def pdf_post(pdf_id):
                 msg_pdf = "Error en eliminación de PDFdetail"
             
             finally:
-                print(msg_pdf)
+                # print(msg_pdf)
                 result_split = 1
 
         if current_user.is_authenticated and result_split == 1:

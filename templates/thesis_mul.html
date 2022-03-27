@@ -18,12 +18,9 @@
                                     <form method="post" action="/thesis_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
                                             <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar múltiples PDFs</label><br>
-                                            <input type="file" class="form-control" name="files[]" multiple="true" autocomplete="off" required>
+                                            <input type="file" class="form-control" id="file_pdf" name="files[]" multiple="true" autocomplete="off" required>
                                             <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
                                             <div class="line"></div>
-                                            <!-- <p style="margin: 10px auto;">
-                                                <input type="submit" class="btn btn-primary" onclick="clicPDFProgressMul()" value="Cargar PDFs">
-                                            </p> -->
                                             <button class="btn btn-primary" id="progressPDF_btn" onclick="clicPDFProgressMul()" type="submit">
                                                 <i class="fas fa-file-upload"></i> &nbsp;Cargar PDFs
                                             </button>
@@ -39,15 +36,16 @@
                                             <!-- PROCESAMIENTO CON FILTRO X ATRIBUTOS -->
                                             <div class="card">
                                                 <div class="card-body" style="padding-bottom: 0.2rem;">
-                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" onclick="clicProcessPart()">
                                                     {% for pdf in pdfs %}
                                                         <li class="nav-item">
                                                             <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span></a>
                                                         </li>
-                                                        
                                                     {% endfor %}
+                                                        <div class="col-sm-12 text-center">
+                                                            <span style="font-size:smaller;">Si NO desea procesar todo, seleccione el PDF que desea procesar</span>
+                                                        </div>
                                                     </ul>
-
                                                     <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
                                                         {% for pdf in pdfs %}
                                                         <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
@@ -59,8 +57,12 @@
                                                                             <img class="card-img-land" style="width: 110px;" src='{{pdf.pdf_path}}{{i}}.jpg'>
                                                                         </span>
                                                                     </div>
-                                                                    <input class="form-check-input" style="margin-left: 0;" type="checkbox" id="page_{{pdf.pdf_id}}_{{i}}" value="page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
-                                                                    <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
+                                                                    {% if i==0 or i==1 %}
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                    {% else %}
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                    {% endif %}
+                                                                        <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
                                                                         <span id="myPopup" class="fa-fw select-all fas"></span>
                                                                     </button> -->
                                                                     <!-- Button to launch a modal -->
@@ -92,13 +94,9 @@
                                                 </div>
                                             </div>
 
-                                            <div class="mb-3 text-center">
-                                                <!-- <img class="card-img-logo" style="width: 15%;" src="{{ url_for('static', filename='img/pdf-upload.png') }}"> -->
-                                                <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">PDFs cargados con éxito.</label>
-                                                <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
-                                            </div>
                                             <div class="mb-3 text-center" style="margin: 1rem 0;">
-                                                <!-- <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" /> -->
+                                                <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
+                                                <input type="hidden" name="process" id="process" value="1" />
                                                 <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button>
                                                 <button class="btn btn-success" id="processPDF_btn" onclick="clicPDFProcessMul()" type="submit">
                                                     <i class="fas fa-play"></i> &nbsp;Procesar
@@ -110,27 +108,19 @@
 
                                 <div class="col-sm-12 text-center">
                                     <div class="mb-3">
-                                        
                                     </div>
                                     <div id="processPDF_wrapper" class="text-center d-none">
                                         <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
-                                        <p style="margin:0 auto;">
+                                        <p style="margin:1rem auto;">
                                             <small style="color:gray;" lass="text-muted"><b>procesando PDF(s)</b></small>
                                         </p>
                                     </div>
                                     <div id="progressPDF_wrapper" class="text-center d-none">
                                         <img src="{{ url_for('static', filename='img/processing.gif') }}" style="width: 100px; height: 100px;">
-                                        <p style="margin:0 auto;">
+                                        <p style="margin:1rem auto;">
                                             <small style="color:gray;" lass="text-muted"><b>cargando PDF(s)</b></small>
                                         </p>
                                     </div>
-                                    <!-- <div id="progressPDF_wrapper" class="d-none">
-                                        <label id="progressPDF_status"></label>
-                                        <div class="progress mb-3">
-                                            <div id="progressPDF" class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div> -->
-
                                     <div id="alertPDF_wrapper">
                                         
                                     </div>

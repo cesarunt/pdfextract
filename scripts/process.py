@@ -1,9 +1,6 @@
 import os, re
 import datetime
-# from spacy_langdetect import LanguageDetector
-# from googletrans import Translator
 import numpy as np
-# from statistics import mode
 import spacy
 from scipy import stats as s
 from bs4 import BeautifulSoup as soup
@@ -29,7 +26,7 @@ def addText_view(line, att_id, page):
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, files_output, pdf_info_id):
+def pdf_process(files_split, files_output, pdf_info_id, pdfs):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -70,7 +67,6 @@ def pdf_process(files_split, files_output, pdf_info_id):
     resumen_band = False
 
     font_max = 0
-    font_subtitle = 0
 
     # Introduction
     intro_font = 0
@@ -104,19 +100,27 @@ def pdf_process(files_split, files_output, pdf_info_id):
     conclusion_text = ""
     conclusion_band = False
     conclusion_title = ""
-    pagefonts_mode = 0
 
     result_res = False
     listQuan = []
     listQual = []
+    pagelines_list = []
 
     # PATTERN_OBJE = []
     level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
 
-    if length > 40 :
+    if length > 50 :
         is_article = False
     else:
-        for page in range(length): #Repeat each operation for each document.
+        if len(pdfs)>0:
+            list_pages = pdfs[str(pdf_id)]
+            length = len(list_pages)
+        else:
+            list_pages = range(length)
+
+        print(list_pages)
+        np = 0
+        for page in list_pages: #Repeat each operation for each document.
             print("\n\nPage 0"+str(int(page+1)) +": "+fname[page])
 
             # 1. EXTRACT ALL TEXT PAGE
@@ -143,7 +147,7 @@ def pdf_process(files_split, files_output, pdf_info_id):
 
             # 3. FIND THE TITLE TEXT
             # ============================================================================================
-            if text_page != "" :
+            if text_page != ""  and page == 0:
                 # - Using BeautifulSoup to parse the text
                 page_soup = soup(text_html, 'html.parser')
                 patt = re.compile("font-size:(\d+)")
@@ -157,7 +161,7 @@ def pdf_process(files_split, files_output, pdf_info_id):
                 patt_num = 0
                 band_autor = False
                 title_text_line = []
-                pagelines_list = []
+                # pagelines_list = []
                 pagelong_item = []      # longitud del item para obtener el texto resumen mas exacto
                 pagefonts_list = []
                 pageresum_list = []
@@ -291,12 +295,12 @@ def pdf_process(files_split, files_output, pdf_info_id):
                                             authors_text += key + ", "
 
                 # AUTORES (ANTECEDENTES) ............
-                if objective == "":     objective = getData_LongText(resumen_text, PATTERN_OBJE, 'E', '. ')#%%%%%%%%%%%%%%%%%%%%%%
+                if objective == "":     objective = getData_LongText(resumen_text, PATTERN_OBJE, 'E', '. ')
                 if objective == "":     objective = getData_LongText(text_page, PATTERN_OBJE, 'E', '. ')
                 # -----------
 
                 # Getting Article
-                if article_band == False:      article_band, article_text = getData_ResultArticle(text_page, PATTERN_ARTI)
+                if article_band == False:  article_band, article_text = getData_ResultArticle(text_page, PATTERN_ARTI)
 
                 # Getting DOI
                 if doi_band == False:      doi_band, doi_text = getData_ResultDOI(text_page, cfg.LIST.PATTERN_DOI_XX)
@@ -313,11 +317,9 @@ def pdf_process(files_split, files_output, pdf_info_id):
                             year_max = year
                     year = year_max
             
-            # input(".................... authors_text ....................")
-
             # 4. GET THE RESUME TEXT
             # ============================================================================================
-            if resumen_title=="":
+            if resumen_title=="" and len(pagelines_list)>0:
                 resumen_title, resumen_pos = getData_TitleResumen(pagelines_list, PATTERN_ABST, 6, 3, resumen_font)
                 # print("\nResumen Title: \n" + resumen_title)
             if resumen_title != "" :
@@ -342,8 +344,6 @@ def pdf_process(files_split, files_output, pdf_info_id):
                         if item.isdigit() or len(item)<=1: resumen_text_list.remove(item)
                     resumen_text = str(' '.join(resumen_text_list))
                     resumen_text = resumen_text.replace("\n", " ")
-
-            # print("\INTRO FONT: " + str(intro_font))
             
             if (resumen_text != "" or authors_text!= "") and page > 0:
                 # 5. GET THE METHODOLOGY TEXT
@@ -470,11 +470,10 @@ def pdf_process(files_split, files_output, pdf_info_id):
                 addText_view(conclusion_text, 12, page+1)
                 conclusion_band = True
 
-            # print("\nTitle_band ... "+ str(title_band))
-            # print("Authors_text ... "+authors_text)
-            # print("Year... " + str(year))
+            print("np:", np)
+            print("length:", length)
 
-            if title_ctrl == True and authors_text!="" and year!="" and page == length-1 :
+            if title_ctrl == True and authors_text!="" and year!="" and np == length-1 :
                 # RESUMEN ...........
                 resumen_text_list = resumen_text.split("\n")
                 for item in resumen_text_list :
@@ -602,5 +601,9 @@ def pdf_process(files_split, files_output, pdf_info_id):
                 # reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
                 # addText_background("B", '\nREFERENCIAS')
                 # addText_background("N", reference_text)
+                # print('text_pdf', text_pdf)
+            
+            np += 1
+
     
     return is_article, text_pdf, language, title_text

@@ -125,7 +125,7 @@ def get_listThesisByWord(keyword):
         return pdfs
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
-def upd_detailByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict()):
+def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict()):
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     # table_colnames = None
@@ -671,6 +671,32 @@ def put_newPPdetail(id, pdf, name, current_date):
         
         return result
 
+def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pro_pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    UPDATE "{table_name}" SET pdf_name="{name}", pro_pdf_created="{current_date}"
+                    WHERE pro_id = {pro_id} AND pdf_id = {pdf_id}
+                """
+        # print("UPDATE Canvas",query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
 def get_projectPDFById(id):
     # List of TOP 10
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
@@ -725,7 +751,7 @@ def get_pdfDetailById(pdf_id):
                     WHERE  a.pdf_id = "{pdf_id}"
                     ORDER BY b.det_id ASC
                 """ 
-        print('pdfDetail', query)
+        # print('pdfDetail', query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()

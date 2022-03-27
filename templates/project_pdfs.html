@@ -27,11 +27,13 @@
                                         </div>
                                         <li style="margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <div id="div_attribute" style="text-align: center;" class="d-none">
-                                                <input style="width: 85%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="Ingrese atributo" class="form-control">
+                                                <input style="width: 65%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="Ingrese atributo" class="form-control">
+                                                <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
+                                                    <i class="fas fa-save"> T </i>
+                                                </button>
                                                 <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
                                                     <i class="fas fa-window-close"></i>
                                                 </button>
-                                                <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">Guardar</button>
                                             </div>
                                         </li>
                                         <div id="div_found" class="text-center">
@@ -63,21 +65,15 @@
                                                 {% if detail.det_value %}
                                                 <div id="divtext_{{detail.det_name}}" class="d-none">
                                                     <textarea id="text_{{detail.det_name}}" class="text_area"> {{ detail.det_value }} </textarea><br>
-                                                    <button type="submit" id="btn_save_text" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">Guardar</button>    
+                                                    <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                        <i class="fas fa-save"> T </i>
+                                                    </button>    
                                                 </div>
                                                 {% endif %}
                                             </li>
                                             {% endfor %}
                                         </div>
-                                        <li style="margin: 10px 0 5px; border-bottom:#CCC 1px solid; text-align: center;"></li>
-                                        <div class="mb-3">
-                                            <form method="POST" action="export_paper_mul" enctype="multipart/form-data">
-                                                <input type="hidden" name="export_att" id="export_att" value="{{ result_file_down }}" />
-                                                <p style="text-align: center; margin: 15px 0 0 0;">
-                                                    <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: small;" disabled>Exportar</button>
-                                                </p>
-                                            </form>
-                                        </div>
+                                        <!-- <li style="margin: 10px 0 5px; border-bottom:#CCC 1px solid; text-align: center;"></li> -->
 
                                     </div>  
                                 </div>
@@ -85,7 +81,7 @@
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
                                         <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.25rem;">
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
-                                                <i class="fas fa-save"></i>
+                                                <i class="fas fa-save"> &nbsp;Canvas</i>
                                             </button>
                                         </div>
                                         <span>Page</span>&nbsp;
@@ -95,15 +91,23 @@
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 20px 0 25px;">
+                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 10px 0 15px;">
                                             <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         {% else %}
-                            <div class="row d-none" style="padding: 0 1rem;">
-                                <canvas id="canvas"></canvas>
+                            <div class="row" style="padding: 0 1rem;">
+                                <div class="mb-3 d-none">
+                                    <form method="POST" action="export_paper_mul" enctype="multipart/form-data">
+                                        <input type="hidden" name="export_att" id="export_att" value="{{ result_file_down }}" />
+                                        <p style="text-align: center; margin: 15px 0 0 0;">
+                                            <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: small;" disabled>Exportar</button>
+                                        </p>
+                                    </form>
+                                </div>
+                                <canvas id="canvas" class="d-none"></canvas>
                             </div>
                         {% endif %}
                     </div>
