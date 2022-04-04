@@ -6,7 +6,6 @@ var progressPDF_status = document.getElementById("progressPDF_status");
 var uploadPDF_btn = document.getElementById("uploadPDF_btn");
 var loadingPDF_btn = document.getElementById("loadingPDF_btn");
 var cancelPDF_btn = document.getElementById("cancelPDF_btn");
-// var reviewPDF_btn = document.getElementById("reviewPDF_btn")
 
 var processPDF_btn = document.getElementById("processPDF_btn");
 var processPDF_wrapper = document.getElementById("processPDF_wrapper");
@@ -26,8 +25,6 @@ var updatePDF_btn = document.getElementById("updatePDF_btn");
 var div_notfound = document.getElementById("div_notfound");
 var div_found = document.getElementById("div_found");
 
-// var update_att = document.getElementById("btn_update_att")
-// var cancel_att = document.getElementById("btn_close_att");
 var pages = document.getElementById('num_pages')
 var _page = 1
 
@@ -51,7 +48,6 @@ function showPDFAlert(message, alert) {
 
 // Function to show content output image
 function showPDFResult(imageOut, imageW) {
-  // var width = "auto";
   container_postImage.innerHTML = ` 
     <img class="card-img-top" src="${imageOut}" style="border: 1px solid #F55; margin: 0 auto;">
   `
@@ -132,9 +128,6 @@ function uploadPDF(url) {
   // Append the file to the FormData instance
   data.append("file", file);
   
-  // Append identifier of process IMAGE on media value
-  //   data.append("process", process);
-
   // request progress handler
   request.upload.addEventListener("progress", function (e) {
     // Get the loaded amount and total filesize (bytes)
@@ -242,8 +235,8 @@ function on_select_attributes() {
 
 // SELECT PAGE FUNCTION
 function goPage(val, pdf_id) {
-  console.log(val)
-  console.log(pdf_id)
+  // console.log(val)
+  // console.log(pdf_id)
   path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
   _page = val
@@ -281,13 +274,10 @@ function movePage(_this, pdf_id, direct) {
       _this.disabled = true
     }
   }
+  // clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   document.getElementById('current_page').innerHTML = (val).toString()
   goPage(val, pdf_id)
-}
-
-// Function to active canvas and hide/show buttons
-function activeCanvas(edit_id) {
-  // 
 }
 
 // Function to inactive canvas and hide/show buttons

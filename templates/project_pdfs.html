@@ -16,7 +16,7 @@
                         <span style="font-size:medium;">{{ project.pro_title }}</span>
                         {% endif %}
                     </h6>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 1rem 0.5rem;">
                         {% if pdf %}   
                             <div id="alert_wrapper"></div>
                             <div class="row" style="padding: 0 1rem;">
@@ -73,25 +73,23 @@
                                             </li>
                                             {% endfor %}
                                         </div>
-                                        <!-- <li style="margin: 10px 0 5px; border-bottom:#CCC 1px solid; text-align: center;"></li> -->
-
                                     </div>  
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
-                                        <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.25rem;">
+                                        <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.5rem;">
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
                                                 <i class="fas fa-save"> &nbsp;Canvas</i>
                                             </button>
                                         </div>
                                         <span>Page</span>&nbsp;
                                         <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span>
-                                        <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.5rem;">
+                                        <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.75rem;">
                                             <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
-                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 10px 0 15px;">
+                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 10px 0 10px;">
                                             <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
                                         </div>
                                     </div>

@@ -115,7 +115,6 @@ def build_document_(title, text_pdf, language):
                 if key_text == "I": line.bold = True; line.italic = True; line.font.size = Pt(12) #line.font.color.rgb = RGBColor(0x22, 0x8b, 0x22)
             
             texts = []
-            # if key == "B":  p.add_run('bold').bold = True
 
     return document
 
@@ -512,7 +511,7 @@ def action_thesis_mul():
         pro_id = request.form.get('pro_id')
         process = request.form.get('process')
         _pages = request.form.getlist('page')
-        # print(_pages)
+
         if process == '0' and len(_pages) > 0:
             temp_page = ""
             for _page in _pages:
@@ -522,7 +521,6 @@ def action_thesis_mul():
                     temp_page = item[0]
                 pages.append(int(item[1]))
                 pdfs[item[0]] = pages
-            # print(pdfs)
         
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
@@ -692,9 +690,6 @@ def action_thesis_mul():
         else:
             result_file_text = "El servidor está procesando, espere un momento."
     
-    # print("Results")
-    # print("result_valid", result_valid)
-    # print("result_invalid_process", result_invalid_process)
     return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, pro_id=pro_id)
 
 """
@@ -725,7 +720,6 @@ def project_pdfs(id):
             pdf['pdf_path'] = pdf_path
         
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
-        # project = one_project
     else:
         return render_template('project_pdfs.html')
 
@@ -751,23 +745,11 @@ def project_pdf(pdf_id):
                 }
         pdf['pdf_path'] = pdf_path
 
+        # pdfs, for the left panel
+        # pdf, for the content page
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
-        # project = one_project
     else:
         return render_template('project_pdfs.html')
-
-
-@main.route("/export_paper_mul", methods=["POST"])
-def export_paper_mul():
-    if request.method == "POST":
-        export_att = request.form.get('export_att')
-    
-    return send_file(export_att, as_attachment=True)
-
-
-@app.route('/files/multiple/upload/<filename>')
-def thesis_upload_img(filename):
-    return send_from_directory(app.config['MULTIPLE_UPLOAD'], filename)
 
 @main.route("/<pdf_id>", methods=["POST"])
 def pdf_post(pdf_id):
@@ -776,36 +758,40 @@ def pdf_post(pdf_id):
 
     if request.method == "POST":
         action = request.values.get("action")
-        print("Action", action)
 
         if action == "save_canvas":
             det_id = int(request.values.get("det_id"))
             det_attribute = int(request.values.get("det_attribute"))
             current_date = date.today().strftime("%d/%m/%Y")
-            rect = {
-                    'x': int(request.values.get("x")),
-                    'y': int(request.values.get("y")),
-                    'w': int(request.values.get("w")),
-                    'h': int(request.values.get("h"))
-                }
-            page = int(request.values.get("page"))                
-            image = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(page-1) + ".jpg"
-            image = cv2.imread(image, 0)
-            thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-            ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
+            dictCanvas = json.loads(request.values.get("dictCanvas"))
 
-            print("ROI line 798", str(len(ROI)))
+            print("dictCanvas")
+            print(dictCanvas)
+            i = 0
             text = ""
-            try:
-                text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
-                print(text)
-            except Exception as e:
-                    print(e)
-                    print("Error generate text")
+            dictPage = None
+            # page = int(request.values.get("page"))
+            for dictVal in dictCanvas:
+                if i == 0:
+                    dictPage = dictVal
+                    page = int(dictVal['page'])
+                print(str(dictVal['page']), " -> ", str(dictVal['x']))
+                i += 1
+                image = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                image = cv2.imread(image, 0)
+                thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+                ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
+                try:
+                    text_page = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                    print(text)
+                except Exception as e:
+                        print(e)
+                        print("Error generate text")
+                text = text + text_page + " "
             
             if text is None or text == "":
                 text = "..."
-            result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
+            result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, dictPage)
 
             # Solo guardar el titulo
             if det_attribute == 2 and result1:
@@ -854,7 +840,6 @@ def pdf_post(pdf_id):
                 msg_pdf = "Error en eliminación de PDFdetail"
             
             finally:
-                # print(msg_pdf)
                 result_split = 1
 
         if current_user.is_authenticated and result_split == 1:
@@ -877,7 +862,20 @@ def pdf_post(pdf_id):
             pdf['pdf_path'] = pdf_path
 
             return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
-        
+
+
+@main.route("/export_paper_mul", methods=["POST"])
+def export_paper_mul():
+    if request.method == "POST":
+        export_att = request.form.get('export_att')
+    
+    return send_file(export_att, as_attachment=True)
+
+
+@app.route('/files/multiple/upload/<filename>')
+def thesis_upload_img(filename):
+    return send_from_directory(app.config['MULTIPLE_UPLOAD'], filename)
+
 
 @main.route("/action_thesis_search", methods=["POST"])
 def action_thesis_search():
@@ -891,7 +889,6 @@ def action_thesis_search():
             print("len pdfs: " + str(len(pdfs)))
         
     return render_template('thesis_search.html', _pdfs = pdfs)
-
 
 @main.route("/close_thesis_one/<source>")
 def close_thesis_one(source):
