@@ -156,19 +156,20 @@ class SearchForm(Form):
 def home():
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     print(data_base)
+    with open('log.txt', 'w') as f:
+        f.write('Connection to SQLite ...')
+        f.write('\n')
+        f.write(data_base)
+        f.write('\n')
     try:
         connection = sqlite3.connect(data_base)
         # print("Connection to SQLite DB successful")
         with open('log.txt', 'w') as f:
-            f.write('Connection to SQLite DB successful')
-            f.write('\n')
-            f.write(data_base)
+            f.write('DB successful')
     except sqlite3.Error as error:
         # print("Error")
         with open('log.txt', 'w') as f:
             f.write('Connection ERROR')
-            f.write('\n')
-            f.write(data_base)
             f.write('\n')
             f.write(error)
     
