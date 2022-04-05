@@ -154,6 +154,24 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    print(data_base)
+    try:
+        connection = sqlite3.connect(data_base)
+        # print("Connection to SQLite DB successful")
+        with open('log.txt', 'w') as f:
+            f.write('Connection to SQLite DB successful')
+            f.write('\n')
+            f.write(data_base)
+    except sqlite3.Error as error:
+        # print("Error")
+        with open('log.txt', 'w') as f:
+            f.write('Connection ERROR')
+            f.write('\n')
+            f.write(data_base)
+            f.write('\n')
+            f.write(error)
+    
     if current_user.is_authenticated:
         list_projects = get_listProjects()
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
@@ -1045,24 +1063,6 @@ def save_thesis_mul():
 
 # INIT PROJECT
 if __name__ == '__main__':
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
-    print(data_base)
-    try:
-        connection = sqlite3.connect(data_base)
-        # print("Connection to SQLite DB successful")
-        with open('log.txt', 'w') as f:
-            f.write('Connection to SQLite DB successful')
-            f.write('\n')
-            f.write(data_base)
-    except sqlite3.Error as error:
-        # print("Error")
-        with open('log.txt', 'w') as f:
-            f.write('Connection ERROR')
-            f.write('\n')
-            f.write(data_base)
-            f.write('\n')
-            f.write(error)
-    
     db.create_all(app=create_app()) # create the SQLite database
     # start the flask app
     app.run(debug=True, use_reloader=True)
