@@ -1,5 +1,6 @@
 # -*- coding: utf_8 -*-
 import os, re, json
+import sqlite3
 from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
@@ -153,6 +154,25 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
+    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    print(data_base)
+    with open('log.txt', 'w') as f:
+        f.write('Connection to SQLite ...')
+        f.write('\n')
+        f.write(data_base)
+        f.write('\n')
+    try:
+        connection = sqlite3.connect(data_base)
+        # print("Connection to SQLite DB successful")
+        with open('log.txt', 'w') as f:
+            f.write('DB successful')
+    except sqlite3.Error as error:
+        # print("Error")
+        with open('log.txt', 'w') as f:
+            f.write('Connection ERROR')
+            f.write('\n')
+            f.write(error)
+    
     if current_user.is_authenticated:
         list_projects = get_listProjects()
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
@@ -1044,7 +1064,6 @@ def save_thesis_mul():
 
 # INIT PROJECT
 if __name__ == '__main__':
-    print("__main__")
     db.create_all(app=create_app()) # create the SQLite database
     # start the flask app
     app.run(debug=True, use_reloader=True)
