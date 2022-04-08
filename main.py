@@ -154,6 +154,7 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
+    print("__home__")
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     print(data_base)
     with open('log.txt', 'w') as f:
@@ -1064,6 +1065,7 @@ def save_thesis_mul():
 
 # INIT PROJECT
 if __name__ == '__main__':
+    print("__main__")
     db.create_all(app=create_app()) # create the SQLite database
     # start the flask app
     app.run(debug=True, use_reloader=True)
