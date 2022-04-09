@@ -562,14 +562,14 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                     if level_expo : methodology_det += methodology_det + "Exploratorio";   print("Exploratorio", end="")
                     # addText_background("N", "Metodología Detalles:\n" + methodology_det, page)
 
-                tools_text = ""
-                # print("\n07._ TOOLS : Tecnica(s) de recoleccion de datos empleada(s): ")
-                if len(listQuan) > 0 : 
-                    tools_text = tools_text + "Cuantitativos: " + str(listQuan)
-                    # print("  " + str(listQuan))
-                if len(listQual) > 0 : 
-                    tools_text = tools_text + ", Cualitativos: " + str(listQual)
-                    # print("  " + str(listQual))
+                # tools_text = ""
+                # # print("\n07._ TOOLS : Tecnica(s) de recoleccion de datos empleada(s): ")
+                # if len(listQuan) > 0 : 
+                #     tools_text = tools_text + "Cuantitativos: " + str(listQuan)
+                #     # print("  " + str(listQuan))
+                # if len(listQual) > 0 : 
+                #     tools_text = tools_text + ", Cualitativos: " + str(listQual)
+                #     # print("  " + str(listQual))
                 # addText_background("N", "Herramientas\nTécnica(s) de recolección de datos:\n" + tools_text, "")
 
                 if samples == "":     samples = getData_LongText(methodology_text, PATTERN_SAMP, 'E', '. ')
@@ -579,7 +579,7 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                 addText_background("N", samples)
 
                 addText_background("B", "\nRESULTADOS")
-                # result_text = list(filter(lambda x : x != '', result_text.split('\n\n')))
+                result_text = list(filter(lambda x : x != '', result_text.split('\n\n')))
                 # result_text = result_text.replace("\n", "")
                 # result_text = result_text.replace(".  ", ".\n\n")
                 if result_text=="":
@@ -587,7 +587,6 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                 else:
                     addText_background("N", result_text)
                     
-
                 addText_background("B", "\nCONCLUSIONES")
                 if conclusion_text=="":
                     addText_background("N", "No existe información específica sobre Conclusiones.")

@@ -134,7 +134,7 @@ def build_document(title, text_pdf, language):
             except:
                 delete_paragraph(p)
                 p = document.add_paragraph()
-                html = value.encode("ascii", "xmlcharrefreplace").decode("utf-8")
+                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
                 html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
                 html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
                 html = ILLEGAL_XML_CHARS_RE.sub("", html)
