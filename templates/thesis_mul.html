@@ -8,8 +8,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <h5 class="card-header">Extraer Múltiples Tesis</h5>
+                    <h6 class="card-header">Extraer de información de PDFs</h6>
                     <div class="card-body">
+                        {% if project %}
+                        <h5 class="card-title-info">{{ project.pro_title}} </h5>
+                        {% endif %}
                         <!-- <form class=""> -->
                             {% if not result_file_text %}
                             <div class="row">
@@ -17,7 +20,7 @@
                                     {% if not resultLoad %}
                                     <form method="post" action="/thesis_mul" enctype="multipart/form-data">
                                         <div class="mb-3 text-center">
-                                            <label id="files_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">Seleccionar múltiples PDFs</label><br>
+                                            <label id="files_label" style="margin: 0.5rem 0; width: 100%;">Seleccionar múltiples PDFs</label><br>
                                             <input type="file" class="form-control" id="file_pdf" name="files[]" multiple="true" autocomplete="off" required>
                                             <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
                                             <div class="line"></div>
@@ -52,23 +55,27 @@
                                                             <div class="col-sm-12">
                                                                 {% for i in range(pdf.npages) %}
                                                                 <div class="form-check form-check-inline" style="padding-left: 0; margin-right: 2px; font-size:small; color: #666;">
-                                                                    <div style="border: 1px solid #CCC; margin-top: 10px;">
-                                                                        <span class="fa-fw select-all fas" style="width: 100px">
-                                                                            <img class="card-img-land" style="width: 110px;" src='{{pdf.pdf_path}}{{i}}.jpg'>
-                                                                        </span>
-                                                                    </div>
-                                                                    {% if i==0 or i==1 %}
-                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
-                                                                    {% else %}
-                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
-                                                                    {% endif %}
+                                                                    <button type="button" class="btn" style="padding: 0 2px; margin: 5px 0;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}">
+                                                                        <div style="border: 1px solid #CCC; margin-top: 2px;">
+                                                                            <span class="fa-fw select-all fas" style="width: 100px">
+                                                                                <img class="card-img-land" style="width: 100px;" src='{{pdf.pdf_path}}{{i}}.jpg'>
+                                                                            </span>
+                                                                        </div>
+                                                                        <span id="popup" class="fa-fw select-all fas"></span>
+                                                                        <div style="margin: 0 15px;">
+                                                                        {% if i==0 or i==1 %}
+                                                                            <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                        {% else %}
+                                                                            <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                        {% endif %}
+                                                                        </div>
+                                                                    </button>
+                                                                    
                                                                         <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
                                                                         <span id="myPopup" class="fa-fw select-all fas"></span>
                                                                     </button> -->
                                                                     <!-- Button to launch a modal -->
-                                                                    <button type="button" class="btn btn-secondary" style="padding: 0 2px;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}">
-                                                                        <span id="popup" class="fa-fw select-all fas"></span>
-                                                                    </button>
+                                                                    
 
                                                                     <!-- Modal -->
                                                                     <div class="modal fade" id="exampleModal_{{pdf.pdf_id}}_{{i}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

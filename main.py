@@ -154,26 +154,7 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
-    print("__home__")
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
-    print(data_base)
-    with open('log.txt', 'w') as f:
-        f.write('Connection to SQLite ...')
-        f.write('\n')
-        f.write(data_base)
-        f.write('\n')
-    try:
-        connection = sqlite3.connect(data_base)
-        # print("Connection to SQLite DB successful")
-        with open('log.txt', 'w') as f:
-            f.write('DB successful')
-    except sqlite3.Error as error:
-        # print("Error")
-        with open('log.txt', 'w') as f:
-            f.write('Connection ERROR')
-            f.write('\n')
-            f.write(error)
-    
+    # print("__home__")
     if current_user.is_authenticated:
         list_projects = get_listProjects()
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
@@ -207,8 +188,6 @@ def upload_home(id):
     if current_user.is_authenticated:
         one_project = get_projectById(id)
         list_keywords = get_pkDetailById(id)
-
-        print("list_keywords", list_keywords)
         return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywords=list_keywords, pro_id=id)
     else:
         return render_template('upload_home.html')
@@ -239,7 +218,8 @@ def thesis_one():
 @main.route('/thesis_mul/<id>')
 def thesis_mul(id):
     if current_user.is_authenticated:
-        return render_template('thesis_mul.html', name=current_user.name.split()[0], pro_id=id)
+        one_project = get_projectById(id)
+        return render_template('thesis_mul.html', name=current_user.name.split()[0], project=one_project[0], pro_id=id)
     else:
         return render_template('thesis_mul.html')
 
@@ -466,7 +446,6 @@ def thesis_mul_load():
         
         # 1. Remove and split IMG
         # img_remove(fname, app.config['MULTIPLE_SPLIT_IMG'])
-
         for file in files:
             file_pdfs.append(file.filename)
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
