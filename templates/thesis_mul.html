@@ -62,15 +62,14 @@
                                                                             </span>
                                                                         </div>
                                                                         <span id="popup" class="fa-fw select-all fas"></span>
-                                                                        <div style="margin: 0 15px;">
-                                                                        {% if i==0 or i==1 %}
-                                                                            <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
-                                                                        {% else %}
-                                                                            <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
-                                                                        {% endif %}
-                                                                        </div>
                                                                     </button>
-                                                                    
+                                                                    <div style="margin: 0 15px;">
+                                                                    {% if i==0 or i==1 %}
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                    {% else %}
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                    {% endif %}
+                                                                    </div>
                                                                         <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
                                                                         <span id="myPopup" class="fa-fw select-all fas"></span>
                                                                     </button> -->
