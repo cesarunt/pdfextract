@@ -744,9 +744,6 @@ def pdf_post(pdf_id):
             det_attribute = int(request.values.get("det_attribute"))
             current_date = date.today().strftime("%d/%m/%Y")
             dictCanvas = json.loads(request.values.get("dictCanvas"))
-
-            print("dictCanvas")
-            print(dictCanvas)
             i = 0
             text = ""
             dictPage = None
@@ -757,7 +754,8 @@ def pdf_post(pdf_id):
                     page = int(dictVal['page'])
                 print(str(dictVal['page']), " -> ", str(dictVal['x']))
                 i += 1
-                image = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                image = cfg.FILES.GLOBAL_PATH + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                print("image... ", image)
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
