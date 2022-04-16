@@ -142,22 +142,26 @@
                                         {% else %}
                                         <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
                                         {% endif %}
-                                        {% if result_invalid_text %}
+                                        {% if result_save %}
+                                        <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%;">{{ result_file_text }}</label>
+                                        {% else %}
                                         <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%; font-size: small; color: darkred;">{{ result_invalid_text }}</label>
                                         {% endif %}
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; font-weight: bold; width: 100%;">{{ result_file_text }}</label>
                                     </div>
-                                    <div class="mb-3">
+                                    {% if result_save %}
+                                    <div class="mb-3" style="margin-bottom: 0 !important;">
                                         <form method="POST" action="save_paper_mul" enctype="multipart/form-data">
                                             <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
-                                            <p style="text-align: center; margin: 15px 0 0 0;">
-                                                <a href="{{ url_for('main.close_thesis_mul', source='upload/home/'+pro_id) }}" class="btn btn-secondary">Cerrar</a>
-                                                {% if result_save %}
+                                            <p style="text-align: center; margin: 5px 0 25px;">
                                                 <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: medium;">Guardar</button>
-                                                {% endif %}
+                                            </p>
+                                            <p style="text-align: center; margin: 0 0 15px 0;">
+                                                <span>Los PDFs fueron procesados correctamente, si desea actualizarlos. Ingrese aqui </span>
+                                                <a href="{{ url_for('main.close_thesis_mul', source='upload/home/'+pro_id) }}" class="btn btn-success">PDFs</a>
                                             </p>
                                         </form>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% endif %}

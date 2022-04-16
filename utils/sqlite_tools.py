@@ -1,9 +1,12 @@
 # -*- coding: utf_8 -*-
+from utils.config import cfg
 import sqlite3
 import secrets
 import json
 import os
 
+global data_base
+data_base = cfg.FILES.GLOBAL_PATH + '/db.sqlite'
 
 def get_pdf_info(cursor, tablename, file_pdf):
     """Get column names of main table, given its name and a cursor (or connection) to the database.
@@ -33,7 +36,6 @@ def get_col_names(cursor, tablename):
     return [x[0] for x in reader.description] 
 
 def get_thesisByName(file_pdf):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_attributes'
     table_colnames = None
     pdf = dict()
@@ -85,7 +87,6 @@ def get_thesisByName(file_pdf):
         return pdf
 
 def get_listThesisByWord(keyword):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_keywords'
     pdfs = []
     try:
@@ -126,7 +127,6 @@ def get_listThesisByWord(keyword):
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
 def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict()):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     # table_colnames = None
     result = False
@@ -154,7 +154,6 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT)
 def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     # table_colnames = None
     result = False
@@ -182,7 +181,6 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
 
 # ----------------------------------- FORM UPLOAD -----------------------------------
 def put_newProject(project=dict()):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'project_info'
     result = False
     try:
@@ -211,7 +209,6 @@ def put_newProject(project=dict()):
         return result, id
 
 def put_newPKdetail(id, key, current_date):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_key_details'
     result = False
     try:
@@ -237,7 +234,6 @@ def put_newPKdetail(id, key, current_date):
         return result
 
 def put_newKeyword(key_name, current_date):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'key_info'
     result = False
     try:
@@ -264,7 +260,6 @@ def put_newKeyword(key_name, current_date):
 
 def get_listUniversities():
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'uni_info'
     universities = []
     try:
@@ -298,7 +293,6 @@ def get_listUniversities():
 
 def get_listKeywords():
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'key_info'
     keywords = []
     # keynames = []
@@ -331,10 +325,7 @@ def get_listKeywords():
 
 def get_listProjects():
     # List of TOP 10
-    basedir   = os.path.abspath(os.path.dirname(__file__))
-    print("basedir", basedir)
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
-    print("data_base", data_base)
+    print("data_base... ", data_base)
     table_name = 'project_info'
     projects = []
     try:
@@ -362,7 +353,7 @@ def get_listProjects():
                     })
         cursor.close()
     except sqlite3.Error as error:
-        print("Failed to connect", error)
+        print("Failed to connect... ", error)
     finally:
         if sqliteConnection:
             sqliteConnection.close()
@@ -371,7 +362,6 @@ def get_listProjects():
 
 def get_projectById(id):
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'project_info'
     project = []
     try:
@@ -409,7 +399,6 @@ def get_projectById(id):
 
 def get_pkDetailById(id):
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_key_details'
     pk_details = []
     try:
@@ -440,7 +429,6 @@ def get_pkDetailById(id):
         return pk_details
 
 def upd_projectById(id, n_articles, n_process):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'project_info'
     result = False
     try:
@@ -466,7 +454,6 @@ def upd_projectById(id, n_articles, n_process):
         return result
 
 def get_squareProjects_ByWord(keyword):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'project_info'
     projects = []
     try:
@@ -510,7 +497,6 @@ def get_squareProjects_ByWord(keyword):
 
 def get_userById(id):
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'user'
     user = []
     try:
@@ -540,7 +526,6 @@ def get_userById(id):
         return user
 
 def put_newPDFattribute(name, current_date):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_attributes'
     result = False
     try:
@@ -568,7 +553,6 @@ def put_newPDFattribute(name, current_date):
         return result, id
 
 def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     result = False
     try:
@@ -621,7 +605,6 @@ def del_itemPDFdetail(det_id):
 
 # ----------------------------------- SAVE AFTER PROCESS -----------------------------------
 def put_newPDF(pdf=dict()):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_info'
     result = False
     try:
@@ -649,7 +632,6 @@ def put_newPDF(pdf=dict()):
         return id
 
 def put_newPPdetail(id, pdf, name, current_date):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -675,7 +657,6 @@ def put_newPPdetail(id, pdf, name, current_date):
         return result
 
 def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -702,7 +683,6 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
 
 def get_projectPDFById(id):
     # List of TOP 10
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     pp_details = []
     try:
@@ -745,7 +725,6 @@ def get_projectPDFById(id):
         return pp_details
 
 def get_pdfDetailById(pdf_id):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     pdf = dict()
     pdf_foundlist = []      #   Atributos

@@ -10,7 +10,6 @@ from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
 from __init__ import create_app, db
-# import sqlite3, os
 
 import cv2
 import pytesseract
@@ -25,7 +24,6 @@ main = Blueprint('main', __name__)
 # app = Flask(__name__)
 app = create_app() # we initialize our flask app using the __init__.py function
 app.jinja_env.auto_reload = True
-app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH 
 app.config['UPLOAD_EXTENSIONS']  = cfg.FILES.UPLOAD_EXTENSIONS
 app.config['SINGLE_UPLOAD']      = cfg.FILES.SINGLE_UPLOAD
@@ -39,6 +37,7 @@ app.config['MULTIPLE_OUTPUT']    = cfg.FILES.MULTIPLE_OUTPUT
 app.config['MULTIPLE_FORWEB']    = cfg.FILES.MULTIPLE_FORWEB
 app.config['MULTIPLE_SPLIT_WEB'] = cfg.FILES.MULTIPLE_SPLIT_WEB
 app.config['MULTIPLE_UPLOAD_WEB'] = cfg.FILES.MULTIPLE_UPLOAD_WEB
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Allowed extension you can set your own
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
@@ -153,11 +152,13 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
-    # print("__home__")
+    print("__home__")
     if current_user.is_authenticated:
+        print("user auth")
         list_projects = get_listProjects()
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
     else:
+        print("user none")
         return render_template('login.html')
 
 @main.route('/create/upload')
@@ -177,7 +178,6 @@ def upload_form():
 @main.route('/create/db')
 def db_form():
     if current_user.is_authenticated:
-        # list_projects = get_listProjects()
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "")
     else:
         return render_template('db_form.html')
@@ -637,7 +637,6 @@ def action_thesis_mul():
                     # -----------
                     # # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
-                    print("SPLIT ...")
                     pdf_info_id = pdf_ids[i]
                     print("pdf_info_id", pdf_info_id)
                     #     ---------
@@ -1027,7 +1026,6 @@ def save_thesis_mul():
 # INIT PROJECT
 if __name__ == '__main__':
     print("__main__")
-    db.create_all(app=create_app()) # create the SQLite database
     # start the flask app
     app.run(debug=True, use_reloader=True)
     # app.run(host="0.0.0.0", port="5000", debug=True, threaded=True, use_reloader=True)
