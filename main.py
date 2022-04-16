@@ -1,6 +1,5 @@
 # -*- coding: utf_8 -*-
 import os, re, json
-import sqlite3
 from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
@@ -10,7 +9,11 @@ from scripts.process import pdf_process
 from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
-from __init__ import create_app, db
+# from __init__ import create_app, db
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+# import sqlite3, os
 
 import cv2
 import pytesseract
@@ -19,6 +22,32 @@ from docx.shared import Pt
 from fold_to_ascii import fold
 from flask_login import current_user
 from wtforms import TextField, Form
+
+db = SQLAlchemy()
+def create_app():
+    # print("__init__")
+    app = Flask(__name__) # creates the Flask instance, __name__ is the name of the current Python module
+    app.config['SECRET_KEY'] = 'secret-key-goes-here' # it is used by Flask and extensions to keep data safe
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #it is the path where the SQLite database file will be saved
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # deactivate Flask-SQLAlchemy track modifications
+    db.init_app(app) # Initialiaze sqlite database
+    # The login manager contains the code that lets your application and Flask-Login work together
+    login_manager = LoginManager() # Create a Login Manager instance
+    login_manager.login_view = 'auth.login' # define the redirection path when login required and we attempt to access without being logged in
+    login_manager.init_app(app) # configure it for login
+    from utils.models import User
+    @login_manager.user_loader
+    def load_user(user_id): #reload user object from the user ID stored in the session
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return User.query.get(int(user_id))
+    # blueprint for auth routes in our app
+    # blueprint allow you to orgnize your flask app
+    from utils.auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint)
+    # blueprint for non-auth parts of app
+    from main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+    return app
 
 main = Blueprint('main', __name__)
 
@@ -702,21 +731,6 @@ def project_pdfs(id):
     if current_user.is_authenticated:
         project = get_projectById(id)
         pdfs = get_projectPDFById(id)
-        for pdf in pdfs:
-            # revisar esto ... luego de hacer el input pdf_details
-            """Verificar pdf_details, encontrados y no encontradps"""
-            # if len(pdf['foundlist']): select = None 
-            # else: select = "."
-            list_npages = list(range(1, int(pdf['pdf_npages']+1)))
-            list_npages = [str(int) for int in list_npages]
-            pdf['listnpages'] = list_npages
-
-            # get data for pdf_file
-            pdf_path = {
-                    'name': pdf['pdf_name'],
-                    'num_pages':   int(pdf['pdf_npages']),
-                    }
-            pdf['pdf_path'] = pdf_path
         
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
     else:
@@ -734,7 +748,6 @@ def project_pdf(pdf_id):
         list_npages = list(range(1, int(pdf['npages']+1)))
         list_npages = [str(int) for int in list_npages]
         pdf['listnpages'] = list_npages
-
         # get data for pdf_file
         pdf_path = {
                 'name':        pdf['name'],
@@ -743,7 +756,6 @@ def project_pdf(pdf_id):
                 'num_pages':   int(pdf['npages']),
                 }
         pdf['pdf_path'] = pdf_path
-
         # pdfs, for the left panel
         # pdf, for the content page
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)

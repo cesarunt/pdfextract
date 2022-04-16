@@ -9,7 +9,7 @@ import sqlite3, os
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 def create_app():
-    # print("__init__")
+    print("__init__")
     app = Flask(__name__) # creates the Flask instance, __name__ is the name of the current Python module
     app.config['SECRET_KEY'] = 'secret-key-goes-here' # it is used by Flask and extensions to keep data safe
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #it is the path where the SQLite database file will be saved

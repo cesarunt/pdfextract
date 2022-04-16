@@ -41,14 +41,14 @@
                     {% for pdf in pdfs %}
                     <li style="padding:0 0 0 5px;">
                         <span>
-                        <a style="font-size: 0.75rem; padding: 0.25rem 0.1rem 0.25rem 0.5rem; display: inline-flex; width: 88%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                        <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
                             <i class="fas fa-copy" style="margin-right: 0;"></i>
-                            {{ pdf.pdf_name }}
+                            <div>{{ pdf.pdf_name }}</div>
                         </a>
                         </span>
-                        <button type="button" id="close_{{pdf.det_id}}" style="padding: 0;" class="btn" onclick="closeAttribute(this.id)">
+                        <!-- <button type="button" id="close_{{pdf.det_id}}" style="padding: 0;" class="btn" onclick="closeAttribute(this.id)">
                             <i class="fas fa-window-close" style="color:firebrick;"></i>
-                        </button>                        
+                        </button> -->
                     </li>
                     {% endfor %}
                 {% endif %}

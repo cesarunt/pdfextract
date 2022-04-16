@@ -717,10 +717,17 @@ def get_projectPDFById(id):
         records = cursor.fetchall()
 
         for record in records:
+            words = record[2].split()
+            for word in words:
+                if len(word)>25:
+                    index = words.index(word)
+                    words.remove(word)
+                    words.insert(index, "-")
+            text = ' '.join(words)
             pp_details.append({
                 'pro_id':     record[0],
                 'pdf_id':     record[1],
-                'pdf_name':   record[2],
+                'pdf_name':   text,
                 'pdf_file':   record[3],
                 'pdf_npages': record[4],
                 'pdf_size':   record[5],
