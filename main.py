@@ -9,10 +9,7 @@ from scripts.process import pdf_process
 from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
-# from __init__ import create_app, db
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from __init__ import create_app, db
 # import sqlite3, os
 
 import cv2
@@ -23,37 +20,10 @@ from fold_to_ascii import fold
 from flask_login import current_user
 from wtforms import TextField, Form
 
-db = SQLAlchemy()
-def create_app():
-    # print("__init__")
-    app = Flask(__name__) # creates the Flask instance, __name__ is the name of the current Python module
-    app.config['SECRET_KEY'] = 'secret-key-goes-here' # it is used by Flask and extensions to keep data safe
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #it is the path where the SQLite database file will be saved
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # deactivate Flask-SQLAlchemy track modifications
-    db.init_app(app) # Initialiaze sqlite database
-    # The login manager contains the code that lets your application and Flask-Login work together
-    login_manager = LoginManager() # Create a Login Manager instance
-    login_manager.login_view = 'auth.login' # define the redirection path when login required and we attempt to access without being logged in
-    login_manager.init_app(app) # configure it for login
-    from utils.models import User
-    @login_manager.user_loader
-    def load_user(user_id): #reload user object from the user ID stored in the session
-        # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(int(user_id))
-    # blueprint for auth routes in our app
-    # blueprint allow you to orgnize your flask app
-    from utils.auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
-    # blueprint for non-auth parts of app
-    from main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-    return app
-
 main = Blueprint('main', __name__)
 
 # app = Flask(__name__)
 app = create_app() # we initialize our flask app using the __init__.py function
-
 app.jinja_env.auto_reload = True
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH 
