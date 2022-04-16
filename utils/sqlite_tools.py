@@ -331,7 +331,10 @@ def get_listKeywords():
 
 def get_listProjects():
     # List of TOP 10
+    basedir   = os.path.abspath(os.path.dirname(__file__))
+    print("basedir", basedir)
     data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    print("data_base", data_base)
     table_name = 'project_info'
     projects = []
     try:
@@ -359,7 +362,7 @@ def get_listProjects():
                     })
         cursor.close()
     except sqlite3.Error as error:
-        print("Failed to list data from sqlite table", error)
+        print("Failed to connect", error)
     finally:
         if sqliteConnection:
             sqliteConnection.close()
