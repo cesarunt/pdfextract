@@ -6,13 +6,20 @@
     <div class="container">
         <div class="page-title">  </div>
         <div class="row">
-            <div class="col-md-12 page-header" style="text-align: right; font-size: smaller; margin: 5px auto;">                
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
+                <div class="row" style="margin: 0 0.1rem;">
+                    <div class="col-md-9" style="margin: 0.4rem 0 0; text-align: left;">
+                        <a href="{{ url_for('main.upload_form') }}">
+                            <p class="text-muted" style="margin: 0.25rem 0 0; font-size: large;"><b>Información del Proyecto</b></p>
+                        </a>
+                    </div>
+                    <div class="col-md-3" style="margin: 0.3rem 0; text-align: right;">
+                        <a href="#">
+                            <button type="button" class="btn btn-primary" style="margin: 0rem;"><b>Editar</b></button>
+                        </a>
+                    </div>
+                </div>
                 <div class="card">
-                    <h6 class="card-header">Información del Proyecto</h6>
                     <div class="card-body" style="text-align: center;">
                         <!-- <h5 class="card-title">Construcción de Antecedentes</h5> -->
                         <h5 class="card-title-info">{{ project.pro_title}} </h5>

@@ -190,8 +190,8 @@ def put_newProject(project=dict()):
         print(json.dumps(project))
         print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_career, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
-                    VALUES ("{project['title']} ", "{project['university']}", "{project['career']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
+                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
+                    VALUES ("{project['title']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
                 """
         # print(query)
         sqlite_select_query = query
@@ -259,7 +259,6 @@ def put_newKeyword(key_name, current_date):
         return result
 
 def get_listUniversities():
-    # List of TOP 10
     table_name = 'uni_info'
     universities = []
     try:
@@ -271,7 +270,6 @@ def get_listUniversities():
                     FROM "{table_name}"
                     WHERE  uni_active = 1
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -290,6 +288,67 @@ def get_listUniversities():
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return universities
+
+def get_listDepartments():
+    table_name = 'ubigeo_departments'
+    departments = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    SELECT id, name
+                    FROM {table_name}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        print(records)
+
+        for record in records:
+            departments.append({
+                    'dpt_id':       record[0],
+                    'dpt_name':     record[1],
+                    })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to list data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return departments
+
+def get_listProvinces(department):
+    table_name = 'ubigeo_provinces'
+    provinces = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    SELECT id, name, department_id
+                    FROM {table_name}
+                    WHERE  department_id = {department}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        print(records)
+
+        for record in records:
+            provinces.append({
+                    'prv_id':        record[0],
+                    'prv_name':      record[1],
+                        })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to list data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return provinces
 
 def get_listKeywords():
     # List of TOP 10
@@ -323,7 +382,7 @@ def get_listKeywords():
             print("The SQLite connection is closed")
         return keywords
 
-def get_listProjects():
+def get_listProjects(limit=-1):
     # List of TOP 10
     print("data_base... ", data_base)
     table_name = 'project_info'
@@ -336,7 +395,7 @@ def get_listProjects():
                     SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     ORDER BY a.pro_id DESC
-                    LIMIT 5
+                    LIMIT "{limit}"
                 """
         # print(query)
         sqlite_select_query = query

@@ -155,18 +155,27 @@ def home():
     print("__home__")
     if current_user.is_authenticated:
         print("user auth")
-        list_projects = get_listProjects()
+        list_projects = get_listProjects(5)
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
     else:
         print("user none")
         return render_template('login.html')
 
+@main.route('/province/<department>')
+def province(department):
+    list_provinces = get_listProvinces(department)
+    print("----------------------------------------")
+    print(list_provinces)
+    return jsonify({'provinces': list_provinces})
+
 @main.route('/create/upload')
 def upload_form():
     if current_user.is_authenticated:
         list_universities = get_listUniversities()
+        list_departments = get_listDepartments()
+        # list_provinces = get_listProvinces()
         list_keywords = get_listKeywords()
-        return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords)
+        return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, departments=list_departments, keywords=list_keywords)
     else:
         return render_template('upload_form.html')
 
@@ -263,7 +272,10 @@ def save_upload():
         project = {
             'title' :       request.form['title'],
             'university' :  request.form['university'],
+            'department' :  request.form['department'],
+            'province' :    request.form['province'],
             'career' :      request.form['career'],
+            'comment' :     request.form['comment'],
             'type_a' :      type_a,
             'type_m' :      type_m,
             'n_articles':   0,
@@ -693,6 +705,14 @@ def action_thesis_mul():
     PROJECT PDF 
     =====================
 """
+@main.route('/project/list')
+def project_list():
+    if current_user.is_authenticated:
+        list_projects = get_listProjects()
+        return render_template('project_list.html', name=current_user.name.split()[0], projects=list_projects)
+    else:
+        return render_template('login.html')
+
 @main.route('/project/pdfs/<id>')
 def project_pdfs(id):
     global pro_id

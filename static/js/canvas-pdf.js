@@ -1,7 +1,6 @@
 
 var update_att = document.getElementById("btn_save_canvas");
 // var text_area = document.getElementById("text_area");
-
 // var iframe_pdf = document.getElementById("iframe_pdf");
 
 var canvas = document.getElementById("canvas");

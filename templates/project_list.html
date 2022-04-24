@@ -1,0 +1,25 @@
+{% extends "layout_home.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container" style="max-width: 1000px;">
+        
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <h5 style="padding: 0.5rem; margin-bottom: 0;"><b>Actualizar Proyectos</b></h5>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p class="card-title-form" style="margin-bottom: 0.75rem;">Seleccionar proyecto <span style="font-size: small; font-weight: 100;">(todos)</span></p>
+                        {% for project in projects %}
+                        <a href="{{ url_for('main.upload_home', id=project.pro_id) }}">
+                            <button type="button" class="btn btn-outline-dark mb-2">{{project.pro_title}} <span class="badge bg-light text-dark" style="background-color:cornflowerblue !important;">({{project.pro_uni}})</span></button><br>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,8 @@ var variables_select = document.getElementById("keywords_select");
 var variables_label = document.getElementById("keywords_label");
 var keywords = document.getElementById("keywords_in").value;
 var keywords_out = document.getElementById("keywords_out");
+var departments = document.getElementById("department");
+var provinces = document.getElementById("province");
 // console.log(keywords)
 keywords = keywords.replace(']', '').replace('[', '')
 keywords = keywords.split(', ')
@@ -133,4 +135,20 @@ function addVariable() {
   request.open("POST", "/add_variable");
   request.send(data);
 
+}
+
+// Action to change and load provinces list
+if (!departments.value) {
+  departments.onchange = function(){
+    department = departments.value;
+    fetch('/province/' + department).then(function(response){
+      response.json().then(function(data){
+        let optionHTML = "";
+        for (let province of data.provinces){
+          optionHTML += '<option value="'+ province.prv_id +'">' + province.prv_name + '</option>';
+        }
+        provinces.innerHTML = optionHTML;
+      });
+    });
+  }
 }
