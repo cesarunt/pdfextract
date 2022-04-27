@@ -138,7 +138,8 @@ function addVariable() {
 }
 
 // Action to change and load provinces list
-if (!departments.value) {
+// if (!departments.value) {
+  // console.log(departments.value)
   departments.onchange = function(){
     department = departments.value;
     fetch('/province/' + department).then(function(response){
@@ -151,4 +152,4 @@ if (!departments.value) {
       });
     });
   }
-}
+// }

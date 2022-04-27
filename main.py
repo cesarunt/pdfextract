@@ -164,8 +164,6 @@ def home():
 @main.route('/province/<department>')
 def province(department):
     list_provinces = get_listProvinces(department)
-    print("----------------------------------------")
-    print(list_provinces)
     return jsonify({'provinces': list_provinces})
 
 @main.route('/create/upload')
@@ -173,9 +171,21 @@ def upload_form():
     if current_user.is_authenticated:
         list_universities = get_listUniversities()
         list_departments = get_listDepartments()
-        # list_provinces = get_listProvinces()
         list_keywords = get_listKeywords()
-        return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, departments=list_departments, keywords=list_keywords)
+        one_project = []
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project, universities=list_universities, departments=list_departments, keywords=list_keywords)
+    else:
+        return render_template('upload_form.html')
+
+@main.route('/edit/update/<id>')
+def update_form(id):
+    if current_user.is_authenticated:
+        list_universities = get_listUniversities()
+        list_departments = get_listDepartments()
+        one_project = get_projectById(id)
+        list_keywords = get_pkDetailById(id)
+        list_provinces = get_listProvinces(one_project[0]['pro_department'])
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, keywords=list_keywords, pro_id=id)
     else:
         return render_template('upload_form.html')
 
@@ -201,19 +211,6 @@ def upload_home(id):
         return render_template('upload_home.html')
 
 # Papers
-@main.route('/paper_one')
-def paper_one():
-    if current_user.is_authenticated:
-        return render_template('paper_one.html', name=current_user.name.split()[0])
-    else:
-        return render_template('paper_one.html')
-
-@main.route('/paper_mul/<id>')
-def paper_mul(id):
-    if current_user.is_authenticated:
-        return render_template('paper_mul.html', name=current_user.name.split()[0], pro_id=id)
-    else:
-        return render_template('paper_mul.html')
 
 # Thesis
 @main.route('/thesis_one')
@@ -259,13 +256,11 @@ def save_upload():
                 type_a = 1
         except:
             type_a = 0
-        
         try:
             if request.form['type_m']:
                 type_m = 1
         except:
             type_m = 0
-
         if current_user.is_authenticated:
             user_id = current_user.id
 
@@ -284,24 +279,39 @@ def save_upload():
             'created' :     current_date
         }
         keywords = request.form['keywords_out'].split(',')
-        
-        try:
+        save_type = request.form['save_type']
+        if save_type == "new" :
             response_project, id = put_newProject(project)
             if response_project is True:
-                msg_project = "Proyecto registrado con éxito"
-        except:
-            msg_project = "Error en registro del proyecto"
-        
-        try:
-            for key in keywords:
-                response_pkdetail = put_newPKdetail(id, key, current_date)
-            if response_pkdetail is True:
-                msg_pkdetail = "PKdetail registrado con éxito"
-        except:
-            msg_pkdetail = "Error en registro de PKdetail"
-        
-        finally:
-            return redirect('/upload/home/'+str(id))
+                print("Proyecto registrado con éxito")
+                for key in keywords:
+                    response_pkdetail = put_newPKdetail(id, key, current_date)
+            # try:
+            #     response_project, id = put_newProject(project)
+            #     if response_project is True:
+            #         msg_project = "Proyecto registrado con éxito"
+            # except:
+            #     msg_project = "Error en registro del proyecto"
+            # try:
+            #     for key in keywords:
+            #         response_pkdetail = put_newPKdetail(id, key, current_date)
+            #     if response_pkdetail is True:
+            #         msg_pkdetail = "PKdetail registrado con éxito"
+            # except:
+            #     msg_pkdetail = "Error en registro de PKdetail"
+        else:
+            id = request.form['save_id']
+            response_project = upd_projectById(id, project)
+            if response_project is True:
+                print("Proyecto actualizado con éxito")
+            # 
+            # 
+            # FALTA AGREGAR UPDATE PARA pro_key_details
+            # 
+            # 
+
+        # finally:
+        return redirect('/upload/home/'+str(id))
 
 
 @main.route("/add_variable", methods=["POST"])
@@ -692,7 +702,7 @@ def action_thesis_mul():
 
             # Put data on pro_pdf_details
             # Update data on project_info
-            saveDB = upd_projectById(pro_id, result_valid, n_process)
+            saveDB = upd_projectProcess(pro_id, result_valid, n_process)
             if saveDB is True:
                 print("Se actualizó con éxito project_info")
                     
@@ -927,93 +937,6 @@ def paper_mul_load():
         if (upload == True):
             print('File(s) successfully uploaded')
             return render_template('paper_mul.html', resultLoad=upload, pro_id=pro_id)
-
-
-@main.route("/action_paper_mul", methods=["POST"])
-def action_paper_mul():
-    global file_pdfs
-    text_pdf = []
-
-    if request.method == "POST":
-        global file_pdf, document
-        resultCPU = False
-        action = None
-        result_save = None
-        result_file_text = "None"
-        result_invalid_text = ""
-        result_file_down = "None"
-        result_valid = 0
-        result_invalid = 0
-        result_invalid_process = []
-        pro_id = request.form.get('pro_id')
-
-        # Verify if posible to process
-        if get_viewProcess_CPU() is True :
-
-            document = Document() 
-            print("NumPDFs Cargados")
-            print(len(file_pdfs))
-            for filename in file_pdfs :
-                filename = fold(filename)                
-                fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
-                path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
-                path = validate_path(path)
-                path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
-                action = request.values.get("action")
-                print("Action", action)
-
-                if action is None:
-                    # 1. Remove and split PDF
-                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])                     # Call pdf remove function
-                    result_split = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])     # Call pdf splitter function
-
-                if result_split == 0:
-                    # result_save = False
-                    result_invalid += 1
-                    result_invalid_process.append(filename + " ...NO se procesó")
-                    # result_file_text = "No se logró procesar"
-                if result_split == 2:
-                    # result_save = False
-                    result_invalid += 1
-                    result_invalid_process.append(filename + " ...supera el Nro páginas")
-                    # result_file_text = "El PDF debe tener máximo " + str(cfg.FILES.MAX_NUMPAGES) + " páginas."
-                if result_split == 1:
-                    # 2. Process PDF
-                    # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'])  # Call pdf process function
-                    # print("Out web: " + app.config['MULTIPLE_FORWEB'])
-                    print("len text_pdf", str(len(text_pdf)))
-
-                    if len(text_pdf) > 1 :
-                        now = datetime.now()
-                        document = build_document(filename, text_pdf, language)
-                        file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-                        document.save(file_save)
-                        result_valid += 1
-                        result_file_text = "Antecedente Múltiple"
-                        result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-
-                if result_valid > 0 :
-                    result_save = True
-                
-                if result_invalid > 0 and result_valid == 0 :
-                    result_save = False
-                    result_file_text = "No fue posible procesar"
-                
-                if len(result_invalid_process) > 0 :
-                    # result_save = False
-                    result_invalid_text = (',  \n'.join(result_invalid_process))
-            
-            # Save resutls on database
-            project = get_projectById(pro_id)
-            n_process = int(project[0]["pro_n_process"]) + 1
-            saveDB = upd_projectById(pro_id, result_valid, n_process)
-            if saveDB is True:
-                print("Se actualizó con éxito project_info")
-        else:
-            result_file_text = "El servidor está procesando, espere un momento."
-    
-    return render_template('paper_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down=result_file_down, pro_id=pro_id)
 
 # CLOSE PAPER
 @main.route("/<source>")

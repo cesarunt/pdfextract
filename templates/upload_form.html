@@ -16,7 +16,7 @@
                         <form class="needs-validation" action="{{ url_for('main.save_upload') }}" method="POST" accept-charset="utf-8">
                             <div class="row g-2">
                                 <input id="keywords_out" name="keywords_out" type="hidden" value="">
-                                <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
+                                <input id="keywords_in" name="keywords_in" type="hidden" value="">
                                 <div class="col-md-4">
                                     <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" autocomplete="off" onkeyup="showResults(this.value)">
                                     <span class="fa-fw select-all fas" onclick="addVariable()"></span>
@@ -25,13 +25,27 @@
                                     <div class="invalid-feedback">Ingrese palabra clave</div>
                                 </div>
                                 <div class="col-md-8">
+                                    {% if project %}
+                                    <label id="keywords_label" class="form-label" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas <a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" onclick="clearKeywords()" href="#"> (limpiar)</a></label>
+                                    <div id="keywords_select" class="form-label">
+                                        {% for keyword in keywords %}
+                                        <button id="{{ keyword.key_id }}" type="button" value="{{ keyword.key_id }}" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">{{ keyword.key_name }}</button>
+                                            <!-- {{ keyword.key_name }}, -->
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
                                     <label id="keywords_label" class="form-label d-none" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas <a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" onclick="clearKeywords()" href="#"> (limpiar)</a></label>
                                     <div id="keywords_select" class="form-label"></div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="row g-2">
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" id="title" name="title" placeholder="Ingrese el título" value="{{ title }}" required>
+                                    {% if project.pro_title %}
+                                    <input type="text" class="form-control" id="title" name="title" value="{{ project.pro_title }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="title" name="title" placeholder="Ingrese el título" value="" required>
+                                    {% endif %}
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese el título</div>
                                 </div>
@@ -39,7 +53,11 @@
                             <div class="row g-2">
                                 <div class="mb-3">
                                     <select name="university" class="form-select" required>
+                                        {% if project.pro_uni %}
+                                        <option value="{{ project.pro_uniid }}" selected>{{ project.pro_uni }}</option>
+                                        {% else %}
                                         <option value="" selected>Seleccione la universidad</option>
+                                        {% endif %}
                                         {% for university in universities %}
                                         <option value="{{university.uni_id}}">{{university.uni_nickname}} - {{university.uni_name}}</option>
                                         {% endfor %}
@@ -53,24 +71,47 @@
                                     <select name="department" id="department" class="form-select col-md-6" required>
                                         <option value="" selected>Seleccione el departamento</option>
                                         {% for department in departments %}
-                                        <option value="{{department.dpt_id}}">{{department.dpt_name}}</option>
+                                            {% if department.dpt_id == project.pro_department %}
+                                            <option value="{{department.dpt_id}}" selected>{{department.dpt_name}}</option>
+                                            {% else %}
+                                            <option value="{{department.dpt_id}}">{{department.dpt_name}}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="mb-3 col-md-6">
                                     <select name="province" id="province" class="form-select col-md-6" required>
+                                        <!-- <option value="" selected>Provincia</option> -->
+                                        {% if project.pro_province %}
+                                            {% for province in provinces %}
+                                                {% if province.prv_id == project.pro_province %}
+                                                <option value="{{province.prv_id}}" selected>{{province.prv_name}}</option>
+                                                {% else %}
+                                                <option value="{{province.prv_id}}">{{province.prv_name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
                                         <option value="" selected>Provincia</option>
+                                        {% endif %}
                                     </select>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Seleccione la provincia</div>
                                 </div>
                                 <div class="mb-3 col-md-4">
+                                    {% if project.pro_career %}
+                                    <input type="text" class="form-control" name="career" value="{{ project.pro_career }}" required>
+                                    {% else %}
                                     <input type="text" class="form-control" name="career" placeholder="Ingrese la carrera" required>
+                                    {% endif %}
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese la carrera</div>
                                 </div>
                                 <div class="mb-3 col-md-8">
+                                    {% if project.pro_comment %}
+                                    <input type="text" class="form-control" name="comment" value="{{ project.pro_comment }}" required>
+                                    {% else %}
                                     <input type="text" class="form-control" name="comment" placeholder="Ingrese un comentario">
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="line" style="margin: 10px auto;"></div>
@@ -88,6 +129,13 @@
                             </div>
                             <div class="line" style="margin: 10px auto;"></div>
                             <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 1rem;">
+                                {% if project %}
+                                <input id="save_type" name="save_type" type="hidden" value="edit">
+                                <input id="save_id" name="save_id" type="hidden" value="{{ pro_id }}">
+                                {% else %}
+                                <input id="save_type" name="save_type" type="hidden" value="new">
+                                {% endif %}
+                                <!-- <input id="save_type" name="save_type" type="hidden" value=""> -->
                                 <button type="submit" id="save_upload" class="btn btn-primary" style="font-size: medium;" > &nbsp; Guardar &nbsp;
                                 </button>
                             </div>

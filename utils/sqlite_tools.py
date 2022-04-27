@@ -428,7 +428,7 @@ def get_projectById(id):
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_title, b.uni_name, a.pro_career, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
+                    SELECT a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
@@ -438,14 +438,18 @@ def get_projectById(id):
         record = cursor.fetchone()
         project.append({
                 'pro_title':      record[0],
-                'pro_uni':        record[1],
-                'pro_career':     record[2],
-                'pro_type_a':     record[3],
-                'pro_type_m':     record[4],
-                'pro_n_articles': record[5],
-                'pro_n_process':  record[6],
-                'pro_user':       record[7],
-                'pro_created':    record[8],
+                'pro_uniid':      record[1],
+                'pro_uni':        record[2],
+                'pro_department': record[3],
+                'pro_province':   record[4],
+                'pro_career':     record[5],
+                'pro_comment':    record[6],
+                'pro_type_a':     record[7],
+                'pro_type_m':     record[8],
+                'pro_n_articles': record[9],
+                'pro_n_process':  record[10],
+                'pro_user':       record[11],
+                'pro_created':    record[12],
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -465,7 +469,7 @@ def get_pkDetailById(id):
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
         query = f"""
-                    SELECT c.key_name
+                    SELECT c.key_name, c.key_id
                     FROM   (project_info a INNER JOIN "{table_name}" b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id
                     WHERE  b.pro_id = "{id}"
                 """
@@ -476,7 +480,8 @@ def get_pkDetailById(id):
 
         for record in records:
             pk_details.append({
-                'key_name':  record[0]
+                'key_name': record[0],
+                'key_id':   record[1],
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -487,7 +492,32 @@ def get_pkDetailById(id):
             print("The SQLite connection is closed")
         return pk_details
 
-def upd_projectById(id, n_articles, n_process):
+def upd_projectById(id, project):
+    table_name = 'project_info'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+        query = f"""
+                    UPDATE "{table_name}" SET pro_title="{project['title']}", pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
+                    WHERE pro_id = {id}
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to update data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
+def upd_projectProcess(id, n_articles, n_process):
     table_name = 'project_info'
     result = False
     try:

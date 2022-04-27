@@ -9,12 +9,12 @@
             <div class="col-md-12">
                 <div class="row" style="margin: 0 0.1rem;">
                     <div class="col-md-9" style="margin: 0.4rem 0 0; text-align: left;">
-                        <a href="{{ url_for('main.upload_form') }}">
+                        <a>
                             <p class="text-muted" style="margin: 0.25rem 0 0; font-size: large;"><b>Información del Proyecto</b></p>
                         </a>
                     </div>
                     <div class="col-md-3" style="margin: 0.3rem 0; text-align: right;">
-                        <a href="#">
+                        <a href="{{ url_for('main.update_form', id=pro_id) }}">
                             <button type="button" class="btn btn-primary" style="margin: 0rem;"><b>Editar</b></button>
                         </a>
                     </div>
@@ -25,11 +25,13 @@
                         <h5 class="card-title-info">{{ project.pro_title}} </h5>
                         <p class="card-text-info">{{ project.pro_uni }}</p>
                         <p class="card-text-info">{{ project.pro_career }}</p>
+                        {% if keywords %}
                         <p class="card-text-info"><b>Variables:</b> 
                             {% for keyword in keywords %}
                                 {{ keyword.key_name }},
                             {% endfor %}
                         </p>
+                        {% endif %}
                         <p class="card-text-info" style="font-size: smaller;">({{ project.pro_created }})</p>
                         <p class="card-text-info" style="border-bottom:#CCC 1px solid; margin: 1.5rem 1rem 0.5rem;"></p>
                         {% if project.pro_n_process > 0 %}
