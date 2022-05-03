@@ -25,9 +25,9 @@
                         <h5 class="card-title-info">{{ project.pro_title}} </h5>
                         <p class="card-text-info">{{ project.pro_uni }}</p>
                         <p class="card-text-info">{{ project.pro_career }}</p>
-                        {% if keywords %}
+                        {% if keywordsOne %}
                         <p class="card-text-info"><b>Variables:</b> 
-                            {% for keyword in keywords %}
+                            {% for keyword in keywordsOne %}
                                 {{ keyword.key_name }},
                             {% endfor %}
                         </p>

@@ -215,11 +215,17 @@ def put_newPKdetail(id, key, current_date):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
+        # query = f"""
+        #         #     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
+        #         #     VALUES ("{id} ", "{key}", "{current_date}")                
+        #         # """
         query = f"""
                     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
-                    VALUES ("{id} ", "{key}", "{current_date}")                
+                    SELECT "{id}", "{key}", "{current_date}"
+                    WHERE NOT EXISTS(SELECT 1 FROM "{table_name}" WHERE pro_id = "{id}" AND key_id = "{key}");
                 """
-        # print(query)
+
+        print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -354,8 +360,6 @@ def get_listKeywords():
     # List of TOP 10
     table_name = 'key_info'
     keywords = []
-    # keynames = []
-    # keyids = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
@@ -460,7 +464,7 @@ def get_projectById(id):
             print("The SQLite connection is closed")
         return project
 
-def get_pkDetailById(id):
+def get_listKeywordsById(id):
     # List of TOP 10
     table_name = 'pro_key_details'
     pk_details = []

@@ -7,16 +7,23 @@ var keywords = document.getElementById("keywords_in").value;
 var keywords_out = document.getElementById("keywords_out");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
-// console.log(keywords)
+
 keywords = keywords.replace(']', '').replace('[', '')
 keywords = keywords.split(', ')
 var search_terms = []
 var var_list = []
 var terms = []
 
+if (keywords_out.value){
+  keys = keywords_out.value
+  keys = keys.replace(']', '').replace('[', '')
+  if (keys!=""){
+    var_list = keys.split(', ')
+  }
+}
 if (keywords){
   for (var i = 0; i < keywords.length; i++) {
-      search_terms.push(keywords[i].replace("'", "").replace("'", ""))
+    search_terms.push(keywords[i].replace("'", "").replace("'", ""))
   }
 
   function autocompleteMatch(input) {
@@ -31,7 +38,7 @@ if (keywords){
     });
   }
 
-  var var_list = []
+  // var var_list = []
   
   function showResults(val) {
     res = document.getElementById("result");
@@ -62,6 +69,7 @@ if (keywords){
           variables_label.classList.remove("d-none");
           variables_select.innerHTML += '<button id="'+current_id+'" type="button" value="'+current_id+'" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">'+$(this).attr('data_value')+'</button>&nbsp;'
           keywords_out.value = var_list
+          console.log("Ids")
           console.log(keywords_out.value)
         }
       }

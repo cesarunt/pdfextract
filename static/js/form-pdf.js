@@ -234,15 +234,6 @@ function on_select_attributes() {
 }
 
 // SELECT PAGE FUNCTION
-function goPage(val, pdf_id) {
-  // console.log(val)
-  // console.log(pdf_id)
-  path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
-  $("canvas").css("background-image", "url("+path_page+")");
-  _page = val
-}
-
-// SELECT PAGE FUNCTION
 function selectPage(val, pdf_id) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
@@ -256,7 +247,7 @@ function selectPage(val, pdf_id) {
   goPage(parseInt(val), pdf_id)
 }
 
-// MOVE PAGE FUNCTION
+// MOVE PAGE FUNCTION, to move inside One PDF
 function movePage(_this, pdf_id, direct) {
   if (direct == "up"){
     val = parseInt(_page) + 1
@@ -278,6 +269,49 @@ function movePage(_this, pdf_id, direct) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   document.getElementById('current_page').innerHTML = (val).toString()
   goPage(val, pdf_id)
+}
+
+// SELECT PAGE FUNCTION
+function goPage(val, pdf_id) {
+  // console.log(val)
+  // console.log(pdf_id)
+  path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
+  $("canvas").css("background-image", "url("+path_page+")");
+  _page = val
+}
+
+// MOVE PAGE FUNCTION, to move outside One PDF
+function movePages(_this, pdf_path, direct) {
+  if (direct == "up"){
+    // val = parseInt(_page) + 1
+    document.getElementById('btn_arrow_left').disabled = false
+    document.getElementById('btn_arrow_right').disabled = false
+    // if (val == pages.value){
+    //   _this.disabled = true
+    // }
+  }
+  else{
+    // val = parseInt(_page) - 1
+    document.getElementById('btn_arrow_left').disabled = false
+    document.getElementById('btn_arrow_right').disabled = false
+    // if (val == 1){
+    //   _this.disabled = true
+    // }
+  }
+  // clear the canvas
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // document.getElementById('current_page').innerHTML = (val).toString()
+  goPages(pdf_path)
+}
+
+// SELECT PAGE FUNCTION
+function goPages(pdf_path) {
+  // console.log(val)
+  console.log(pdf_path)
+  path_page = pdf_path
+  // $("image").css("src", "("+path_page+")");
+  // FALTA ASIGNAR EL VALOR A ID=IMAGE FROM HTML
+  // _page = val
 }
 
 // Function to inactive canvas and hide/show buttons

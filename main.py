@@ -183,9 +183,11 @@ def update_form(id):
         list_universities = get_listUniversities()
         list_departments = get_listDepartments()
         one_project = get_projectById(id)
-        list_keywords = get_pkDetailById(id)
+        list_keywords = get_listKeywords()
+        list_keywordsOne = get_listKeywordsById(id)
+        list_keywordsOneId = [val['key_id'] for val in list_keywordsOne]
         list_provinces = get_listProvinces(one_project[0]['pro_department'])
-        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, keywords=list_keywords, pro_id=id)
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
     else:
         return render_template('upload_form.html')
 
@@ -205,8 +207,8 @@ def db_form():
 def upload_home(id):
     if current_user.is_authenticated:
         one_project = get_projectById(id)
-        list_keywords = get_pkDetailById(id)
-        return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywords=list_keywords, pro_id=id)
+        list_keywordsOne = get_listKeywordsById(id)
+        return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=id)
     else:
         return render_template('upload_home.html')
 
@@ -286,29 +288,13 @@ def save_upload():
                 print("Proyecto registrado con éxito")
                 for key in keywords:
                     response_pkdetail = put_newPKdetail(id, key, current_date)
-            # try:
-            #     response_project, id = put_newProject(project)
-            #     if response_project is True:
-            #         msg_project = "Proyecto registrado con éxito"
-            # except:
-            #     msg_project = "Error en registro del proyecto"
-            # try:
-            #     for key in keywords:
-            #         response_pkdetail = put_newPKdetail(id, key, current_date)
-            #     if response_pkdetail is True:
-            #         msg_pkdetail = "PKdetail registrado con éxito"
-            # except:
-            #     msg_pkdetail = "Error en registro de PKdetail"
         else:
             id = request.form['save_id']
             response_project = upd_projectById(id, project)
             if response_project is True:
                 print("Proyecto actualizado con éxito")
-            # 
-            # 
-            # FALTA AGREGAR UPDATE PARA pro_key_details
-            # 
-            # 
+                for key in keywords:
+                    response_pkdetail = put_newPKdetail(id, key, current_date)
 
         # finally:
         return redirect('/upload/home/'+str(id))
@@ -784,7 +770,7 @@ def pdf_post(pdf_id):
                     page = int(dictVal['page'])
                 print(str(dictVal['page']), " -> ", str(dictVal['x']))
                 i += 1
-                image = cfg.FILES.GLOBAL_PATH + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
                 print("image... ", image)
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]

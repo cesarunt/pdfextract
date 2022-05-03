@@ -15,8 +15,8 @@
                         <h5 class="card-title-form" style="margin:0.5rem 0 1rem 0">Formulario de Registro</h5>
                         <form class="needs-validation" action="{{ url_for('main.save_upload') }}" method="POST" accept-charset="utf-8">
                             <div class="row g-2">
-                                <input id="keywords_out" name="keywords_out" type="hidden" value="">
-                                <input id="keywords_in" name="keywords_in" type="hidden" value="">
+                                <input id="keywords_out" name="keywords_out" type="hidden" value="{{ keywordsOneId }}">
+                                <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
                                 <div class="col-md-4">
                                     <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" autocomplete="off" onkeyup="showResults(this.value)">
                                     <span class="fa-fw select-all fas" onclick="addVariable()"></span>
@@ -28,7 +28,7 @@
                                     {% if project %}
                                     <label id="keywords_label" class="form-label" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas <a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" onclick="clearKeywords()" href="#"> (limpiar)</a></label>
                                     <div id="keywords_select" class="form-label">
-                                        {% for keyword in keywords %}
+                                        {% for keyword in keywordsOne %}
                                         <button id="{{ keyword.key_id }}" type="button" value="{{ keyword.key_id }}" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">{{ keyword.key_name }}</button>
                                             <!-- {{ keyword.key_name }}, -->
                                         {% endfor %}
