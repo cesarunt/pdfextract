@@ -35,56 +35,56 @@ def get_col_names(cursor, tablename):
     reader=cursor.execute("SELECT * FROM {}".format(tablename))
     return [x[0] for x in reader.description] 
 
-def get_thesisByName(file_pdf):
-    table_name = 'pdf_attributes'
-    table_colnames = None
-    pdf = dict()
-    pdf_foundlist = []      #   Atributos
-    try:
-        sqliteConnection = sqlite3.connect(data_base)
-        cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
-        pdf_info = get_pdf_info(cursor, 'pdf_info', file_pdf)
-        pdf_id, pdf_name, pdf_npages = pdf_info
-        query = f"""
-                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
-                    FROM (pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
-                    WHERE a.pdf_id = "{pdf_id}" 
-                    ORDER BY b.det_id ASC
-                """ 
-        sqlite_select_query = query
-        cursor.execute(sqlite_select_query)
-        records = cursor.fetchall()
+# def get_thesisByName(file_pdf):
+#     table_name = 'pdf_attributes'
+#     table_colnames = None
+#     pdf = dict()
+#     pdf_foundlist = []      #   Atributos
+#     try:
+#         sqliteConnection = sqlite3.connect(data_base)
+#         cursor = sqliteConnection.cursor()
+#         print("Connected to SQLite")
+#         pdf_info = get_pdf_info(cursor, 'pdf_info', file_pdf)
+#         pdf_id, pdf_name, pdf_npages = pdf_info
+#         query = f"""
+#                     SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
+#                     FROM (pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+#                     WHERE a.pdf_id = "{pdf_id}" 
+#                     ORDER BY b.det_id ASC
+#                 """ 
+#         sqlite_select_query = query
+#         cursor.execute(sqlite_select_query)
+#         records = cursor.fetchall()
         
-        for record in records:
-            pdf_foundlist.append({
-                            'det_id':       record[0],
-                            'det_attribute':record[1],
-                            'det_name':     record[2], 
-                            'det_value':    record[3],
-                            'det_npage':    record[4],
-                            'det_x':        record[5],
-                            'det_y':        record[6],
-                            'det_width':    record[7],
-                            'det_height':   record[8]
-                            })
+#         for record in records:
+#             pdf_foundlist.append({
+#                             'det_id':       record[0],
+#                             'det_attribute':record[1],
+#                             'det_name':     record[2], 
+#                             'det_value':    record[3],
+#                             'det_npage':    record[4],
+#                             'det_x':        record[5],
+#                             'det_y':        record[6],
+#                             'det_width':    record[7],
+#                             'det_height':   record[8]
+#                             })
 
-        pdf = {
-            'id':          pdf_id,
-            'name':        pdf_name,
-            'npages':      pdf_npages,
-            'foundlist':   pdf_foundlist,
-        }
+#         pdf = {
+#             'id':          pdf_id,
+#             'name':        pdf_name,
+#             'npages':      pdf_npages,
+#             'foundlist':   pdf_foundlist,
+#         }
         
-        cursor.close()
-    except sqlite3.Error as error:
-        print("Failed to read data from sqlite table", error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print("The SQLite connection is closed")
+#         cursor.close()
+#     except sqlite3.Error as error:
+#         print("Failed to read data from sqlite table", error)
+#     finally:
+#         if sqliteConnection:
+#             sqliteConnection.close()
+#             print("The SQLite connection is closed")
         
-        return pdf
+#         return pdf
 
 def get_listThesisByWord(keyword):
     table_name = 'pdf_keywords'
@@ -92,7 +92,7 @@ def get_listThesisByWord(keyword):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT a.pdf_id, a.pdf_name, a.pdf_npages, a.pdf_size, b.det_value, d.key_name
                     FROM  ((pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_key_details c ON a.pdf_id = c.pdf_id) INNER JOIN key_info d ON c.key_id = d.key_id
@@ -133,7 +133,7 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value="{text}", det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
@@ -160,7 +160,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value="{text}"
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
@@ -186,9 +186,8 @@ def put_newProject(project=dict()):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-
-        print(json.dumps(project))
-        print("Connected to SQLite")
+        # print(json.dumps(project))
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
                     VALUES ("{project['title']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
@@ -214,7 +213,7 @@ def put_newPKdetail(id, key, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         # query = f"""
         #         #     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
         #         #     VALUES ("{id} ", "{key}", "{current_date}")                
@@ -245,7 +244,7 @@ def put_newKeyword(key_name, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (key_name, key_active, key_created)
                     VALUES ("{key_name}", "1", "{current_date}")                
@@ -270,7 +269,7 @@ def get_listUniversities():
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT uni_id, uni_name, uni_nickname
                     FROM "{table_name}"
@@ -301,7 +300,7 @@ def get_listDepartments():
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT id, name
                     FROM {table_name}
@@ -331,7 +330,7 @@ def get_listProvinces(department):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT id, name, department_id
                     FROM {table_name}
@@ -363,7 +362,7 @@ def get_listKeywords():
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT key_id, key_name
                     FROM "{table_name}"
@@ -394,7 +393,7 @@ def get_listProjects(limit=-1):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
@@ -430,7 +429,7 @@ def get_projectById(id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
@@ -471,7 +470,7 @@ def get_listKeywordsById(id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT c.key_name, c.key_id
                     FROM   (project_info a INNER JOIN "{table_name}" b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id
@@ -502,7 +501,7 @@ def upd_projectById(id, project):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET pro_title="{project['title']}", pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
                     WHERE pro_id = {id}
@@ -527,7 +526,7 @@ def upd_projectProcess(id, n_articles, n_process):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET pro_n_articles="{n_articles}", pro_n_process={n_process}
                     WHERE pro_id = {id}
@@ -552,7 +551,7 @@ def get_squareProjects_ByWord(keyword):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created
                     FROM  (("{table_name}" a INNER JOIN pro_key_details b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id) INNER JOIN user u ON a.pro_user = u.id
@@ -595,7 +594,7 @@ def get_userById(id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT email, name
                     FROM "{table_name}"
@@ -624,8 +623,7 @@ def put_newPDFattribute(name, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (att_name, att_fecha) 
                     VALUES ("{name} ", "{current_date}")
@@ -651,7 +649,7 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
                     VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}")                
@@ -677,7 +675,7 @@ def del_itemPDFdetail(det_id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     DELETE FROM "{table_name}"
                     WHERE det_id = "{det_id}"            
@@ -703,8 +701,7 @@ def put_newPDF(pdf=dict()):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pdf_name, pdf_npages, pdf_size, pdf_created) 
                     VALUES ("{pdf['name']} ", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
@@ -730,7 +727,7 @@ def put_newPPdetail(id, pdf, name, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pro_pdf_created)
                     VALUES ("{id} ", "{pdf}", "{name}", "{current_date}")
@@ -755,7 +752,7 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET pdf_name="{name}", pro_pdf_created="{current_date}"
                     WHERE pro_id = {pro_id} AND pdf_id = {pdf_id}
@@ -781,7 +778,7 @@ def get_projectPDFById(id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         query = f"""
                     SELECT b.pro_id, b.pdf_id, b.pdf_name, a.pdf_name, a.pdf_npages, a.pdf_size
                     FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
@@ -824,7 +821,7 @@ def get_pdfDetailById(pdf_id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        # print("Connected to SQLite")
         pdf_info = get_pdfById(cursor, 'pdf_info', pdf_id)
         pdf_name, pdf_npages = pdf_info
         query = f"""

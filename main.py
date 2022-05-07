@@ -751,6 +751,7 @@ def project_pdf(pdf_id):
 def pdf_post(pdf_id):
     global file_pdfs
     text_pdf = []
+    text_page = ""
 
     if request.method == "POST":
         action = request.values.get("action")
@@ -768,10 +769,10 @@ def pdf_post(pdf_id):
                 if i == 0:
                     dictPage = dictVal
                     page = int(dictVal['page'])
-                print(str(dictVal['page']), " -> ", str(dictVal['x']))
+                # print(str(dictVal['page']), " -> ", str(dictVal['x']))
                 i += 1
                 image = cfg.FILES.GLOBAL_PATH + '/' + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
-                print("image... ", image)
+                # print("image... ", image)
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
