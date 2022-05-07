@@ -82,9 +82,9 @@
                                                                             <div class="modal-content" style="background-color: #CCC; width: 815px;">
                                                                                 <!-- Add image inside the body of modal -->
                                                                                 <div class="modal-body">
-                                                                                    <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{pdf.pdf_path}}{{i}}.jpg', 'down')"><i class="fas fa-arrow-left"></i></button>
-                                                                                    <img id="image" src="{{pdf.pdf_path}}{{i}}.jpg" alt="Click on button" />
-                                                                                    <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{pdf.pdf_path}}{{i}}.jpg', 'up')"><i class="fas fa-arrow-right"></i></button>
+                                                                                    <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{pdf.pdf_path}}{{i-1}}.jpg', 'down')"><i class="fas fa-arrow-left"></i></button>
+                                                                                    <img class="imageFull" id="imageFull" src="{{pdf.pdf_path}}{{i}}.jpg" alt="Click on button" />
+                                                                                    <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{pdf.pdf_path}}{{i+1}}.jpg', 'up')"><i class="fas fa-arrow-right"></i></button>
                                                                                 </div>
                                                                                 <div class="modal-footer">
                                                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>

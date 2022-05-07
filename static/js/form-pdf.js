@@ -299,18 +299,29 @@ function movePages(_this, pdf_path, direct) {
     // }
   }
   // clear the canvas
-  // ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // document.getElementById('current_page').innerHTML = (val).toString()
-  goPages(pdf_path)
+  // console.log(document.getElementById("imageFull"))
+  // var image = document.getElementById("imageFull")
+  // image.src = pdf_path
+  console.log($("imageFull"))
+  // $("imageFull").css("src", "url("+pdf_path+")");
+  // console.log(image)
+  // goPages(pdf_path)
 }
 
 // SELECT PAGE FUNCTION
 function goPages(pdf_path) {
   // console.log(val)
   console.log(pdf_path)
-  path_page = pdf_path
+  // path_page = pdf_path
   // $("image").css("src", "("+path_page+")");
   // FALTA ASIGNAR EL VALOR A ID=IMAGE FROM HTML
+  // var image = document.getElementsByClassName("imageFull");
+  var image = document.getElementById("imageFull")
+  console.log(image)
+  image.src = pdf_path
+  // document.getElementById("imageFull").src = pdf_path
+  // $("#image").attr('src', pdf_path);
+  console.log(image)
   // _page = val
 }
 
