@@ -633,7 +633,7 @@ def action_thesis_mul():
                     print("Splitter PDF")
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
                 
-                print("result_split", result_split)
+                # print("result_split", result_split)
                 if result_split == 0:
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...NO se procesó")
@@ -646,14 +646,11 @@ def action_thesis_mul():
                     # # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
                     pdf_info_id = pdf_ids[i]
-                    print("pdf_info_id", pdf_info_id)
                     #     ---------
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id, pdfs)  # Call pdf process function
                     
-                    # print("\ntitle_text", title_text)
-
                     if len(text_pdf) > 1 :
                         now = datetime.now()
                         document = build_document(filename, text_pdf, language)
@@ -663,7 +660,6 @@ def action_thesis_mul():
                         result_file_text = "Antecedente Múltiple"
                         result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                 
-                print("result_valid", result_valid)
                 if result_valid > 0 :
                     result_save = True
                     try:
@@ -728,7 +724,6 @@ def project_pdf(pdf_id):
         project = get_projectById(pro_id)
         pdfs = get_projectPDFById(pro_id)
         pdf = get_pdfDetailById(pdf_id)
-        print("NEW PDFs")
         """Verificar pdf_details, encontrados y no encontradps"""
         list_npages = list(range(1, int(pdf['npages']+1)))
         list_npages = [str(int) for int in list_npages]
@@ -841,7 +836,6 @@ def pdf_post(pdf_id):
             project = get_projectById(pro_id)
             pdfs = get_projectPDFById(pro_id)
             pdf = get_pdfDetailById(pdf_id)
-            print("NEW PDFs")
             """Verificar pdf_details, encontrados y no encontradps"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]

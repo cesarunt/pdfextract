@@ -334,10 +334,7 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                     resumen_text = str(' '.join(resumen_text_list))
                     resumen_text = resumen_text.replace("\n", " ")
             
-            # print("TITLE TEXT")
-            # print(title_text)
             if (title_text!="" or resumen_text != "" or authors_text!= "") and page > 0:
-                print("... enter title_text")
                 # 5. GET THE METHODOLOGY TEXT
                 # ============================================================================================
                 # finding the title of methodology using PATTERN_METHOD
@@ -518,10 +515,6 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                 addText_background("N", resumen_text)
                 
                 # print("AUTORES ...")
-                # print(type(authors_text))
-                # print("\n01._ AUTHORs NAME \n" + authors_text)
-                # print("\n02._ PUBLISHING YEAR: " + str(year))
-                # print("\n03._ TITLE TEXT (" + str(title_font)+"px):\n" + title_text)
                 article_print = ""
                 if article_band : article_print = "Revista"
                 # print("\n04._ ARTICLE TEXT: " + article_text)

@@ -1,5 +1,4 @@
 from utils.config import cfg
-# from textblob import TextBlob
 from langdetect import detect
 from scipy import stats as s
 import re
@@ -266,7 +265,6 @@ def getData_ResultResumen(pagelines_list, resumen_pos, PATTERN, limit1, limit2, 
 # getting for introduction
 def getData_TitleIntroduction(text_page, PATTERN, limit, intro_font) :
     resumen_title = ""
-    # patt_band = False
 
     for pattern in PATTERN[:limit]:
         patt = re.search(rf"{pattern}", text_page, re.IGNORECASE)
@@ -377,7 +375,6 @@ def getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN, limit, b
 
     if len(result_lines)>0 :
         for key, value, fi in result_lines:
-            # if len(font_sizes)>2 :
             if fi == 1 and font_lastmax == 0 and len(font_values)>2 :
                 if font_values[fi-1] == font_max and font_values[fi+1] == font_submax :
                     font_lastmax = value
@@ -527,17 +524,13 @@ def getData_LongText_Result(text_page, PATTERN, limit_start='E', limit_end='. \n
         obj = ""
         patt = re.search(rf"\b{pattern}\b", text_page, re.IGNORECASE)
         if patt != None :
-            # print("\nLong pattern: "+pattern+" found:"+str(patt))
             if limit_end == ''  : obj = text_page[patt.end(0)+1:]
             else :
-                # if limit_start == 'E':
                 if len(text_page[patt.end(0)+1:].split(limit_end)[0]) < len(pattern) :
                     obj = text_page[patt.end(0)+1:].split(".\n")[0]
                     obj = obj.replace("\n", "")
                 else:
                     obj = text_page[patt.end(0)+1:].split(limit_end)
-                    # obj = text_page[limit_start:-1].split(limit_end)[0]
-                    # obj = obj.replace("\n", "")
             if len(obj)>0:  
                 text = obj
                 break

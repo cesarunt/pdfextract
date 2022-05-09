@@ -266,6 +266,7 @@ function movePage(_this, pdf_id, direct) {
     }
   }
   // clear the canvas
+  canvas.clear();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   document.getElementById('current_page').innerHTML = (val).toString()
   goPage(val, pdf_id)

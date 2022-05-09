@@ -1,3 +1,5 @@
+// Canvas 
+
 // Dictionary for Canvas Multiple
 var dictCanvas = [];
 
@@ -35,7 +37,7 @@ var Rectangle = (function () {
     });
     inst.canvas.on('object:moving', function(o) {
       inst.disable();
-    })
+    });
   }
     Rectangle.prototype.onMouseUp = function (o) {
       var inst = this;
@@ -57,17 +59,16 @@ var Rectangle = (function () {
         'w': _w,
         'h': _h,
       }
-      // dictCanvas[_page.toString()] = dictPage
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       dictCanvas.push(dictPage)
-      console.log("dictCanvas")
-      console.log(dictCanvas)
+      var objects = canvas.getObjects();
+      console.log(objects)
     };
 
     Rectangle.prototype.onMouseMove = function (o) {
       var inst = this;
 
       if(!inst.isEnable()){ return; }
-      console.log("mouse move rectange");
       var pointer = inst.canvas.getPointer(o.e);
       var activeObj = inst.canvas.getActiveObject();
       activeObj.stroke= 'red',
@@ -81,7 +82,6 @@ var Rectangle = (function () {
       if(origY > pointer.y){
           activeObj.set({ top: Math.abs(pointer.y) });
       }
-
       activeObj.set({ width: Math.abs(origX - pointer.x) });
       activeObj.set({ height: Math.abs(origY - pointer.y) });
       activeObj.setCoords();
@@ -110,6 +110,7 @@ var Rectangle = (function () {
           hasControls: false
       });
   	  inst.canvas.add(rect).setActiveObject(rect);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     };
 
     Rectangle.prototype.isEnable = function(){
@@ -130,8 +131,18 @@ var Rectangle = (function () {
 var canvas = new fabric.Canvas('canvas');
 var arrow = new Rectangle(canvas);
 
-// var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+
+$("canvas").dblclick(function() {
+  console.log("cleaning...");
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var objects = canvas.getObjects();
+  for(var i = 0; i < objects.length; i++){   
+    canvas.remove(objects[i]);
+  };
+  canvas.clear();
+  dictCanvas = []
+});
 
 // Get a reference to the alert wrapper
 var alert_wrapper = document.getElementById("alert_wrapper");
