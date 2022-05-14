@@ -40,9 +40,11 @@ app.config['MULTIPLE_UPLOAD_WEB'] = cfg.FILES.MULTIPLE_UPLOAD_WEB
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Allowed extension you can set your own
+LANGUAGE_PAGE = "es"
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
 ILLEGAL_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
 # pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
 
 
 def strip_illegal_xml_characters(s, default, base=10):
@@ -74,7 +76,6 @@ def validate_path(path):
 
 def build_document_(title, text_pdf, language):
     document.add_heading(title)
-
     keywords = "sample"
     texts = []
 
@@ -558,10 +559,14 @@ def action_thesis_mul():
                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                     ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
 
-                    print("ROI line 558", str(len(ROI)))
+                    print("ROI_language", LANGUAGE_PAGE)
+                    if LANGUAGE_PAGE=="es":
+                        language = "spa"
+                    else:
+                        language = "eng"
                     text = ""
                     try:
-                        text = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                        text = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
                         print(text)
                     except Exception as e:
                         print(e)
@@ -650,7 +655,7 @@ def action_thesis_mul():
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id, pdfs)  # Call pdf process function
-                    
+                    LANGUAGE_PAGE = language
                     if len(text_pdf) > 1 :
                         now = datetime.now()
                         document = build_document(filename, text_pdf, language)
@@ -771,8 +776,14 @@ def pdf_post(pdf_id):
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
+                
+                print("ROI_language", LANGUAGE_PAGE)
+                if LANGUAGE_PAGE=="es":
+                    language = "spa"
+                else:
+                    language = "eng"
                 try:
-                    text_page = pytesseract.image_to_string(ROI, lang='eng',config='--psm 6')
+                    text_page = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
                     print(text)
                 except Exception as e:
                         print(e)
