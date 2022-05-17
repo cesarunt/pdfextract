@@ -27,6 +27,8 @@ var div_found = document.getElementById("div_found");
 
 var pages = document.getElementById('num_pages')
 var _page = 1
+var _canvas_page = 0
+var _band_page = false
 
 // Function to show Popup
 // function clicPDFPreview() {
@@ -282,48 +284,39 @@ function goPage(val, pdf_id) {
 }
 
 // MOVE PAGE FUNCTION, to move outside One PDF
-function movePages(_this, pdf_path, direct) {
+function movePages(_this, pdf_path, _i, _pages, direct) {
+  console.log("movePages")
+  if (_canvas_page == 0 && _band_page == false){
+    _canvas_page = _i
+    _band_page = true
+  }
   if (direct == "up"){
-    // val = parseInt(_page) + 1
-    document.getElementById('btn_arrow_left').disabled = false
-    document.getElementById('btn_arrow_right').disabled = false
-    // if (val == pages.value){
-    //   _this.disabled = true
-    // }
+    // console.log(_canvas_page)
+    // console.log(_pages)
+    if (_canvas_page < parseInt(_pages)-1){
+      _canvas_page = parseInt(_canvas_page) + 1
+      goPages(_canvas_page, pdf_path)
+    }
   }
   else{
-    // val = parseInt(_page) - 1
-    document.getElementById('btn_arrow_left').disabled = false
-    document.getElementById('btn_arrow_right').disabled = false
-    // if (val == 1){
-    //   _this.disabled = true
-    // }
+    // console.log(_canvas_page)
+    // console.log(_pages)
+    if (_canvas_page > 0){
+      _canvas_page = parseInt(_canvas_page) - 1
+      goPages(_canvas_page, pdf_path)
+    }
   }
-  // clear the canvas
-  // console.log(document.getElementById("imageFull"))
-  // var image = document.getElementById("imageFull")
-  // image.src = pdf_path
-  console.log($("imageFull"))
-  // $("imageFull").css("src", "url("+pdf_path+")");
-  // console.log(image)
-  // goPages(pdf_path)
+  
 }
 
 // SELECT PAGE FUNCTION
-function goPages(pdf_path) {
-  // console.log(val)
+function goPages(val, pdf_path) {
+  console.log("goPages")
   console.log(pdf_path)
+  path_page = pdf_path + (val).toString() + '.jpg'
+  // console.log(path_page)
   // path_page = pdf_path
-  // $("image").css("src", "("+path_page+")");
-  // FALTA ASIGNAR EL VALOR A ID=IMAGE FROM HTML
-  // var image = document.getElementsByClassName("imageFull");
-  var image = document.getElementById("imageFull")
-  console.log(image)
-  image.src = pdf_path
-  // document.getElementById("imageFull").src = pdf_path
-  // $("#image").attr('src', pdf_path);
-  console.log(image)
-  // _page = val
+  $("canvas").css("background-image", "url("+path_page+")");
 }
 
 // Function to inactive canvas and hide/show buttons
