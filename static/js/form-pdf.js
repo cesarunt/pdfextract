@@ -314,9 +314,21 @@ function goPages(val, pdf_path) {
   console.log("goPages")
   console.log(pdf_path)
   path_page = pdf_path + (val).toString() + '.jpg'
-  // console.log(path_page)
-  // path_page = pdf_path
   $("canvas").css("background-image", "url("+path_page+")");
+}
+
+function closePDF(_this, pdf_id) {
+  console.log("closePDF")
+  page = "page_" + pdf_id
+  full_page = "full_page_" + pdf_id
+  
+  check = document.getElementById(full_page).checked;
+  if (check==true){
+    document.getElementById(page).checked = true;
+  }
+  else{
+    document.getElementById(page).checked = false;
+  }
 }
 
 // Function to inactive canvas and hide/show buttons

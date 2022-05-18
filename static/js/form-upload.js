@@ -3,24 +3,30 @@
 // FUNCTIONS FOR AUTOCOMPLETE KEYWORDS
 var variables_select = document.getElementById("keywords_select");
 var variables_label = document.getElementById("keywords_label");
-var keywords = document.getElementById("keywords_in").value;
+var keywords_in = document.getElementById("keywords_in");
 var keywords_out = document.getElementById("keywords_out");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
 
-keywords = keywords.replace(']', '').replace('[', '')
-keywords = keywords.split(', ')
+if (keywords_in){
+  keywords = keywords_in.value;
+  keywords = keywords.replace(']', '').replace('[', '')
+  keywords = keywords.split(', ')
+}
+
 var search_terms = []
 var var_list = []
 var terms = []
 
-if (keywords_out.value){
+// if (keywords_out.value){
+if (keywords_out){
   keys = keywords_out.value
   keys = keys.replace(']', '').replace('[', '')
   if (keys!=""){
     var_list = keys.split(', ')
   }
 }
+
 if (keywords){
   for (var i = 0; i < keywords.length; i++) {
     search_terms.push(keywords[i].replace("'", "").replace("'", ""))
@@ -146,8 +152,7 @@ function addVariable() {
 }
 
 // Action to change and load provinces list
-// if (!departments.value) {
-  // console.log(departments.value)
+if (departments) {
   departments.onchange = function(){
     department = departments.value;
     fetch('/province/' + department).then(function(response){
@@ -160,4 +165,4 @@ function addVariable() {
       });
     });
   }
-// }
+}

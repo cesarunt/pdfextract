@@ -44,6 +44,10 @@
                                                     {% for pdf in pdfs %}
                                                         <li class="nav-item">
                                                             <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span></a>
+                                                            <span class="fa-fw select-all fas" style="width: 75px; padding: 0 1.5rem;">
+                                                                <img class="card-img-land" style="width: 50px;" src='{{pdf.pdf_path}}0.jpg'>
+                                                            </span>
+                                                        
                                                         </li>
                                                     {% endfor %}
                                                         <div class="col-sm-12 text-center">
@@ -89,8 +93,15 @@
                                                                                     <button id="btn_arrow_right" style="height: 50px; margin-top: 250px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
                                                                                     <input type="hidden" name="canvas_page" id="canvas_page" value="" />
                                                                                 </div>
+                                                                                <div style="margin: 0 10px 5px;">
+                                                                                    {% if i==0 or i==1 %}
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                                    {% else %}
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                                    {% endif %}
+                                                                                </div>
                                                                                 <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}_{{i}}')">Cerrar</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

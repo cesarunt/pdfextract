@@ -336,7 +336,7 @@ def search_db():
 
     if current_user.is_authenticated:
         if request.method == "POST":
-            keyword = request.values.get("keyword") 
+            keyword = request.values.get("keyword")
             if len(keyword) > 1:
                 list_projects = get_squareProjects_ByWord(keyword)
                 num_projects = len(list_projects)

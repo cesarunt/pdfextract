@@ -554,11 +554,11 @@ def get_squareProjects_ByWord(keyword):
         # print("Connected to SQLite")
         query = f"""
                     SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created
-                    FROM  (("{table_name}" a INNER JOIN pro_key_details b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id) INNER JOIN user u ON a.pro_user = u.id
+                    FROM  (("{table_name}" a LEFT JOIN pro_key_details b ON a.pro_id = b.pro_id) LEFT JOIN key_info c ON b.key_id = c.key_id) INNER JOIN user u ON a.pro_user = u.id
                     WHERE a.pro_title LIKE "%{keyword}%" OR c.key_name LIKE "%{keyword}%"
                     ORDER BY a.pro_id DESC
                 """
-        # print(query)
+        print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
