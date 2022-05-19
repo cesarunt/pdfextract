@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                             <div class="row g-2">
-                                <div class="mb-3 col-md-6">
+                                <div class="mb-3 col-md-4">
                                     <select name="department" id="department" class="form-select col-md-6" required>
                                         <option value="" selected>Seleccione el departamento</option>
                                         {% for department in departments %}
@@ -79,7 +79,7 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="mb-3 col-md-6">
+                                <div class="mb-3 col-md-4">
                                     <select name="province" id="province" class="form-select col-md-6" required>
                                         <!-- <option value="" selected>Provincia</option> -->
                                         {% if project.pro_province %}
@@ -96,6 +96,24 @@
                                     </select>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Seleccione la provincia</div>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <select name="district" id="district" class="form-select col-md-6" required>
+                                        <!-- <option value="" selected>Provincia</option> -->
+                                        {% if project.pro_district %}
+                                            {% for district in districts %}
+                                                {% if district.dis_id == project.pro_district %}
+                                                <option value="{{district.dis_id}}" selected>{{district.dis_name}}</option>
+                                                {% else %}
+                                                <option value="{{district.dis_id}}">{{district.dis_name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                        <option value="" selected>Distrito</option>
+                                        {% endif %}
+                                    </select>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Seleccione el distrito</div>
                                 </div>
                                 <div class="mb-3 col-md-4">
                                     {% if project.pro_career %}

@@ -155,7 +155,7 @@ class SearchForm(Form):
 def home():
     print("__home__")
     if current_user.is_authenticated:
-        print("user auth")
+        # print("user auth")
         list_projects = get_listProjects(5)
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
     else:
@@ -166,6 +166,11 @@ def home():
 def province(department):
     list_provinces = get_listProvinces(department)
     return jsonify({'provinces': list_provinces})
+
+@main.route('/district/<province>/province/<department>')
+def district(province, department):
+    list_districts = get_listDistricts(province, department)
+    return jsonify({'districts': list_districts})
 
 @main.route('/create/upload')
 def upload_form():
@@ -187,8 +192,11 @@ def update_form(id):
         list_keywords = get_listKeywords()
         list_keywordsOne = get_listKeywordsById(id)
         list_keywordsOneId = [val['key_id'] for val in list_keywordsOne]
+        print("TYPE")
+        print(type(list_keywordsOneId))
         list_provinces = get_listProvinces(one_project[0]['pro_department'])
-        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
+        list_districts = get_listDistricts(one_project[0]['pro_province'], one_project[0]['pro_department'])
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, districts=list_districts, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
     else:
         return render_template('upload_form.html')
 
@@ -250,6 +258,7 @@ def report():
 @main.route("/save_upload", methods=["POST"])
 def save_upload():
     id = 0
+    keywords = ""
     msg_project = ""
     msg_pkdetail = ""
     if request.method == 'POST':
@@ -272,6 +281,7 @@ def save_upload():
             'university' :  request.form['university'],
             'department' :  request.form['department'],
             'province' :    request.form['province'],
+            'district' :    request.form['district'],
             'career' :      request.form['career'],
             'comment' :     request.form['comment'],
             'type_a' :      type_a,
@@ -281,25 +291,31 @@ def save_upload():
             'user' :        user_id,
             'created' :     current_date
         }
-        keywords = request.form['keywords_out'].split(',')
+        k_out = request.form['keywords_out']
+        k_out = k_out.replace('[','').replace(']','')
+        if k_out=='':
+            keywords = None
+        else:
+            keywords = request.form['keywords_out'].split(',')
         save_type = request.form['save_type']
         if save_type == "new" :
             response_project, id = put_newProject(project)
             if response_project is True:
                 print("Proyecto registrado con éxito")
-                for key in keywords:
-                    response_pkdetail = put_newPKdetail(id, key, current_date)
+                if keywords != None:
+                    for key in keywords:
+                        response_pkdetail = put_newPKdetail(id, key, current_date)
         else:
             id = request.form['save_id']
             response_project = upd_projectById(id, project)
             if response_project is True:
                 print("Proyecto actualizado con éxito")
-                for key in keywords:
-                    response_pkdetail = put_newPKdetail(id, key, current_date)
-
+                # print(keywords)
+                if keywords != None:
+                    for key in keywords:
+                        response_pkdetail = put_newPKdetail(id, key, current_date)
         # finally:
         return redirect('/upload/home/'+str(id))
-
 
 @main.route("/add_variable", methods=["POST"])
 def add_variable():
@@ -340,8 +356,7 @@ def search_db():
             if len(keyword) > 1:
                 list_projects = get_squareProjects_ByWord(keyword)
                 num_projects = len(list_projects)
-                
-                print("len projects: " + str(num_projects))
+                # print("len projects: " + str(num_projects))
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword)
     else:
         return render_template('db_form.html', keyword = "")
@@ -358,7 +373,6 @@ def paper_one_load():
         # Code for One pdf
         if "filesize" in request.cookies:
             if not allowed_file_filesize(request.cookies["filesize"], app.config["MAX_CONTENT_LENGTH"]):
-                # print("Filesize exceeded maximum limit")
                 return redirect(request.url)
             file = request.files["file"]
             filesize = request.cookies.get("filesize")

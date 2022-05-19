@@ -7,6 +7,7 @@ var keywords_in = document.getElementById("keywords_in");
 var keywords_out = document.getElementById("keywords_out");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
+var districts = document.getElementById("district");
 
 if (keywords_in){
   keywords = keywords_in.value;
@@ -151,7 +152,10 @@ function addVariable() {
 
 }
 
-// Action to change and load provinces list
+var department = 0
+var province = 0
+
+// Action to change and load provinces list from department
 if (departments) {
   departments.onchange = function(){
     department = departments.value;
@@ -162,6 +166,22 @@ if (departments) {
           optionHTML += '<option value="'+ province.prv_id +'">' + province.prv_name + '</option>';
         }
         provinces.innerHTML = optionHTML;
+      });
+    });
+  }
+}
+
+// Action to change and load districts list from province
+if (provinces) {
+  provinces.onchange = function(){
+    province = provinces.value;
+    fetch('/district/' + province + '/province/' + department).then(function(response){
+      response.json().then(function(data){
+        let optionHTML = "";
+        for (let district of data.districts){
+          optionHTML += '<option value="'+ district.dis_id +'">' + district.dis_name + '</option>';
+        }
+        districts.innerHTML = optionHTML;
       });
     });
   }

@@ -2,7 +2,6 @@
 from utils.config import cfg
 import sqlite3
 import secrets
-import json
 import os
 
 global data_base
@@ -34,57 +33,6 @@ def get_col_names(cursor, tablename):
     """
     reader=cursor.execute("SELECT * FROM {}".format(tablename))
     return [x[0] for x in reader.description] 
-
-# def get_thesisByName(file_pdf):
-#     table_name = 'pdf_attributes'
-#     table_colnames = None
-#     pdf = dict()
-#     pdf_foundlist = []      #   Atributos
-#     try:
-#         sqliteConnection = sqlite3.connect(data_base)
-#         cursor = sqliteConnection.cursor()
-#         print("Connected to SQLite")
-#         pdf_info = get_pdf_info(cursor, 'pdf_info', file_pdf)
-#         pdf_id, pdf_name, pdf_npages = pdf_info
-#         query = f"""
-#                     SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
-#                     FROM (pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
-#                     WHERE a.pdf_id = "{pdf_id}" 
-#                     ORDER BY b.det_id ASC
-#                 """ 
-#         sqlite_select_query = query
-#         cursor.execute(sqlite_select_query)
-#         records = cursor.fetchall()
-        
-#         for record in records:
-#             pdf_foundlist.append({
-#                             'det_id':       record[0],
-#                             'det_attribute':record[1],
-#                             'det_name':     record[2], 
-#                             'det_value':    record[3],
-#                             'det_npage':    record[4],
-#                             'det_x':        record[5],
-#                             'det_y':        record[6],
-#                             'det_width':    record[7],
-#                             'det_height':   record[8]
-#                             })
-
-#         pdf = {
-#             'id':          pdf_id,
-#             'name':        pdf_name,
-#             'npages':      pdf_npages,
-#             'foundlist':   pdf_foundlist,
-#         }
-        
-#         cursor.close()
-#     except sqlite3.Error as error:
-#         print("Failed to read data from sqlite table", error)
-#     finally:
-#         if sqliteConnection:
-#             sqliteConnection.close()
-#             print("The SQLite connection is closed")
-        
-#         return pdf
 
 def get_listThesisByWord(keyword):
     table_name = 'pdf_keywords'
@@ -189,8 +137,8 @@ def put_newProject(project=dict()):
         # print(json.dumps(project))
         # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
-                    VALUES ("{project['title']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
+                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
+                    VALUES ("{project['title']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['district']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
                 """
         # print(query)
         sqlite_select_query = query
@@ -213,18 +161,12 @@ def put_newPKdetail(id, key, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
-        # query = f"""
-        #         #     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
-        #         #     VALUES ("{id} ", "{key}", "{current_date}")                
-        #         # """
         query = f"""
                     INSERT INTO "{table_name}" (pro_id, key_id, pro_key_created)
                     SELECT "{id}", "{key}", "{current_date}"
                     WHERE NOT EXISTS(SELECT 1 FROM "{table_name}" WHERE pro_id = "{id}" AND key_id = "{key}");
                 """
-
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -308,7 +250,7 @@ def get_listDepartments():
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        print(records)
+        # print(records)
 
         for record in records:
             departments.append({
@@ -339,7 +281,7 @@ def get_listProvinces(department):
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        print(records)
+        # print(records)
 
         for record in records:
             provinces.append({
@@ -354,6 +296,36 @@ def get_listProvinces(department):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return provinces
+
+def get_listDistricts(province, department):
+    table_name = 'ubigeo_districts'
+    districts = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        # print("Connected to SQLite")
+        query = f"""
+                    SELECT id, name, province_id, department_id
+                    FROM {table_name}
+                    WHERE province_id = {province} and department_id = {department}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+
+        for record in records:
+            districts.append({
+                    'dis_id':        record[0],
+                    'dis_name':      record[1],
+                        })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to list data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return districts
 
 def get_listKeywords():
     # List of TOP 10
@@ -387,7 +359,7 @@ def get_listKeywords():
 
 def get_listProjects(limit=-1):
     # List of TOP 10
-    print("data_base... ", data_base)
+    # print("data_base... ", data_base)
     table_name = 'project_info'
     projects = []
     try:
@@ -431,7 +403,7 @@ def get_projectById(id):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
+                    SELECT a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
@@ -445,14 +417,15 @@ def get_projectById(id):
                 'pro_uni':        record[2],
                 'pro_department': record[3],
                 'pro_province':   record[4],
-                'pro_career':     record[5],
-                'pro_comment':    record[6],
-                'pro_type_a':     record[7],
-                'pro_type_m':     record[8],
-                'pro_n_articles': record[9],
-                'pro_n_process':  record[10],
-                'pro_user':       record[11],
-                'pro_created':    record[12],
+                'pro_district':   record[5],
+                'pro_career':     record[6],
+                'pro_comment':    record[7],
+                'pro_type_a':     record[8],
+                'pro_type_m':     record[9],
+                'pro_n_articles': record[10],
+                'pro_n_process':  record[11],
+                'pro_user':       record[12],
+                'pro_created':    record[13],
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -503,7 +476,7 @@ def upd_projectById(id, project):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pro_title="{project['title']}", pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
+                    UPDATE "{table_name}" SET pro_title="{project['title']}", pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
                     WHERE pro_id = {id}
                 """
         # print(query)
@@ -558,7 +531,7 @@ def get_squareProjects_ByWord(keyword):
                     WHERE a.pro_title LIKE "%{keyword}%" OR c.key_name LIKE "%{keyword}%"
                     ORDER BY a.pro_id DESC
                 """
-        print(query)
+        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -847,7 +820,6 @@ def get_pdfDetailById(pdf_id):
                     'det_width':    record[7],
                     'det_height':   record[8]
                     })
-
         pdf = {
             'id':          pdf_id,
             'name':        pdf_name,
