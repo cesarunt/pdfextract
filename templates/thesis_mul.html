@@ -36,23 +36,25 @@
                                             <input type="file" class="form-control" name="file_pdf" id="file_pdf" accept="application/pdf" multiple oninput="input_pdf_file();">
                                         </div> -->
                                         <form method="POST" action="action_thesis_mul" enctype="multipart/form-data">
-                                           
                                             <!-- PROCESAMIENTO CON FILTRO X ATRIBUTOS -->
                                             <div class="card">
                                                 <div class="card-body" style="padding-bottom: 0.2rem;">
                                                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" onclick="clicProcessPart()">
                                                     {% for pdf in pdfs %}
-                                                        <li class="nav-item">
+                                                        <li class="nav-item" id="pdf_id_{{pdf.pdf_id}}">
                                                             <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span></a>
-                                                            <span class="fa-fw select-all fas" style="width: 75px; padding: 0 1.5rem;">
-                                                                <img class="card-img-land" style="width: 50px;" src='{{pdf.pdf_path}}0.jpg'>
+                                                            <span class="fa-fw select-all fas" style="width: 100px; padding: 0 0 0.5rem 1rem;">
+                                                                <button type="submit" id="close_{{pdf.pdf_id}}" style="padding: 0; display: flex;" class="btn" onclick="removePDF('{{ request.url }}', '{{pdf.pdf_id}}', '{{pdf.name}}')">
+                                                                    <img class="card-img-land" style="width: 50px;" src='{{pdf.pdf_path}}0.jpg'>
+                                                                    <i class="fas fa-window-close" style="color:firebrick; padding-left: 5px;"></i>
+                                                                </button>
                                                             </span>
-                                                        
                                                         </li>
                                                     {% endfor %}
-                                                        <div class="col-sm-12 text-center">
+                                                        <div class="col-sm-12 text-center" style="margin: 5px 0;">
                                                             <span style="font-size:smaller;">Si NO desea procesar todo, seleccione el PDF que desea procesar</span>
                                                         </div>
+                                                        <input type="hidden" name="pdfs_remove" id="pdfs_remove" value="" />
                                                     </ul>
                                                     <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
                                                         {% for pdf in pdfs %}

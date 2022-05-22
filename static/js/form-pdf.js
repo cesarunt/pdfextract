@@ -24,19 +24,12 @@ var select_attributes = document.getElementById("select_attributes");
 var updatePDF_btn = document.getElementById("updatePDF_btn");
 var div_notfound = document.getElementById("div_notfound");
 var div_found = document.getElementById("div_found");
+var pdfs_remove = "" 
 
 var pages = document.getElementById('num_pages')
 var _page = 1
 var _canvas_page = 0
 var _band_page = false
-
-// Function to show Popup
-// function clicPDFPreview() {
-//   console.log("Popup")
-//   var popup = document.getElementById("myPopup");
-//   console.log(popup)
-//   popup.classList.toggle("show");
-// }
 
 // Function to show alerts
 function showPDFAlert(message, alert) {
@@ -176,7 +169,6 @@ function uploadPDF(url) {
   // Open and send the request
   request.open("POST", url);
   request.send(data);
-
 }
 
 if(cancelPDF_btn)
@@ -276,8 +268,6 @@ function movePage(_this, pdf_id, direct) {
 
 // SELECT PAGE FUNCTION
 function goPage(val, pdf_id) {
-  // console.log(val)
-  // console.log(pdf_id)
   path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
   _page = val
@@ -285,22 +275,17 @@ function goPage(val, pdf_id) {
 
 // MOVE PAGE FUNCTION, to move outside One PDF
 function movePages(_this, pdf_path, _i, _pages, direct) {
-  console.log("movePages")
   if (_canvas_page == 0 && _band_page == false){
     _canvas_page = _i
     _band_page = true
   }
   if (direct == "up"){
-    // console.log(_canvas_page)
-    // console.log(_pages)
     if (_canvas_page < parseInt(_pages)-1){
       _canvas_page = parseInt(_canvas_page) + 1
       goPages(_canvas_page, pdf_path)
     }
   }
   else{
-    // console.log(_canvas_page)
-    // console.log(_pages)
     if (_canvas_page > 0){
       _canvas_page = parseInt(_canvas_page) - 1
       goPages(_canvas_page, pdf_path)
@@ -311,14 +296,11 @@ function movePages(_this, pdf_path, _i, _pages, direct) {
 
 // SELECT PAGE FUNCTION
 function goPages(val, pdf_path) {
-  console.log("goPages")
-  console.log(pdf_path)
   path_page = pdf_path + (val).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
 }
 
 function closePDF(_this, pdf_id) {
-  console.log("closePDF")
   page = "page_" + pdf_id
   full_page = "full_page_" + pdf_id
   
@@ -343,4 +325,12 @@ function cancelCanvas(edit_id) {
   _det_id = detail_edit[0]
   _det_attribute = detail_edit[1]
   ctx.clearRect(0, 0, canvas_pdf.width, canvas_pdf.height);
+}
+
+function removePDF(url, pdf_id, pdf_name) {
+  pdfs_remove = pdfs_remove + '/' + pdf_name
+  document.getElementById('pdfs_remove').value = pdfs_remove
+
+  pdf_rem_selec = document.getElementById('pdf_id_' + pdf_id)
+  pdf_rem_selec.remove();
 }

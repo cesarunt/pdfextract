@@ -451,10 +451,10 @@ def thesis_mul_load():
     # aqui hay que crear un nuevo ARRAY para almacenar los pdf_ids (pdf_info_id)
     pdf_info_id = None
     upload = False
-    file_pdfs = []
     pdf_ids = []
 
     if request.method == "POST":
+        file_pdfs = []
         pro_id = request.form.get('pro_id')
         print("PRO_ID", pro_id)
         # Code for multiple pdfs
@@ -464,15 +464,20 @@ def thesis_mul_load():
         files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d/%m/%Y")
         pdfs = []
-        fname = os.listdir(app.config['MULTIPLE_SPLIT_IMG'])
+        # fname = os.listdir(app.config['MULTIPLE_SPLIT_IMG'])
+
+        files = request.files.getlist('files[]')
         
         # 1. Remove and split IMG
         # img_remove(fname, app.config['MULTIPLE_SPLIT_IMG'])
         for file in files:
-            file_pdfs.append(file.filename)
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'], filename)
+                path = validate_path(path)
+                path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
+                # action = request.values.get("action")
+                file_pdfs.append(path.split("/")[-1])
                 file.save(path)
                 upload = True
 
@@ -497,8 +502,6 @@ def thesis_mul_load():
                     img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
                     pdf['pdf_id'] = pdf_info_id
                     pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
-                    # print(img_split)
-                    # print("Number IMG_pages", img_npages)
                     pdfs.append(pdf)
         print("PDFs: ", pdfs)
 
@@ -532,6 +535,7 @@ def action_thesis_mul():
         pro_id = request.form.get('pro_id')
         process = request.form.get('process')
         _pages = request.form.getlist('page')
+        pdfs_remove = request.form.get('pdfs_remove')
 
         if process == '0' and len(_pages) > 0:
             temp_page = ""
@@ -549,6 +553,15 @@ def action_thesis_mul():
             print("NumPDFs Cargados")
             print(len(file_pdfs))
             print(file_pdfs)
+            if len(pdfs_remove):
+                print("PDFs Remove")
+                pdfs_remove = pdfs_remove.split("/")
+                print(pdfs_remove)
+                for pdf_rem in pdfs_remove :
+                    if pdf_rem != "":
+                        file_pdfs.remove(pdf_rem)
+                        print("PDF removido", pdf_rem)
+
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
@@ -557,6 +570,7 @@ def action_thesis_mul():
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 action = request.values.get("action")
+                print("ACTION", action)
 
                 if action == "save_canvas":
                     det_id =        int(request.values.get("det_id"))
@@ -740,6 +754,10 @@ def project_pdfs(id):
 @main.route('/<pdf_id>')
 def project_pdf(pdf_id):
     if current_user.is_authenticated:
+        # action = request.values.get("action")
+        # action = request.form.get('action')
+        # _type = type(pdf_id)
+        # if _type == isinstance(_type, str):
         project = get_projectById(pro_id)
         pdfs = get_projectPDFById(pro_id)
         pdf = get_pdfDetailById(pdf_id)
@@ -760,6 +778,7 @@ def project_pdf(pdf_id):
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
     else:
         return render_template('project_pdfs.html')
+
 
 @main.route("/<pdf_id>", methods=["POST"])
 def pdf_post(pdf_id):
@@ -932,6 +951,8 @@ def paper_mul_load():
             return redirect(request.url)
 
         files = request.files.getlist('files[]')
+        print("files...")
+        print(files)
 
         for file in files:
             file_pdfs.append(file.filename)
