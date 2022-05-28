@@ -273,33 +273,26 @@ function goPage(val, pdf_id) {
   _page = val
 }
 
-// MOVE PAGE FUNCTION, to move outside One PDF
-function movePages(_this, pdf_path, _i, _pages, direct) {
-  if (_canvas_page == 0 && _band_page == false){
-    _canvas_page = _i
-    _band_page = true
-  }
-  if (direct == "up"){
-    if (_canvas_page < parseInt(_pages)-1){
-      _canvas_page = parseInt(_canvas_page) + 1
-      goPages(_canvas_page, pdf_path)
-    }
+// OPEN AND CLOSE PAGE FUNCTION
+function openPage(_this, pdf_path, _pdf_id, _i) {
+  path_page = pdf_path + (_i).toString() + '.jpg'
+  $("canvas").css("background-image", "url("+path_page+")");
+
+  foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
+  val = parseInt(_i) + 1
+  document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val).toString()}&nbsp;`;
+  
+  page = "page_" + _pdf_id + "_" + _i
+  full_page = "full_page_" + _pdf_id + "_" + _i
+  check = document.getElementById(page).checked;
+  if (check==true){
+    document.getElementById(full_page).checked = true;
   }
   else{
-    if (_canvas_page > 0){
-      _canvas_page = parseInt(_canvas_page) - 1
-      goPages(_canvas_page, pdf_path)
-    }
+    document.getElementById(full_page).checked = false;
   }
-  
+  _canvas_page = _i
 }
-
-// SELECT PAGE FUNCTION
-function goPages(val, pdf_path) {
-  path_page = pdf_path + (val).toString() + '.jpg'
-  $("canvas").css("background-image", "url("+path_page+")");
-}
-
 function closePDF(_this, pdf_id) {
   page = "page_" + pdf_id
   full_page = "full_page_" + pdf_id
@@ -312,6 +305,33 @@ function closePDF(_this, pdf_id) {
     document.getElementById(page).checked = false;
   }
 }
+
+// MOVE AND GO PAGE FUNCTION, to move outside One PDF
+function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
+  if (_canvas_page == 0 && _band_page == false){
+    _canvas_page = _i
+    _band_page = true
+  }
+  foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
+  if (direct == "up"){
+    if (_canvas_page < parseInt(_pages)-1){
+      _canvas_page = parseInt(_canvas_page) + 1
+      goPages(_canvas_page, pdf_path)
+    }
+  }
+  else{
+    if (_canvas_page > 0){
+      _canvas_page = parseInt(_canvas_page) - 1
+      goPages(_canvas_page, pdf_path)
+    }
+  }
+}
+function goPages(val, pdf_path) {
+  document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
+  path_page = pdf_path + (val).toString() + '.jpg'
+  $("canvas").css("background-image", "url("+path_page+")");
+}
+
 
 // Function to inactive canvas and hide/show buttons
 function cancelCanvas(edit_id) {

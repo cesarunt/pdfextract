@@ -38,13 +38,14 @@
                                                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" onclick="clicProcessPart()">
                                                     {% for pdf in pdfs %}
                                                         <li class="nav-item" id="pdf_id_{{pdf.pdf_id}}">
-                                                            <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span></a>
-                                                            <span class="fa-fw select-all fas" style="width: 100px; padding: 0 0 0.5rem 1rem;">
-                                                                <img class="card-img-land" style="width: 50px;" src='{{pdf.pdf_path}}0.jpg'>
+                                                            <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" style="padding: 5px 12px 0;" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">
+                                                                PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span>
+                                                                <img class="card-img-land" style="width: 50px; display: block; margin: 4px 5px 0 15px;" src='{{pdf.pdf_path}}0.jpg'>
+                                                            </a>
+                                                            <span class="fa-fw select-all fas" style="width: 100px; padding: 0 0 0.5rem 0.85rem;">
                                                                 <button type="submit" id="close_{{pdf.pdf_id}}" style="padding: 0; display: block;" class="btn" onclick="removePDF('{{ request.url }}', '{{pdf.pdf_id}}', '{{pdf.name}}')">
                                                                     <i class="fas fa-trash-alt" title="borrar" style="color:firebrick;"></i>
                                                                 </button>
-                                                                
                                                             </span>
                                                         </li>
                                                     {% endfor %}
@@ -59,7 +60,7 @@
                                                             <div class="col-sm-12">
                                                                 {% for i in range(pdf.npages) %}
                                                                 <div class="form-check form-check-inline" style="padding-left: 0; margin-right: 2px; font-size:small; color: #666;">
-                                                                    <button type="button" class="btn" style="padding: 0 2px; margin: 5px 0;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}">
+                                                                    <button type="button" class="btn" style="padding: 0 2px; margin: 5px 0;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}" onclick="openPage(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}')">
                                                                         <div style="border: 1px solid #CCC; margin-top: 2px;">
                                                                             <span class="fa-fw select-all fas" style="width: 100px">
                                                                                 <img class="card-img-land" style="width: 100px;" src='{{pdf.pdf_path}}{{i}}.jpg'>
@@ -85,22 +86,23 @@
                                                                             <div class="modal-content" style="background-color: #CCC; width: 815px;">
                                                                                 <!-- Add image inside the body of modal -->
                                                                                 <div class="modal-body" style="display: inline-flex;">
-                                                                                    <button id="btn_arrow_left" style="height: 50px; margin-top: 250px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{i}}', '{{pdf.npages}}', 'down')"><i class="fas fa-arrow-left"></i></button>
+                                                                                    <button id="btn_arrow_left" style="height: 50px; margin-top: 250px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'down')"><i class="fas fa-arrow-left"></i></button>
                                                                                     <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 1px 0 1px;">
                                                                                         <canvas id="canvas" class="canvas_page" style="background-image: url('{{pdf.pdf_path}}{{i}}.jpg'); position: relative; margin: 0 auto;" width="700px" height="1000px" ></canvas>
                                                                                     </div>
-                                                                                    <button id="btn_arrow_right" style="height: 50px; margin-top: 250px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
+                                                                                    <button id="btn_arrow_right" style="height: 50px; margin-top: 250px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
                                                                                     <input type="hidden" name="canvas_page" id="canvas_page" value="" />
                                                                                 </div>
                                                                                 <div style="margin: 0 10px 5px;">
                                                                                     {% if i==0 or i==1 %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>
                                                                                     {% else %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">
                                                                                     {% endif %}
+                                                                                    <span id="foot_page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;</span>
                                                                                 </div>
                                                                                 <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}_{{i}}')">Cerrar</button>
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}_{{i}}')">Aceptar</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

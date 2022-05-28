@@ -192,8 +192,8 @@ def update_form(id):
         list_keywords = get_listKeywords()
         list_keywordsOne = get_listKeywordsById(id)
         list_keywordsOneId = [val['key_id'] for val in list_keywordsOne]
-        print("TYPE")
-        print(type(list_keywordsOneId))
+        print("ONE Proyect")
+        print(one_project)
         list_provinces = get_listProvinces(one_project[0]['pro_department'])
         list_districts = get_listDistricts(one_project[0]['pro_province'], one_project[0]['pro_department'])
         return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, districts=list_districts, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
