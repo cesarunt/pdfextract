@@ -75,11 +75,6 @@
                                                                         <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
                                                                     {% endif %}
                                                                     </div>
-                                                                        <!-- <button class="btn btn-secondary" style="padding: 0 2px;" id="preview" onclick="clicPDFPreview()" type="button">
-                                                                        <span id="myPopup" class="fa-fw select-all fas"></span>
-                                                                    </button> -->
-                                                                    <!-- Button to launch a modal -->
-
                                                                     <!-- Modal -->
                                                                     <div class="modal fade" id="exampleModal_{{pdf.pdf_id}}_{{i}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                         <div class="modal-dialog" role="document" style="max-width: 780px;">
@@ -97,12 +92,12 @@
                                                                                     {% if i==0 or i==1 %}
                                                                                         <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>
                                                                                     {% else %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')">
                                                                                     {% endif %}
                                                                                     <span id="foot_page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;</span>
                                                                                 </div>
                                                                                 <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}_{{i}}')">Aceptar</button>
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}', '{{i}}')">Aceptar</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

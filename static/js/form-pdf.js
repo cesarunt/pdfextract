@@ -293,9 +293,21 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   }
   _canvas_page = _i
 }
-function closePDF(_this, pdf_id) {
-  page = "page_" + pdf_id
-  full_page = "full_page_" + pdf_id
+function openCheck(_this, _pdf_id, _i) {
+  page = "page_" + _pdf_id + "_" + _canvas_page
+  full_page = "full_page_" + _pdf_id + "_" + _canvas_page
+  
+  check = document.getElementById(full_page).checked;
+  if (check==true){
+    document.getElementById(page).checked = true;
+  }
+  else{
+    document.getElementById(page).checked = false;
+  }
+}
+function closePDF(_this, _pdf_id, _i) {
+  page = "page_" + _pdf_id + "_" + _canvas_page
+  full_page = "full_page_" + _pdf_id + "_" + _i
   
   check = document.getElementById(full_page).checked;
   if (check==true){
@@ -325,6 +337,17 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
       goPages(_canvas_page, pdf_path)
     }
   }
+  page = "page_" + _pdf_id + "_" + _canvas_page
+  full_page = "full_page_" + _pdf_id + "_" + _canvas_page
+  console.log(full_page)
+  check = document.getElementById(page).checked;
+  if (check==true){
+    document.getElementById(full_page).checked = true;
+  }
+  else{
+    document.getElementById(full_page).checked = false;
+  }
+
 }
 function goPages(val, pdf_path) {
   document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
