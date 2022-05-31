@@ -99,15 +99,15 @@ function addVariable() {
 
   // Reject if the file input is empty & throw alert
   if (!value) {
-    alert("Ingresar texto de la variable", "warning")
+    alert("Debe ingresar una palabra", "warning")
     return;
   }
   if (!value.match("^[A-Za-z]{1,30}")) {
-    alert("Ingrese caracteres de texto", "warning")
+    alert("Ingrese caracteres de texto válidos", "warning")
     return;
   }
   if (value.length < 4) {
-    alert("Ingresar texto de la variable", "warning")
+    alert("Ingresar palabra, mínimo de 5 caracteres", "warning")
     return;
   }
 
