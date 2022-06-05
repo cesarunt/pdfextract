@@ -179,7 +179,8 @@ def upload_form():
         list_departments = get_listDepartments()
         list_keywords = get_listKeywords()
         one_project = []
-        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project, universities=list_universities, departments=list_departments, keywords=list_keywords)
+        key_id = ""
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project, key_id=key_id, universities=list_universities, departments=list_departments, keywords=list_keywords)
     else:
         return render_template('upload_form.html')
 
@@ -192,11 +193,12 @@ def update_form(id):
         list_keywords = get_listKeywords()
         list_keywordsOne = get_listKeywordsById(id)
         list_keywordsOneId = [val['key_id'] for val in list_keywordsOne]
-        print("ONE Proyect")
+        print("ONE Project")
         print(one_project)
+        key_id = ""
         list_provinces = get_listProvinces(one_project[0]['pro_department'])
         list_districts = get_listDistricts(one_project[0]['pro_province'], one_project[0]['pro_department'])
-        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], universities=list_universities, departments=list_departments, provinces=list_provinces, districts=list_districts, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project[0], key_id=key_id, universities=list_universities, departments=list_departments, provinces=list_provinces, districts=list_districts, keywords=list_keywords, keywordsOne=list_keywordsOne, keywordsOneId=list_keywordsOneId, pro_id=id)
     else:
         return render_template('upload_form.html')
 
@@ -317,6 +319,11 @@ def save_upload():
         # finally:
         return redirect('/upload/home/'+str(id))
 
+@main.route('/last_variable')
+def last_variable():
+    key_id = get_lastVariable()
+    return jsonify({'key_id': key_id})
+
 @main.route("/add_variable", methods=["POST"])
 def add_variable():
     id = 0
@@ -328,18 +335,23 @@ def add_variable():
         value = request.values.get("value")
 
         try:
-            response_key = put_newKeyword(value, current_date)
+            response_key, response_id = put_newKeyword(value, current_date)
             if response_key is True:
                 msg_variable = "Variable registrada con éxito"
+                key_id = response_id
         except:
             msg_variable = "Error en registro de variable"
         
         finally:
             print(msg_variable)
+            print(key_id)
             list_universities = get_listUniversities()
             list_keywords = get_listKeywords()
             title = request.values.get("title")
-            return render_template('upload_form.html', name=current_user.name.split()[0], universities=list_universities, keywords=list_keywords, title=title)
+            one_project = []
+            # return redirect(request.url)
+            return jsonify({'key_id': key_id})
+            # return render_template('upload_form.html', name=current_user.name.split()[0], project = one_project, key_id=key_id, universities=list_universities, keywords=list_keywords, title=title)
 
 """
     FORM SEARCH DATABASES

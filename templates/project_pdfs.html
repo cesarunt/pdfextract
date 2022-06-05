@@ -77,14 +77,15 @@
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
-                                        <div id="buttons-close" style="width: 42%; display: inline-block; text-align: left; margin: 0 0 0 1.5rem;">
+                                        <div id="buttons-close" style="width: 40%; display: inline-block; text-align: left; margin: 0 0 0 1.5rem;">
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
                                                 <i class="fas fa-save"> &nbsp;Canvas</i>
                                             </button>
                                         </div>
-                                        <span>Page</span>&nbsp;
-                                        <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span>
-                                        <div id="buttons-actions" style="width: 42%; display: inline-block; text-align: right; margin: 0 0 0 0.75rem;">
+                                        <span>Página</span>&nbsp;
+                                        <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
+                                        <!-- <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span> -->
+                                        <div id="buttons-actions" style="width: 40%; display: inline-block; text-align: right; margin: 0 0 0 0.75rem;">
                                             <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>

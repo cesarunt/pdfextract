@@ -243,27 +243,37 @@ function selectPage(val, pdf_id) {
 
 // MOVE PAGE FUNCTION, to move inside One PDF
 function movePage(_this, pdf_id, direct) {
+  document.getElementById('btn_arrow_left').disabled = false
+  document.getElementById('btn_arrow_right').disabled = false
   if (direct == "up"){
     val = parseInt(_page) + 1
-    document.getElementById('btn_arrow_left').disabled = false
-    document.getElementById('btn_arrow_right').disabled = false
     if (val == pages.value){
       _this.disabled = true
     }
   }
-  else{
+  if (direct == "down"){
     val = parseInt(_page) - 1
-    document.getElementById('btn_arrow_left').disabled = false
-    document.getElementById('btn_arrow_right').disabled = false
     if (val == 1){
       _this.disabled = true
+    }
+  }
+  if (direct == "set"){
+    val = parseInt(_page)
+    console.log(val)
+    if (val <= 1){
+      document.getElementById('btn_arrow_left').disabled = true
+    }
+    if (val >= pages.value){
+      document.getElementById('btn_arrow_right').disabled = true
     }
   }
   // clear the canvas
   canvas.clear();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  document.getElementById('current_page').innerHTML = (val).toString()
-  goPage(val, pdf_id)
+  document.getElementById('current_page').value = (val).toString();
+  if (val >= 1 && val <=pages.value){
+    goPage(val, pdf_id);
+  }
 }
 
 // SELECT PAGE FUNCTION
@@ -272,6 +282,9 @@ function goPage(val, pdf_id) {
   $("canvas").css("background-image", "url("+path_page+")");
   _page = val
 }
+
+// -----------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------
 
 // OPEN AND CLOSE PAGE FUNCTION
 function openPage(_this, pdf_path, _pdf_id, _i) {
@@ -284,6 +297,7 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   
   page = "page_" + _pdf_id + "_" + _i
   full_page = "full_page_" + _pdf_id + "_" + _i
+  console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
     document.getElementById(full_page).checked = true;
@@ -293,23 +307,10 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   }
   _canvas_page = _i
 }
+
 function openCheck(_this, _pdf_id, _i) {
   page = "page_" + _pdf_id + "_" + _canvas_page
-  full_page = "full_page_" + _pdf_id + "_" + _canvas_page
-  
-  check = document.getElementById(full_page).checked;
-  if (check==true){
-    document.getElementById(page).checked = true;
-  }
-  else{
-    document.getElementById(page).checked = false;
-  }
-}
-function closePDF(_this, _pdf_id, _i) {
-  page = "page_" + _pdf_id + "_" + _canvas_page
-  full_page = "full_page_" + _pdf_id + "_" + _i
-  
-  check = document.getElementById(full_page).checked;
+  check = _this.checked
   if (check==true){
     document.getElementById(page).checked = true;
   }
@@ -338,7 +339,8 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
     }
   }
   page = "page_" + _pdf_id + "_" + _canvas_page
-  full_page = "full_page_" + _pdf_id + "_" + _canvas_page
+  console.log(page)
+  full_page = "full_page_" + _pdf_id + "_" + _i
   console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
@@ -355,6 +357,21 @@ function goPages(val, pdf_path) {
   $("canvas").css("background-image", "url("+path_page+")");
 }
 
+// Function to set current page on keypress
+// function setPage(val)
+var current_page = document.getElementById("current_page");
+
+if (current_page) {
+  current_page.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+      _page = document.getElementById("current_page").value;
+      // Cancel the default action, if needed
+      event.preventDefault();
+      movePage(this, parseInt(current_page.name), "set");
+    }
+  });
+}
 
 // Function to inactive canvas and hide/show buttons
 function cancelCanvas(edit_id) {

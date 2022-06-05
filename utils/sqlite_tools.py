@@ -180,6 +180,27 @@ def put_newPKdetail(id, key, current_date):
         
         return result
 
+def get_lastVariable():
+    table_name = 'key_info'
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    SELECT * FROM {table_name} ORDER BY key_id DESC LIMIT 1           
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        record = cursor.fetchone()
+        result = record[0]
+    except sqlite3.Error as error:
+        print("Failed to get data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
 def put_newKeyword(key_name, current_date):
     table_name = 'key_info'
     result = False
@@ -194,6 +215,7 @@ def put_newKeyword(key_name, current_date):
         # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
+        id = cursor.lastrowid
         sqliteConnection.commit()
         result = True
     except sqlite3.Error as error:
@@ -203,7 +225,7 @@ def put_newKeyword(key_name, current_date):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         
-        return result
+        return result, id
 
 def get_listUniversities():
     table_name = 'uni_info'

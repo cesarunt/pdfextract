@@ -1,10 +1,8 @@
-// Define keywords
-
 // FUNCTIONS FOR AUTOCOMPLETE KEYWORDS
 var variables_select = document.getElementById("keywords_select");
 var variables_label = document.getElementById("keywords_label");
-var keywords_in = document.getElementById("keywords_in");
 var keywords_out = document.getElementById("keywords_out");
+var keywords_in = document.getElementById("keywords_in");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
 var districts = document.getElementById("district");
@@ -18,8 +16,8 @@ if (keywords_in){
 var search_terms = []
 var var_list = []
 var terms = []
+var current_id = 0
 
-// if (keywords_out.value){
 if (keywords_out){
   keys = keywords_out.value
   keys = keys.replace(']', '').replace('[', '')
@@ -44,8 +42,6 @@ if (keywords){
       }
     });
   }
-
-  // var var_list = []
   
   function showResults(val) {
     res = document.getElementById("result");
@@ -61,25 +57,12 @@ if (keywords){
       }
     }
     res.innerHTML = '<ul id="keywords_found">' + list + '</ul>';
-
     var listul = document.getElementById ("keywords_found");
     var liTags = listul.getElementsByTagName ("li");
 
     for (var i = 0; i < liTags.length; i++) {
-      // liTags[i].value = i + 3;
       var variable = "key_" + i.toString()
-      document.getElementById(variable).onclick = function(event) {
-        variables_label.classList.remove("d-none");
-        let current_id = $(this).attr('data_id')
-        if (var_list.indexOf(current_id) < 0){
-          var_list.push(current_id)
-          variables_label.classList.remove("d-none");
-          variables_select.innerHTML += '<button id="'+current_id+'" type="button" value="'+current_id+'" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">'+$(this).attr('data_value')+'</button>&nbsp;'
-          keywords_out.value = var_list
-          console.log("Ids")
-          console.log(keywords_out.value)
-        }
-      }
+      selectKeyword(variable);
     }
   }
 }
@@ -92,11 +75,41 @@ function clearKeywords() {
   keywords_out.value = var_list
 }
 
+function selectKeyword(variable){
+  // Event onClick, when click on keywords found
+  document.getElementById(variable).onclick = function(event) {
+    variables_label.classList.remove("d-none");
+    current_id = $(this).attr('data_id')
+    if (var_list.indexOf(current_id) < 0){
+      var_list.push(current_id)
+      variables_label.classList.remove("d-none");
+      variables_select.innerHTML += '<button id="'+current_id+'" type="button" value="'+current_id+'" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">'+$(this).attr('data_value')+'</button>&nbsp;'
+      keywords_out.value = var_list
+    }
+  }
+}
+
+var keyword = document.getElementById("keyword");
+if (keyword) {
+  keyword.addEventListener("keypress", function(event) {
+    current_id = document.getElementById("key_id").value;
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addVariable(keyword.value, "new");
+    }
+  });
+}
+
+
 // ADD VARIABLE FUNCTION
 // --------------------------------------------------------------------------------------------------------
-function addVariable() {
+function addVariable_click() {
   var value = document.getElementById("keyword").value;
+  addVariable(value, "click");
+}
 
+function addVariable(value, type){
   // Reject if the file input is empty & throw alert
   if (!value) {
     alert("Debe ingresar una palabra", "warning")
@@ -128,9 +141,22 @@ function addVariable() {
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      
-      alert(`Registro Exitoso`, "success");
-      location.reload();
+      console.log("success")
+      if (type == "new") {
+        fetch('/last_variable').then(function(response){
+          response.json().then(function(data){
+            console.log(data.key_id)
+            current_id = data.key_id
+            variables_label.classList.remove("d-none");
+            if (var_list.indexOf(current_id) < 0){
+              var_list.push(current_id)
+              variables_label.classList.remove("d-none");
+              variables_select.innerHTML += '<button id="'+current_id+'" type="button" value="'+current_id+'" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">'+keyword.value+'</button>&nbsp;'
+              keywords_out.value = var_list
+            }
+          });
+        });
+      }
     }
     else {
       alert(`Alerta en registro`, "warning");
@@ -149,7 +175,6 @@ function addVariable() {
   // Open and send the request
   request.open("POST", "/add_variable");
   request.send(data);
-
 }
 
 var department = 0

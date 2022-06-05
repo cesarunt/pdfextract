@@ -18,8 +18,13 @@
                                 <input id="keywords_out" name="keywords_out" type="hidden" value="{{ keywordsOneId }}">
                                 <input id="keywords_in" name="keywords_in" type="hidden" value="{{ keywords }}">
                                 <div class="col-md-4">
+                                    {% if key_id %}
+                                        <input id="key_id" name="key_id" type="hidden" value="{{ key_id }}">
+                                    {% else %}
+                                        <input id="key_id" name="key_id" type="hidden" value="">
+                                    {% endif %}
                                     <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" autocomplete="off" onkeyup="showResults(this.value)">
-                                    <span class="fa-fw select-all fas" onclick="addVariable()"></span>
+                                    <span class="fa-fw select-all fas" onclick="addVariable_click()"></span>
                                     <div id="result" style="margin-bottom: 0.5rem;"></div>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese palabra clave</div>
@@ -30,12 +35,11 @@
                                     <div id="keywords_select" class="form-label">
                                         {% for keyword in keywordsOne %}
                                         <button id="{{ keyword.key_id }}" type="button" value="{{ keyword.key_id }}" class="btn btn-secondary mb-2" style="padding: 0.25rem 0.5rem;">{{ keyword.key_name }}</button>
-                                            <!-- {{ keyword.key_name }}, -->
                                         {% endfor %}
                                     </div>
                                     {% else %}
                                     <label id="keywords_label" class="form-label d-none" style="font-size: smaller; margin-top: 10px;">Palabras claves seleccionadas <a style="color: #3e8ef7; font-weight: 600; text-decoration: underline;" onclick="clearKeywords()" href="#"> (limpiar)</a></label>
-                                    <div id="keywords_select" class="form-label"></div>
+                                    <div id="keywords_select" class="form-label"> </div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -81,7 +85,6 @@
                                 </div>
                                 <div class="mb-3 col-md-4">
                                     <select name="province" id="province" class="form-select col-md-6" required>
-                                        <!-- <option value="" selected>Provincia</option> -->
                                         {% if project.pro_province %}
                                             {% for province in provinces %}
                                                 {% if province.prv_id == project.pro_province %}
@@ -99,7 +102,6 @@
                                 </div>
                                 <div class="mb-3 col-md-4">
                                     <select name="district" id="district" class="form-select col-md-6" required>
-                                        <!-- <option value="" selected>Provincia</option> -->
                                         {% if project.pro_district %}
                                             {% for district in districts %}
                                                 {% if district.dis_id == project.pro_district %}
@@ -161,7 +163,6 @@
                                 {% else %}
                                 <input id="save_type" name="save_type" type="hidden" value="new">
                                 {% endif %}
-                                <!-- <input id="save_type" name="save_type" type="hidden" value=""> -->
                                 <button type="submit" id="save_upload" class="btn btn-primary" style="font-size: medium;" > &nbsp; Guardar &nbsp;
                                 </button>
                             </div>

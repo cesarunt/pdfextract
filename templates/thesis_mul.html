@@ -90,14 +90,14 @@
                                                                                 </div>
                                                                                 <div style="margin: 0 10px 5px;">
                                                                                     {% if i==0 or i==1 %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')" checked>
                                                                                     {% else %}
                                                                                         <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')">
                                                                                     {% endif %}
                                                                                     <span id="foot_page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;</span>
                                                                                 </div>
                                                                                 <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closePDF(this, '{{pdf.pdf_id}}', '{{i}}')">Aceptar</button>
+                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Aceptar</button>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
