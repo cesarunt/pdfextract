@@ -104,6 +104,13 @@ if (keyword) {
 
 // ADD VARIABLE FUNCTION
 // --------------------------------------------------------------------------------------------------------
+function clearVariables() {
+  document.getElementById ("keywords_found").value = ""
+  document.getElementById ("keywords_found").innerHTML = ""
+  document.getElementById("keyword").value = ""
+  document.getElementById("keyword").focus();
+}
+
 function addVariable_click() {
   var value = document.getElementById("keyword").value;
   addVariable(value, "click");

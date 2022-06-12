@@ -630,28 +630,28 @@ def action_thesis_mul():
                     pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
                     result_split = 1
                 
-                if action == "save_attribute":
-                    current_date = date.today().strftime("%d/%m/%Y")
-                    att_value =  request.values.get("new_att")
+                # if action == "save_attribute":
+                #     current_date = date.today().strftime("%d/%m/%Y")
+                #     att_value =  request.values.get("new_att")
 
-                    try:
-                        response_att, id = put_newPDFattribute(att_value, current_date)
-                        if response_att is True:
-                            msg_att = "Atributo registrado con éxito"
-                    except:
-                        msg_att = "Error en registro del atributo"
+                #     try:
+                #         response_att, id = put_newPDFattribute(att_value, current_date)
+                #         if response_att is True:
+                #             msg_att = "Atributo registrado con éxito"
+                #     except:
+                #         msg_att = "Error en registro del atributo"
                     
-                    try:
-                        response_pdf = put_newPDFdetail(pdf_id, id)
-                        if response_pdf is True:
-                            msg_pdf = "PDF detail registrado con éxito"
-                    except:
-                        msg_pdf = "Error en registro de PDFdetail"
+                #     try:
+                #         response_pdf = put_newPDFdetail(pdf_id, id)
+                #         if response_pdf is True:
+                #             msg_pdf = "PDF detail registrado con éxito"
+                #     except:
+                #         msg_pdf = "Error en registro de PDFdetail"
                     
-                    finally:
-                        print(msg_att)
-                        print(msg_pdf)
-                        result_split = 1
+                #     finally:
+                #         print(msg_att)
+                #         print(msg_pdf)
+                #         result_split = 1
                 
                 if action == "remove_attribute":
                     det_id = int(request.values.get("det_id"))

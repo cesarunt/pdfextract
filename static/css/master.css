@@ -642,3 +642,20 @@ Popup container
         flex-direction: row;
     }
 }
+
+/*------------------------------------------------------------------
+[12. Form Register] 
+*/
+
+.wrapper_upload {
+    position: relative;
+}
+
+.wrapper_upload span {
+    font-size: 1.4rem;
+    color: darkgray;
+    position: absolute;
+    cursor: pointer;
+    right: 6px;
+    top: 8px;
+}

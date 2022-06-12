@@ -23,8 +23,11 @@
                                     {% else %}
                                         <input id="key_id" name="key_id" type="hidden" value="">
                                     {% endif %}
-                                    <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Busca palabras claves" autocomplete="off" onkeyup="showResults(this.value)">
-                                    <span class="fa-fw select-all fas" onclick="addVariable_click()"></span>
+                                    <div class="wrapper_upload">
+                                        <input type="text" class="form-control" name="keyword" id="keyword" placeholder="Ingrese palabra clave" style="display:inline;"  onkeyup="showResults(this.value)">
+                                        <span class="fa-fw select-all fas" onclick="clearVariables()"></span>
+                                    </div>
+                                    <!-- <span class="fa-fw select-all fas" onclick="addVariable_click()"></span> -->
                                     <div id="result" style="margin-bottom: 0.5rem;"></div>
                                     <div class="valid-feedback">OK!</div>
                                     <div class="invalid-feedback">Ingrese palabra clave</div>

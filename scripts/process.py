@@ -497,6 +497,7 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
                     addText_view(result_text, 11, page-1)
                 if conclusion_band == False:
                     addText_view(conclusion_text, 12, page)
+                    addText_view("-", 13, 1)
                 
                 # RESUMEN ...........
                 resumen_text_list = resumen_text.split("\n")
