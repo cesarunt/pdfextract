@@ -19,7 +19,7 @@ def addText_background(type, line):
 
 def addText_view(line, att_id, page):
     try:    
-        _ = put_newPDFdetail(pdf_id, att_id, line, page)
+        _ = put_newPDFdetail(pdf_id, att_id, line, page, 1)
     except:
         print("Error en registro del PDF details")
 
@@ -28,8 +28,14 @@ def removeAuthorsDuplicates(lst):
 
 def pdf_process(files_split, files_output, pdf_info_id, pdfs):
     # clear_report(files_output)
+    print("PDF_PROCESS")
+    print(files_split)
+    print(files_output)
+    print(pdf_info_id)
+    print(pdfs)
     fname = os.listdir(files_split+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
+    print(fname)
     length = len(fname)
 
     global text_pdf

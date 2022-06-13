@@ -175,9 +175,7 @@ function delAttribute(url, edit_id) {
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
       /// Disabled updated button (blue color), and opacity 1
-      // update_att.style.opacity = 0.5;
-      update_att.disabled = true
-      
+      update_att.disabled = true      
       // alert(`Eliminación Exitosa`, "success");
       showAlertPage('Atributo eliminado con éxito', 'success')
       location.reload();
@@ -237,11 +235,8 @@ function saveCanvas(url) {
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      /// Disabled updated button (blue color), and opacity 1
-      // update_att.style.opacity = 0.5;
       update_att.disabled = true
       
-      // alert(`Registro Exitoso`, "success");
       showAlertPage('Canvas actualizado con éxito', 'success')
       location.reload();
     }

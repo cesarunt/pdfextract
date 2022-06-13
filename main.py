@@ -864,7 +864,7 @@ def pdf_post(pdf_id):
                 msg_att = "Error en registro del atributo"
             
             try:
-                response_pdf = put_newPDFdetail(pdf_id, id, "", "")
+                response_pdf = put_newPDFdetail(pdf_id, id, "", "", 1)
                 if response_pdf is True:
                     msg_pdf = "PDF detail registrado con éxito"
             except:

@@ -638,7 +638,7 @@ def put_newPDFattribute(name, current_date):
         
         return result, id
 
-def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
+def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible):
     table_name = 'pdf_details'
     result = False
     try:
@@ -646,8 +646,8 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage)
-                    VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}")                
+                    INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage, det_visible)
+                    VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}", "{det_visible}")
                 """
         # print(query)
         sqlite_select_query = query
@@ -672,8 +672,8 @@ def del_itemPDFdetail(det_id):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    DELETE FROM "{table_name}"
-                    WHERE det_id = "{det_id}"            
+                    UPDATE "{table_name}" SET det_visible=0
+                    WHERE det_id = {det_id}
                 """
         # print(query)
         sqlite_select_query = query
@@ -820,7 +820,7 @@ def get_pdfDetailById(pdf_id):
         pdf_info = get_pdfById(cursor, 'pdf_info', pdf_id)
         pdf_name, pdf_npages = pdf_info
         query = f"""
-                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_x, b.det_y, b.det_width, b.det_height
+                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
                     ORDER BY b.det_id ASC
@@ -837,10 +837,11 @@ def get_pdfDetailById(pdf_id):
                     'det_name':     record[2], 
                     'det_value':    record[3],
                     'det_npage':    record[4],
-                    'det_x':        record[5],
-                    'det_y':        record[6],
-                    'det_width':    record[7],
-                    'det_height':   record[8]
+                    'det_visible':  record[5],
+                    'det_x':        record[6],
+                    'det_y':        record[7],
+                    'det_width':    record[8],
+                    'det_height':   record[9]
                     })
         pdf = {
             'id':          pdf_id,
