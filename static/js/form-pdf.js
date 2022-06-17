@@ -332,12 +332,26 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
       goPages(_canvas_page, pdf_path)
     }
   }
-  else{
+  if (direct == "down"){
     if (_canvas_page > 0){
       _canvas_page = parseInt(_canvas_page) - 1
       goPages(_canvas_page, pdf_path)
     }
   }
+  if (direct == "set"){
+    val = parseInt(_pages)
+    console.log(val)
+    if (val <= 1){
+      document.getElementById('btn_arrow_left').disabled = true
+    }
+    if (val >= pages.value){
+      document.getElementById('btn_arrow_right').disabled = true
+    }
+    if (val>1 && val<pages.value){
+      goPages(_canvas_page, pdf_path);
+    }
+  }
+
   page = "page_" + _pdf_id + "_" + _canvas_page
   console.log(page)
   full_page = "full_page_" + _pdf_id + "_" + _i
@@ -360,7 +374,6 @@ function goPages(val, pdf_path) {
 // Function to set current page on keypress
 // function setPage(val)
 var current_page = document.getElementById("current_page");
-
 if (current_page) {
   current_page.addEventListener("keypress", function(event) {
     // If the user presses the "Enter" key on the keyboard
@@ -369,6 +382,27 @@ if (current_page) {
       // Cancel the default action, if needed
       event.preventDefault();
       movePage(this, parseInt(current_page.name), "set");
+    }
+  });
+}
+
+var full_current_page = document.getElementById("full_current_page");
+if (full_current_page) {
+  console.log("full current");
+  console.log(full_current_page)
+  full_current_page.focus();
+  full_current_page.addEventListener("keypress", function(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+      _page = document.getElementById("full_current_page").value;
+      // Cancel the default action, if needed
+      event.preventDefault();
+      console.log("OK.......");
+      // _pdf_path = document.getElementById("full_path").value;
+      // _pdf_id = parseInt(full_current_page.name);
+      // _i = document.getElementById("full_i").value;
+      // _pages = document.getElementById("full_npages").value;
+      // movePages(this, _pdf_path, _pdf_id, _i, _pages, "set");
     }
   });
 }

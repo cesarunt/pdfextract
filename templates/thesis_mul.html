@@ -80,13 +80,21 @@
                                                                         <div class="modal-dialog" role="document" style="max-width: 780px;">
                                                                             <div class="modal-content" style="background-color: #CCC; width: 815px;">
                                                                                 <!-- Add image inside the body of modal -->
-                                                                                <div class="modal-body" style="display: inline-flex; top: 10px;">
+                                                                                <div class="modal-body" style="display: inline-flex; top: 5px;">
                                                                                     <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 1px 0 1px;">
                                                                                         <canvas id="canvas" class="canvas_page" style="background-image: url('{{pdf.pdf_path}}{{i}}.jpg'); position: relative; margin: 0 auto;" width="700px" height="1000px" ></canvas>
                                                                                     </div>
                                                                                     <button id="btn_arrow_left" style="height: 50px; margin-top: 250px; position: fixed; left: 260px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'down')"><i class="fas fa-arrow-left"></i></button>
                                                                                     <button id="btn_arrow_right" style="height: 50px; margin-top: 252px; position: fixed; right: 225px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
                                                                                     <input type="hidden" name="canvas_page" id="canvas_page" value="" />
+                                                                                </div>
+                                                                                <div style="margin: 25px 10px 5px; position: fixed; padding-left: 320px;">
+                                                                                    <span>Página</span>&nbsp;
+                                                                                    <input type="text" name="{{ pdf.pdf_id }}" value="1" id="full_current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
+                                                                                    <input type="hidden" name="" id="full_path" value="{{ pdf.pdf_path }}" />
+                                                                                    <input type="hidden" name="" id="full_i" value="{{ i }}" />
+                                                                                    <!-- <input type="hidden" name="" id="full_pdf_id" value="{{ pdf.pdf_id }}" /> -->
+                                                                                    <input type="hidden" name="" id="full_npages" value="{{ pdf.npages }}" />
                                                                                 </div>
                                                                                 <div style="margin: 0 10px 5px;">
                                                                                     {% if i==0 or i==1 %}

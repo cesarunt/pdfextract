@@ -41,9 +41,9 @@
                                             {% for detail in pdf.foundlist %}
                                                 {% if detail.det_visible == 1 %}
                                                 <li style="padding:3px 0 0 0;">
-                                                    <label for="state" class="form-label" style="width: 100px; text-align: right; font-size: smaller;">{{ detail.det_name }} &nbsp;</label>
+                                                    <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
                                                     <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
-                                                        <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size: small; padding-right: 1.80rem;" required onchange="selectPage(this.value, '{{ pdf.id }}')" disabled>
+                                                        <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size:x-small; padding-right: 1.5rem;" required onchange="selectPage(this.value, '{{ pdf.id }}')" disabled>
                                                             {% for x in pdf.listnpages %}
                                                             <option value="{{x}}">{{x}}</option>
                                                             {% endfor %}
@@ -86,7 +86,6 @@
                                         </div>
                                         <span>Página</span>&nbsp;
                                         <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
-                                        <!-- <span id="current_page" class="input-group-text" style="display: inline; padding: 0.25rem;">1</span> -->
                                         <div id="buttons-actions" style="width: 40%; display: inline-block; text-align: right; margin: 0 0 0 0.75rem;">
                                             <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>

@@ -724,6 +724,8 @@ def action_thesis_mul():
             
             # Save results on database
             # Get data from project_info
+            print("PROD_ID")
+            print(pro_id)
             project = get_projectById(pro_id)
             n_process = int(project[0]["pro_n_process"]) + 1
 

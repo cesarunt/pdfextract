@@ -70,7 +70,7 @@ def get_listThesisByWord(keyword):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return pdfs
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
@@ -96,7 +96,7 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
@@ -123,7 +123,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
@@ -151,7 +151,7 @@ def put_newProject(project=dict()):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result, id
 
@@ -176,7 +176,7 @@ def put_newPKdetail(id, key, current_date):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
@@ -197,7 +197,7 @@ def get_lastVariable():
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
@@ -223,8 +223,7 @@ def put_newKeyword(key_name, current_date):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
-        
+            # print("The SQLite connection is closed")
         return result, id
 
 def get_listUniversities():
@@ -255,7 +254,7 @@ def get_listUniversities():
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return universities
 
 def get_listDepartments():
@@ -285,7 +284,7 @@ def get_listDepartments():
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return departments
 
 def get_listProvinces(department):
@@ -316,7 +315,7 @@ def get_listProvinces(department):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return provinces
 
 def get_listDistricts(province, department):
@@ -346,7 +345,7 @@ def get_listDistricts(province, department):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return districts
 
 def get_listKeywords():
@@ -376,7 +375,7 @@ def get_listKeywords():
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return keywords
 
 def get_listProjects(limit=-1):
@@ -413,7 +412,7 @@ def get_listProjects(limit=-1):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return projects
 
 def get_projectById(id):
@@ -455,7 +454,7 @@ def get_projectById(id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return project
 
 def get_listKeywordsById(id):
@@ -487,7 +486,7 @@ def get_listKeywordsById(id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return pk_details
 
 def upd_projectById(id, project):
@@ -511,8 +510,7 @@ def upd_projectById(id, project):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
-        
+            # print("The SQLite connection is closed")
         return result
 
 def upd_projectProcess(id, n_articles, n_process):
@@ -579,7 +577,7 @@ def get_squareProjects_ByWord(keyword):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return projects
 
 def get_userById(id):
@@ -609,7 +607,7 @@ def get_userById(id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         return user
 
 def put_newPDFattribute(name, current_date):
@@ -634,7 +632,7 @@ def put_newPDFattribute(name, current_date):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result, id
 
@@ -659,12 +657,12 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
 def del_itemPDFdetail(det_id):
-    data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     result = False
     try:
@@ -685,7 +683,7 @@ def del_itemPDFdetail(det_id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return result
 
@@ -712,7 +710,7 @@ def put_newPDF(pdf=dict()):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            # print("The SQLite connection is closed")
         
         return id
 
