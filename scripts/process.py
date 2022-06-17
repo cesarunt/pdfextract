@@ -37,7 +37,7 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
     print(fname)
     length = len(fname)
-    input("....enter .....")
+    # input("....enter .....")
 
     global text_pdf
     global pdf_id
