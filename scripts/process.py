@@ -10,8 +10,8 @@ from utils.process_data import *
 from utils.sqlite_tools import *
 from utils.config import PATTERN_METHOD_EN, cfg
 
-def clear_report(files_output):
-    open(files_output+"/background.txt", "w").close()
+# def clear_report(files_output):
+#     open(files_output+"/background.txt", "w").close()
 
 def addText_background(type, line):
     if line != "":
@@ -26,25 +26,19 @@ def addText_view(line, att_id, page):
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, files_output, pdf_info_id, pdfs):
+def pdf_process(files_split, pdf_info_id, pdfs):
     # clear_report(files_output)
-    print("PDF_PROCESS")
-    print(files_split)
-    print(files_output)
-    # print(pdf_info_id)
-    print(pdfs)
     fname = os.listdir(files_split+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
-    print(fname)
     length = len(fname)
-    # input("....enter .....")
 
     global text_pdf
     global pdf_id
     global attributes
 
-    attributes = []
     pdf_id = pdf_info_id
+    print("pdf_id", pdf_id)
+    attributes = []
     text_pdf = []
     is_article = True
 
@@ -124,7 +118,8 @@ def pdf_process(files_split, files_output, pdf_info_id, pdfs):
     
     np = 0
     for page in list_pages: #Repeat each operation for each document.
-        print("\n\nPage 0"+str(int(page+1)) +": "+fname[page])
+        # print("page", page)
+        # print("\nPage 0"+str(int(page+1)) +": "+fname[page])
 
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================

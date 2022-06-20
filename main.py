@@ -535,6 +535,7 @@ def action_thesis_mul():
         global file_pdf, document
         resultCPU = False
         action = None
+        band_parcial = False
         result_save = None
         result_file_text = "None"
         result_invalid_text = ""
@@ -558,22 +559,26 @@ def action_thesis_mul():
                     temp_page = item[0]
                 pages.append(int(item[1]))
                 pdfs[item[0]] = pages
-        
+                # pdf_ids.append(item[0])
+            band_parcial = True
+            # pdf_info_id = list(pdfs.items())[i][0]
+        # print(pdfs)
+        # print(pdf_ids)
+        # input("... enter ...")
+         
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
             document = Document() 
-            print("NumPDFs Cargados")
-            print(len(file_pdfs))
-            print(file_pdfs)
+            print("NumPDFs Cargados", len(file_pdfs))
+            # print(file_pdfs)
             if len(pdfs_remove):
-                print("PDFs Remove")
                 pdfs_remove = pdfs_remove.split("/")
-                print(pdfs_remove)
                 for pdf_rem in pdfs_remove :
                     if pdf_rem != "":
                         file_pdfs.remove(pdf_rem)
                         print("PDF removido", pdf_rem)
 
+            print("NumPDFs Por Procesar", len(file_pdfs))
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
@@ -617,7 +622,6 @@ def action_thesis_mul():
                     result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
                     # print("Save and update")
                     # result2 = upd_PPdetail(id, pro_id, pdf_id, text, current_date)
-
                     result_split = 1
                 
                 if action == "save_text":
@@ -671,11 +675,11 @@ def action_thesis_mul():
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 if action is None:
                     # print("filename", filename)
-                    print("Remove PDF")
+                    # print("Remove PDF")
                     # 1. Remove and split PDF
                     # input("........")
                     pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
-                    print("Splitter PDF")
+                    # print("Splitter PDF")
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
                 
                 # print("result_split", result_split)
@@ -690,11 +694,14 @@ def action_thesis_mul():
                     # -----------
                     # # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
-                    pdf_info_id = pdf_ids[i]
+                    if band_parcial == True:
+                        pdf_info_id = list(pdfs.items())[i][0]
+                    else:
+                        pdf_info_id = pdf_ids[i]
                     #     ---------
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], app.config['MULTIPLE_OUTPUT'], pdf_info_id, pdfs)  # Call pdf process function
+                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs)  # Call pdf process function
                     LANGUAGE_PAGE = language
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -711,21 +718,16 @@ def action_thesis_mul():
                         _ = put_newPPdetail(pro_id, pdf_info_id, title_text, current_date)
                     except:
                         print("Error en registro de PRO PDF detail")
-                    
                 if result_invalid > 0 and result_valid == 0 :
                     result_save = False
                     result_file_text = "No fue posible procesar"
-                
                 if len(result_invalid_process) > 0 :
-                    # result_save = False
                     result_invalid_text = (',  \n'.join(result_invalid_process))
                 
                 i = i + 1
             
             # Save results on database
             # Get data from project_info
-            print("PROD_ID")
-            print(pro_id)
             project = get_projectById(pro_id)
             n_process = int(project[0]["pro_n_process"]) + 1
 

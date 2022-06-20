@@ -37,7 +37,7 @@
                                                 <div class="card-body" style="padding-bottom: 0.2rem;">
                                                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" onclick="clicProcessPart()">
                                                     {% for pdf in pdfs %}
-                                                        <li class="nav-item" id="pdf_id_{{pdf.pdf_id}}">
+                                                        <li class="nav-item" id="pdf_id_{{pdf.pdf_id}}_li">
                                                             <a class="nav-link" id="page_tab_{{pdf.pdf_id}}" data-bs-toggle="pill" href="#page_{{pdf.pdf_id}}" style="padding: 5px 12px 0;" role="tab" aria-controls="page_{{pdf.pdf_id}}" aria-selected="false">
                                                                 PDF <span style="font-size: x-small;">({{pdf.npages}} pag.)</span>
                                                                 <img class="card-img-land" style="width: 50px; display: block; margin: 4px 5px 0 15px;" src='{{pdf.pdf_path}}0.jpg'>
@@ -57,7 +57,7 @@
                                                     <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
                                                         {% for pdf in pdfs %}
                                                         <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
-                                                            <div class="col-sm-12">
+                                                            <div class="col-sm-12" id="page_{{pdf.pdf_id}}_tab">
                                                                 {% for i in range(pdf.npages) %}
                                                                 <div class="form-check form-check-inline" style="padding-left: 0; margin-right: 2px; font-size:small; color: #666;">
                                                                     <button type="button" class="btn" style="padding: 0 2px; margin: 5px 0;" data-toggle="modal" data-target="#exampleModal_{{pdf.pdf_id}}_{{i}}" onclick="openPage(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}')">
@@ -70,7 +70,8 @@
                                                                     </button>
                                                                     <div style="margin: 0 15px;">
                                                                     {% if i==0 or i==1 %}
-                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="checkbox" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked disabled>&nbsp;Pag. {{i+1}}&nbsp;
+                                                                        <input class="form-check-input" style="margin-left: 0;" type="hidden" name="page" value="{{pdf.pdf_id}}_{{i}}">
                                                                     {% else %}
                                                                         <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
                                                                     {% endif %}
@@ -84,8 +85,8 @@
                                                                                     <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 1px 0 1px;">
                                                                                         <canvas id="canvas" class="canvas_page" style="background-image: url('{{pdf.pdf_path}}{{i}}.jpg'); position: relative; margin: 0 auto;" width="700px" height="1000px" ></canvas>
                                                                                     </div>
-                                                                                    <button id="btn_arrow_left" style="height: 50px; margin-top: 250px; position: fixed; left: 260px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'down')"><i class="fas fa-arrow-left"></i></button>
-                                                                                    <button id="btn_arrow_right" style="height: 50px; margin-top: 252px; position: fixed; right: 225px;" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
+                                                                                    <button id="btn_arrow_left" style="height: 50px; margin-top: 250px; position: fixed; left: 260px;" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'down')"><i class="fas fa-arrow-left"></i></button>
+                                                                                    <button id="btn_arrow_right" style="height: 50px; margin-top: 252px; position: fixed; right: 225px;" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="movePages(this, '{{ pdf.pdf_path }}', '{{pdf.pdf_id}}', '{{i}}', '{{pdf.npages}}', 'up')"><i class="fas fa-arrow-right"></i></button>
                                                                                     <input type="hidden" name="canvas_page" id="canvas_page" value="" />
                                                                                 </div>
                                                                                 <div style="margin: 25px 10px 5px; position: fixed; padding-left: 320px;">
@@ -98,9 +99,9 @@
                                                                                 </div>
                                                                                 <div style="margin: 0 10px 5px;">
                                                                                     {% if i==0 or i==1 %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')" checked>
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="full_page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')" checked>
                                                                                     {% else %}
-                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')">
+                                                                                        <input class="form-check-input" style="margin-left: 350px;" type="checkbox" name="full_page" id="full_page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" onclick="openCheck(this, '{{pdf.pdf_id}}', '{{i}}')">
                                                                                     {% endif %}
                                                                                     <span id="foot_page_{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;</span>
                                                                                 </div>

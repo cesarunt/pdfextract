@@ -388,8 +388,8 @@ if (current_page) {
 
 var full_current_page = document.getElementById("full_current_page");
 if (full_current_page) {
-  console.log("full current");
-  console.log(full_current_page)
+  // console.log("full current");
+  // console.log(full_current_page)
   full_current_page.focus();
   full_current_page.addEventListener("keypress", function(event) {
     // If the user presses the "Enter" key on the keyboard
@@ -425,6 +425,9 @@ function removePDF(url, pdf_id, pdf_name) {
   pdfs_remove = pdfs_remove + '/' + pdf_name
   document.getElementById('pdfs_remove').value = pdfs_remove
 
-  pdf_rem_selec = document.getElementById('pdf_id_' + pdf_id)
-  pdf_rem_selec.remove();
+  // pdf_rem_selec = document.getElementById('pdf_id_' + pdf_id)
+  // pdf_rem_selec.remove();
+  console.log(pdf_id);
+  document.getElementById('pdf_id_' + pdf_id + '_li').remove();
+  document.getElementById('page_' + pdf_id + '_tab').remove();
 }
