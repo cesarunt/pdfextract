@@ -63,14 +63,18 @@
                                                     <button type="submit" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
                                                         <i class="fas fa-backspace"></i>    
                                                     </button>
-                                                    {% if detail.det_value %}
+                                                    
                                                     <div id="divtext_{{detail.det_name}}" class="d-none">
-                                                        <textarea id="text_{{detail.det_name}}" class="text_area"> {{ detail.det_value }} </textarea><br>
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" class="text_area"></textarea><br>
+                                                        {% endif %}
                                                         <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
                                                             <i class="fas fa-save"> T </i>
                                                         </button>    
                                                     </div>
-                                                    {% endif %}
+                                                    
                                                 </li>
                                                 {% endif %}
                                             {% endfor %}

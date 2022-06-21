@@ -598,7 +598,7 @@ def action_thesis_mul():
                             'w': int(request.values.get("w")),
                             'h': int(request.values.get("h"))
                         }
-                    page = int(request.values.get("page"))                
+                    page = int(request.values.get("page"))
                     image = app.config['SINGLE_SPLIT_WEB'] + "/page_" + str(page-1) + ".jpg"
                     image = cv2.imread(image, 0)
                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
@@ -628,10 +628,11 @@ def action_thesis_mul():
                     det_id =        int(request.values.get("det_id"))
                     det_attribute = int(request.values.get("det_attribute"))
                     det_value =     request.values.get("det_value")
+                    page =          int(request.values.get("page"))
                     
                     if text is None or text == "":
                         text = "..."
-                    pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
+                    pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
                     result_split = 1
                 
                 # if action == "save_attribute":
@@ -852,8 +853,9 @@ def pdf_post(pdf_id):
             det_id =        int(request.values.get("det_id"))
             det_attribute = int(request.values.get("det_attribute"))
             det_value =     request.values.get("det_value")
+            page =          int(request.values.get("page"))
             
-            pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value)
+            pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
             result_split = 1
         
         if action == "save_attribute":

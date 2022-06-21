@@ -317,12 +317,6 @@ function saveCanvas(url) {
     alert("Debe seleccionar texto de la imagen", "warning")
     return;
   }
-  // console.log(_x)
-  // console.log(_y)
-  // console.log(_w)
-  // console.log(_h)
-  // console.log(_det_id)
-  // console.log(_det_attribute)
 
   // Create a new FormData instance
   var data = new FormData();
@@ -379,7 +373,7 @@ function saveText(url, det_name) {
   let text = "text_" + det_name
   var text_area = document.getElementById(text)
   console.log(text_area.value)
-
+  console.log(_page)
   // Reject if the file input is empty & throw alert
   if (!text_area.value) {
     alert("Debe ingresar texto", "warning")

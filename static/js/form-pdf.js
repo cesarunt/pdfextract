@@ -27,6 +27,7 @@ var div_found = document.getElementById("div_found");
 var pdfs_remove = "" 
 
 var pages = document.getElementById('num_pages')
+var full_pages = document.getElementById('canvas_page')
 var _page = 1
 var _canvas_page = 0
 var _band_page = false
@@ -237,7 +238,7 @@ function selectPage(val, pdf_id) {
   if (val == pages.value){
     document.getElementById('btn_arrow_right').disabled = true
   }
-  document.getElementById('current_page').innerHTML = (parseInt(val)).toString()
+  document.getElementById('current_page').value = (val).toString();
   goPage(parseInt(val), pdf_id)
 }
 
@@ -297,7 +298,7 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   
   page = "page_" + _pdf_id + "_" + _i
   full_page = "full_page_" + _pdf_id + "_" + _i
-  console.log(full_page)
+  // console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
     document.getElementById(full_page).checked = true;
@@ -353,9 +354,9 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
   }
 
   page = "page_" + _pdf_id + "_" + _canvas_page
-  console.log(page)
+  // console.log(page)
   full_page = "full_page_" + _pdf_id + "_" + _i
-  console.log(full_page)
+  // console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
     document.getElementById(full_page).checked = true;
@@ -386,15 +387,31 @@ if (current_page) {
   });
 }
 
+function selectPages(val, pdf_path) {
+  document.getElementById('btn_arrow_left').disabled = false
+  document.getElementById('btn_arrow_right').disabled = false
+  if (val == 1){
+    document.getElementById('btn_arrow_left').disabled = true
+  }
+  if (val == full_pages.value){
+    document.getElementById('btn_arrow_right').disabled = true
+  }
+  // document.getElementById('current_page').value = (val).toString();
+  goPages(parseInt(val), pdf_path)
+}
+
 var full_current_page = document.getElementById("full_current_page");
+// _page = document.getElementById("full_current_page").value;
 if (full_current_page) {
-  // console.log("full current");
+  console.log("full");
+  // console.log(_page);
   // console.log(full_current_page)
-  full_current_page.focus();
+  // full_current_page.focus();
+  
   full_current_page.addEventListener("keypress", function(event) {
     // If the user presses the "Enter" key on the keyboard
     if (event.key === "Enter") {
-      _page = document.getElementById("full_current_page").value;
+      // _page = document.getElementById("full_current_page").value;
       // Cancel the default action, if needed
       event.preventDefault();
       console.log("OK.......");

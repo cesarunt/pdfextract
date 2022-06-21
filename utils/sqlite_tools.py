@@ -101,7 +101,7 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
         return result
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT)
-def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
+def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
     table_name = 'pdf_details'
     # table_colnames = None
     result = False
@@ -110,7 +110,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text=''):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE pdf_details SET det_value="{text}"
+                    UPDATE pdf_details SET det_value="{text}", det_npage={npage}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
         # print(query)
