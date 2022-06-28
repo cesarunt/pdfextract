@@ -29,8 +29,8 @@ PATTERN_METHOD_ES = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'M�
 PATTERN_METHOD_EN = ['Metodología', 'METODOLOGÍA', 'Métodos', 'MÉTODOS', 'Método', 'MÉTODO', 'ÉTODO', 'Metodología de Investigación', 'Diseños y métodos', 'Diseños y Métodos',    'Methodology', 'METHODOLOGY', 'Methods', 'METHODS', 'Method', 'METHOD', 'ETHOD', 'Research methodology', 'Research design', 'Research Design',     'Results', 'Resultados', 'The results', 'Estimation', 'Findings', 'Empirical', 'Suggestions', 'Discussion', 'https', 'http']
 
 # RESULTS       (4-2-...)
-PATTERN_RESU_ES = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO',    'Results', 'RESULTS', 'Result', 'RESULT',     'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
-PATTERN_RESU_EN = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO',    'Results', 'RESULTS', 'Result', 'RESULT',     'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
+PATTERN_RESU_ES = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Results', 'RESULTS', 'Result', 'RESULT', 'Métodos', 'CONCLUSIONES', 'Conclusiones', 'DISCUSIONES', 'Discusiones', 'DISCUSIÓN', 'Discusión', 'REFERENCIAS', 'Referencias', 'BIBLIOGRAFÍA', 'Bibliografía', 'Figura', 'Recomendaciones', 'Sugerencias', 'Limitaciones']
+PATTERN_RESU_EN = ['Resultados', 'RESULTADOS', 'Resultado', 'RESULTADO', 'Results', 'RESULTS', 'Result', 'RESULT', 'Methods', 'CONCLUSIONS', 'Conclusions', 'DISCUSSIONS', 'Discussions', 'DISCUSSION', 'Discussion', 'Data Analysis', 'REFERENCES', 'References', 'BIBLIOGRAPHY', 'Bibliography', 'Chart', 'Tabela', 'FINDINGS', 'Findings', 'Suggestions', 'Limitations']
 
 # CONCLUSIONS   (4-3-...)
 PATTERN_CONC_ES = ['Conclusiones', 'CONCLUSIONES', 'CONCLU', 'Conclusión', 'CONCLUSIÓN', 'Concluyendo', 'CONCLUYENDO', 'Discusión y conclusión', 'Discusiones y conclusiones',     'Conclusions', 'CONCLUSIONS', 'CONCLU', 'Conclusion', 'CONCLUSION', 'Concluding', 'CONCLUDING', 'Discussion and conclusion', 'Discussion and conclusions',      'Referencias', 'REFERENCIAS', 'References', 'REFERENCES', 'BIBLIOGRAFÍA', 'Bibliografía', 'BIBLIOGRAFIA', 'Notas finales', 'Limitaciones', '& ']
@@ -57,13 +57,13 @@ PATTERN_METH_EN = ['methodology', 'methods', 'methods.', 'research methods', 're
 PATTERN_TYPE_ES = ['tipo']
 PATTERN_TYPE_EN = ['type']
 
-# PATTERN DESIGN (DESI) long
-PATTERN_DESI_ES = ['diseño', 'diseñar']
-PATTERN_DESI_EN = ['design']
-
 # PATTERN APPROACH (APPR) short (3)
 PATTERN_APPR_ES = ['enfoque']
-PATTERN_APPR_EN = ['approaches']
+PATTERN_APPR_EN = ['approach']
+
+# PATTERN DESIGN (DESI) long
+PATTERN_DESI_ES = ['diseño']
+PATTERN_DESI_EN = ['design']
 
 # PATTERN LEVEL (LEVE) short (5)
 PATTERN_LEVE_ES = ['nivel']
@@ -94,11 +94,6 @@ PATTERN_SAMP_EN = ['samples', 'sample', 'exemplo']
 # PATTERN TOOLS (TOOL)
 PATTERN_TOOL_ES = ['instrumentos', 'instrumento']
 PATTERN_TOOL_EN = ['tools', 'tool']
-
-# PATTERN RESULT (RESU)
-# PATTERN_RESU_ES = ['resultados y análisis', 'resultados y discusión', 'siguientes resultados:', 'resultados:', 'resultados obtenidos', 'resultados']
-# PATTERN_RESU_EN = ['results and discussion', 'result and discussion', 'results discussion', 'results obtained', 'findings', 'results']
-
 
 __C = edict()
 cfg = __C

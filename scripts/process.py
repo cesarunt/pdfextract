@@ -65,12 +65,10 @@ def pdf_process(files_split, pdf_info_id, pdfs):
     resumen_title = ""
     resumen_text = ""
     resumen_res = False
-    resumen_band = False
-
-    font_max = 0
 
     # Introduction
     intro_font = 0
+    font_max = 0
 
     # Methodology
     methodology_text = ""
@@ -85,6 +83,8 @@ def pdf_process(files_split, pdf_info_id, pdfs):
     year_band = False
     objective = ""          # 04. FIND THE PATTERN OBJECTIVE
     objective_band = False
+    typelevel = ""          #  -. FIND THE PATTERN TYPE
+    typelevel_band = False
     design = ""             #  -. FIND THE PATTERN DESIGN
     design_band = False
     approach = ""           #  -. FIND THE PATTERN APPROACH
@@ -358,29 +358,14 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                     methodology_text = str(''.join(methodology_text_list))
                     methodology_text = methodology_text.replace("\n", " ")
 
-                # if type_level == "" :   type_level  = getData_LongText(methodology_text, PATTERN_TYPE, 'S', ', ')
-                if design == "" :       design     = getData_LongText(methodology_text, PATTERN_DESI, 'S', ', ')
-                if approach == "" :     approach  = getData_LongText(methodology_text, PATTERN_APPR, 'S', '. ')
-                # - getting 2 approach
-                # if approach_quan == False : approach_quan = getTools_ResultCount(text_method, PATTERN_APPR_QUAN)
-                listQn = getTools_ResultCount(methodology_text, PATTERN_APPR_QUAN)
-                if len(listQn) > 0 :  listQuan = listQuan + listQn
-                listQl = getTools_ResultCount(methodology_text, PATTERN_APPR_QUAL)
-                if len(listQl) > 0 :  listQual = listQual + listQl
-                if len(listQuan) > 0 :
-                    tools_text = tools_text + "Cuantitativos: " + str(listQuan)
-                if len(listQual) > 0 : 
-                    tools_text = tools_text + ", Cualitativos: " + str(listQual)
-                # - getting 5 levels
-                # if level_appl == False :    level_appl = getLevel_Result(methodology_text, PATTERN_LEVE_APPL)
-                # if level_pred == False :    level_pred = getLevel_Result(methodology_text, PATTERN_LEVE_PRED)
-                # if level_expi == False :    level_expi = getLevel_Result(methodology_text, PATTERN_LEVE_EXPI)
-                # if level_rela == False :    level_rela = getLevel_Result(methodology_text, PATTERN_LEVE_RELA)
-                # if level_desc == False :    level_desc = getLevel_Result(methodology_text, PATTERN_LEVE_DESC)
-                # if level_expo == False :    level_expo = getLevel_Result(methodology_text, PATTERN_LEVE_EXPO)
+                if typelevel == "" :   typelevel  = getData_LongText(methodology_text, PATTERN_TYPE, 'S', ', ')
+                if approach == "" :    approach  = getData_LongText(methodology_text, PATTERN_APPR, 'S', ', ')
+                if design == "" :      design   = getData_LongText(methodology_text, PATTERN_DESI, 'S', ', ')
 
                 if samples == "":     samples = getData_LongText(methodology_text, PATTERN_SAMP, 'E', '. ')
                 if samples == "":     samples = getData_LongText(resumen_text, PATTERN_SAMP, 'E', '. ')
+                if tools_text == "":  tools_text = getData_LongText(methodology_text, PATTERN_TOOL, 'E', '. ')
+                if tools_text == "":  tools_text = getData_LongText(resumen_text, PATTERN_TOOL, 'E', '. ')
             
             # 6. GET THE RESULT TEXT
             # ============================================================================================
@@ -433,23 +418,26 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                     conclusion_text = conclusion_text.replace("\n", "")
                     conclusion_text = conclusion_text.replace("._", ".\n\n")
 
-        if authors_text and authors_band == False:
-            addText_view(authors_text, 1, page+1)
-            authors_band = True
         if title_text and title_band == False:
-            addText_view(title_text, 2, page+1)
+            addText_view(title_text, 1, page+1)
             title_band = True
+        if authors_text and authors_band == False:
+            addText_view(authors_text, 2, page+1)
+            authors_band = True
         if year and year_band == False:
             addText_view(year, 3, page+1)
             year_band = True
         if objective and objective_band == False:
             addText_view(objective, 4, page+1)
             objective_band = True
-        if resumen_text and resumen_band == False:
-            addText_view(resumen_text, 5, page+1)
-            resumen_band = True
+        # if resumen_text and resumen_band == False:
+        #     addText_view(resumen_text, 5, page+1)
+        #     resumen_band = True
         if len(methodology_text)>0 and methodology_band == False:
-            addText_view(methodology_text, 6, page+1)
+            addText_view(methodology_text, 5, page+1)
+            methodology_band = True
+        if len(typelevel)>0 and typelevel_band == False:
+            addText_view(typelevel, 6, page+1)
             methodology_band = True
         if approach and approach_band == False:
             addText_view(approach, 7, page+1)
@@ -460,7 +448,7 @@ def pdf_process(files_split, pdf_info_id, pdfs):
         if len(samples)>0 and samples_band == False:
             addText_view(samples, 9, page+1)
             samples_band = True
-        if tools_text and tools_band == False:
+        if len(tools_text)>0 and tools_band == False:
             addText_view(tools_text, 10, page+1)
             tools_band = True
         if len(result_text)>0 and result_band == False:
@@ -479,10 +467,12 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                 addText_view(year, 3, 1)
             if objective_band == False:
                 addText_view(objective, 4, 1)
-            if resumen_band == False:
-                addText_view(resumen_text, 5, 1)
+            # if resumen_band == False:
+            #     addText_view(resumen_text, 5, 1)
             if methodology_band == False:
-                addText_view(methodology_text, 6, 1)
+                addText_view(methodology_text, 5, 1)
+            if typelevel_band == False:
+                addText_view(typelevel, 6, 1)
             if approach_band == False:
                 addText_view(approach, 7, 1)
             if design_band == False:
@@ -504,7 +494,6 @@ def pdf_process(files_split, pdf_info_id, pdfs):
             resumen_text_list = [x for x in resumen_text_list if x]
 
             # print("\nRESUMEN")
-            # print(resumen_text_list)
             resumen_text = (' '.join(resumen_text_list))
 
             addText_background("B", "\nRESUMEN")
@@ -516,7 +505,6 @@ def pdf_process(files_split, pdf_info_id, pdfs):
             # print("AUTORES ...")
             article_print = ""
             if article_band : article_print = "Revista"
-            # print("\n04._ ARTICLE TEXT: " + article_text)
             addText_background("B", "\nANTECEDENTES") 
             addText_background("N", authors_text  + ' ('+str(year)+') en su estudio titulado "' + title_text.replace('\n', ' ') + '". (Articulo cientifico - '+ article_print +'). Objetivo:' + objective)
 
@@ -527,28 +515,7 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                 addText_background("N", "No existe información específica sobre Metodología o Métodos.")
             else:
                 addText_background("N", methodology_text)
-                
-                # Metodologia detalles
-                methodology_det = ""
-                # print("\n  6.1._ APPROACH DETAILS : ", end="")
-                listQuan = list(dict.fromkeys(listQuan))
-                if len(listQuan) > 0 :
-                    methodology_det = methodology_det + "Cuantitativo, "
-                    # print("Cuantitativo", end=", ")
-                listQual = list(dict.fromkeys(listQual))
-                if listQual : 
-                    methodology_det = methodology_det + "Cualitativo, "
-                    # print("Cualitativo", end="")
-                # print("\n\n  6.1_ LEVEL DETAILS: ", end="")
-                # methodology_det += methodology_det + "\n"
-                # if level_appl : methodology_det += methodology_det + "Aplicado, ";     print("Aplicado", end=", ")
-                # if level_pred : methodology_det += methodology_det + "Predictivo, ";   print("Predictivo", end=", ")
-                # if level_expi : methodology_det += methodology_det + "Explicativo, ";  print("Explicativo", end=", ")
-                # if level_rela : methodology_det += methodology_det + "Relacional, ";   print("Relacional", end=", ")
-                # if level_desc : methodology_det += methodology_det + "Descriptivo, ";  print("Descriptivo", end=", ")
-                # if level_expo : methodology_det += methodology_det + "Exploratorio";   print("Exploratorio", end="")
-                # addText_background("N", "Metodología Detalles:\n" + methodology_det, page)
-            
+                        
             addText_background("N", "Muestra: ")
             addText_background("N", samples)
 

@@ -5,42 +5,36 @@
 <div class="content">
     <div class="container" id="container">
         <div class="page-title"> </div>
-        <div class="row" style="height: 9px;">
-            <div class="col-md-12 page-header"></div>
-        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <h6 class="card-header"><b>Proyecto</b>: 
+                    <!-- <h6 class="card-header"><b>Proyecto</b>: 
                         {% if project %}
                         <span style="font-size:medium;">{{ project.pro_title }}</span>
                         {% endif %}
-                    </h6>
+                    </h6> -->
                     <div class="card-body" style="padding: 1rem 0.5rem;">
                         {% if pdf %}   
                             <div id="alert_wrapper"></div>
-                            <div class="row" style="padding: 0 1rem;">
+                            <div class="row" style="padding: 0 1rem; margin-top: -10px;">
                                 <div class="col-sm-3" style="padding: 0;">
-                                    <div class="pagination" style="text-align: left;">
-                                        <div id="add_attribute" style="width: 100%; height: 25px;">
-                                            <a href="#" onClick="addAttribute()" style="padding: 5px;">Agregar Atributo</a>
-                                        </div>
-                                        <li style="margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
-                                            <div id="div_attribute" style="text-align: center;" class="d-none">
-                                                <input style="width: 65%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="Ingrese atributo" class="form-control">
-                                                <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
-                                                    <i class="fas fa-save"> T </i>
-                                                </button>
-                                                <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
-                                                    <i class="fas fa-window-close"></i>
-                                                </button>
-                                            </div>
-                                        </li>
+                                    <div class="pagination" style="text-align: left; position: fixed;">
+                                        
                                         <div id="div_found" class="text-center">
                                             <!-- ATRIBUTOS ENCONTRADOS -->
                                             {% for detail in pdf.foundlist %}
                                                 {% if detail.det_visible == 1 %}
                                                 <li style="padding:3px 0 0 0;">
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 170px; background-color: white; border: 0px solid #666;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
+                                                        {% endif %}
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> T </i>
+                                                        </button>    
+                                                    </div>
                                                     <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
                                                     <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
                                                         <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size:x-small; padding-right: 1.5rem;" required onchange="selectPage(this.value, '{{ pdf.id }}')" disabled>
@@ -64,38 +58,43 @@
                                                         <i class="fas fa-backspace"></i>    
                                                     </button>
                                                     
-                                                    <div id="divtext_{{detail.det_name}}" class="d-none">
-                                                        {% if detail.det_value %}
-                                                        <textarea id="text_{{detail.det_name}}" class="text_area">{{ detail.det_value }}</textarea><br>
-                                                        {% else %}
-                                                        <textarea id="text_{{detail.det_name}}" class="text_area"></textarea><br>
-                                                        {% endif %}
-                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
-                                                            <i class="fas fa-save"> T </i>
-                                                        </button>    
-                                                    </div>
-                                                    
                                                 </li>
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
+                                        <div id="add_attribute" style="width: 100%;">
+                                            <a href="#" onClick="addAttribute()" style="padding: 10px 5px; margin-top: 5px;">Agregar Atributo</a>
+                                        </div>
+                                        <li style="width: 230px; margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
+                                            <div id="div_attribute" style="text-align: center;" class="d-none">
+                                                <input style="width: 50%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="..." class="form-control">
+                                                <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
+                                                    <i class="fas fa-save"> T </i>
+                                                </button>
+                                                <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
+                                                    <i class="fas fa-window-close"></i>
+                                                </button>
+                                            </div>
+                                        </li>
                                     </div>  
                                 </div>
                                 <div class="col-sm-9">
                                     <div id="canvasContainer" style="width: 100%; height: auto;">
-                                        <div id="buttons-close" style="width: 40%; display: inline-block; text-align: left; margin: 0 0 0 1.5rem;">
-                                            <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
-                                                <i class="fas fa-save"> &nbsp;Canvas</i>
-                                            </button>
+                                        <div id="buttons-header" style="width: 720px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
+                                            <div id="buttons-close" style="width: 41%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
+                                                <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
+                                                    <i class="fas fa-save"> &nbsp;Canvas</i>
+                                                </button>
+                                            </div>
+                                            &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
+                                            <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
+                                            <div id="buttons-actions" style="width: 41%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
+                                                <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
+                                                <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
+                                                <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
+                                            </div>
                                         </div>
-                                        <span>Página</span>&nbsp;
-                                        <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
-                                        <div id="buttons-actions" style="width: 40%; display: inline-block; text-align: right; margin: 0 0 0 0.75rem;">
-                                            <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
-                                            <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
-                                            <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
-                                        </div>
-                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 0 10px 0 10px;">
+                                        <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px;">
                                             <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
                                         </div>
                                     </div>

@@ -83,7 +83,7 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE pdf_details SET det_value="{text}", det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
+                    UPDATE pdf_details SET det_value='{text}', det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
         # print(query)
@@ -110,7 +110,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE pdf_details SET det_value="{text}", det_npage={npage}
+                    UPDATE pdf_details SET det_value='{text}', det_npage={npage}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
         # print(query)
@@ -497,7 +497,7 @@ def upd_projectById(id, project):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pro_title="{project['title']}", pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
+                    UPDATE "{table_name}" SET pro_title='{project['title']}', pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
                     WHERE pro_id = {id}
                 """
         # print(query)
@@ -521,7 +521,7 @@ def upd_projectProcess(id, n_articles, n_process):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pro_n_articles="{n_articles}", pro_n_process={n_process}
+                    UPDATE "{table_name}" SET pro_n_articles='{n_articles}', pro_n_process={n_process}
                     WHERE pro_id = {id}
                 """
         # print(query)
