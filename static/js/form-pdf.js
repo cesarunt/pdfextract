@@ -292,9 +292,12 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   path_page = pdf_path + (_i).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
 
+  head_page = "head_page_" + (_pdf_id).toString() + "_" + (_i).toString()
+  val = parseInt(_i)
+  document.getElementById(head_page).value = (val).toString();
   foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
-  val = parseInt(_i) + 1
-  document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val).toString()}&nbsp;`;
+  // val = parseInt(_i) + 1
+  document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
   
   page = "page_" + _pdf_id + "_" + _i
   full_page = "full_page_" + _pdf_id + "_" + _i
@@ -320,12 +323,21 @@ function openCheck(_this, _pdf_id, _i) {
   }
 }
 
+function checkAll(_this) {
+  var checkboxes = document.getElementsByName('page');
+  // console.log(checkboxes);
+  for (var checkbox of checkboxes) {
+      checkbox.checked = this.checked;
+  }
+}
+
 // MOVE AND GO PAGE FUNCTION, to move outside One PDF
 function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
   if (_canvas_page == 0 && _band_page == false){
     _canvas_page = _i
     _band_page = true
   }
+  head_page = "head_page_" + (_pdf_id).toString() + "_" + (_i).toString()
   foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
   if (direct == "up"){
     if (_canvas_page < parseInt(_pages)-1){
@@ -364,9 +376,10 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
   else{
     document.getElementById(full_page).checked = false;
   }
-
 }
+
 function goPages(val, pdf_path) {
+  document.getElementById(head_page).value = (val).toString();
   document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
   path_page = pdf_path + (val).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
@@ -387,15 +400,17 @@ if (current_page) {
   });
 }
 
-function selectPages(val, pdf_path) {
+function selectPages(_val, pdf_path) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
-  if (val == 1){
+  if (_val == 1){
     document.getElementById('btn_arrow_left').disabled = true
   }
-  if (val == full_pages.value){
+  if (_val == full_pages.value){
     document.getElementById('btn_arrow_right').disabled = true
   }
+  val = parseInt(_val)
+  _canvas_page = val
   // document.getElementById('current_page').value = (val).toString();
   goPages(parseInt(val), pdf_path)
 }
