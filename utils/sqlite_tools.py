@@ -17,12 +17,13 @@ def get_pdf_info(cursor, tablename, file_pdf):
     cursor.execute(query)
     return cursor.fetchone()
 
-def get_pdfById(cursor, tablename, pdf_id):
+def get_pdfById(cursor, tablename, pro_id, pdf_id):
     """Get column names of main table, given its name and a cursor (or connection) to the database.
     """
     query = f"""
-                SELECT pdf_name, pdf_npages FROM {tablename}
-                WHERE pdf_id = "{pdf_id}" 
+                SELECT a.pdf_name, a.pdf_npages, b.pdf_pages
+                FROM  {tablename} a INNER JOIN pro_pdf_details b ON a.pdf_id = b.pdf_id
+                WHERE a.pdf_id = "{pdf_id}" and b.pro_id = "{pro_id}"
             """
     cursor.execute(query)
     return cursor.fetchone()
@@ -714,7 +715,7 @@ def put_newPDF(pdf=dict()):
         
         return id
 
-def put_newPPdetail(id, pdf, name, current_date):
+def put_newPPdetail(id, pdf, name, pages, current_date):
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -722,8 +723,8 @@ def put_newPPdetail(id, pdf, name, current_date):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pro_pdf_created)
-                    VALUES ("{id} ", "{pdf}", "{name}", "{current_date}")
+                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_pages, pro_pdf_created)
+                    VALUES ("{id} ", "{pdf}", "{name}", "{pages}", "{current_date}")
                 """
         # print(query)
         sqlite_select_query = query
@@ -782,21 +783,24 @@ def get_projectPDFById(id):
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
 
+        i = 0
         for record in records:
             words = record[2].split()
             for word in words:
-                if len(word)>25:
+                if len(word)>20:
                     index = words.index(word)
                     words.remove(word)
                     words.insert(index, "-")
             text = ' '.join(words)
+            i = i + 1
             pp_details.append({
                 'pro_id':     record[0],
                 'pdf_id':     record[1],
-                'pdf_name':   text,
+                'pdf_name':   text[0:199],
                 'pdf_file':   record[3],
                 'pdf_npages': record[4],
                 'pdf_size':   record[5],
+                'pdf_i':      i
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -807,7 +811,7 @@ def get_projectPDFById(id):
             print("The SQLite connection is closed")
         return pp_details
 
-def get_pdfDetailById(pdf_id):
+def get_pdfDetailById(pro_id, pdf_id):
     table_name = 'pdf_details'
     pdf = dict()
     pdf_foundlist = []      #   Atributos
@@ -815,8 +819,10 @@ def get_pdfDetailById(pdf_id):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
-        pdf_info = get_pdfById(cursor, 'pdf_info', pdf_id)
-        pdf_name, pdf_npages = pdf_info
+        pdf_info = get_pdfById(cursor, 'pdf_info', pro_id, pdf_id)
+        print("pdf_info")
+        print(pdf_info)
+        pdf_name, pdf_npages, pdf_pages = pdf_info
         query = f"""
                     SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
@@ -828,7 +834,9 @@ def get_pdfDetailById(pdf_id):
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
         
+        i = 0
         for record in records:
+            i = i + 1
             pdf_foundlist.append({
                     'det_id':       record[0],
                     'det_attribute':record[1],
@@ -839,13 +847,15 @@ def get_pdfDetailById(pdf_id):
                     'det_x':        record[6],
                     'det_y':        record[7],
                     'det_width':    record[8],
-                    'det_height':   record[9]
+                    'det_height':   record[9],
+                    'det_i':        i
                     })
         pdf = {
-            'id':          pdf_id,
-            'name':        pdf_name,
-            'npages':      pdf_npages,
-            'foundlist':   pdf_foundlist,
+            'id':        pdf_id,
+            'name':      pdf_name,
+            'npages':    pdf_npages,
+            'pages':     pdf_pages,
+            'foundlist': pdf_foundlist,
         }
         
         cursor.close()

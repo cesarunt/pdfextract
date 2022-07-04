@@ -29,6 +29,8 @@ var pdfs_remove = ""
 var pages = document.getElementById('num_pages')
 var full_pages = document.getElementById('canvas_page')
 var _page = 1
+var _page_pos = 0
+var _pages_text = ""
 var _canvas_page = 0
 var _band_page = false
 
@@ -229,7 +231,7 @@ function on_select_attributes() {
 }
 
 // SELECT PAGE FUNCTION
-function selectPage(val, pdf_id) {
+function selectPage(val, pages_text, pdf_id) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
   if (val == 1){
@@ -238,41 +240,59 @@ function selectPage(val, pdf_id) {
   if (val == pages.value){
     document.getElementById('btn_arrow_right').disabled = true
   }
+  
+  let pages_list = pages_text.split(",")
+  _page_pos = pages_list.indexOf((val-1).toString())
+  _pages_text = pages_text
   document.getElementById('current_page').value = (val).toString();
+  document.getElementById('pages_pos').value = ""
   goPage(parseInt(val), pdf_id)
 }
 
+// Ya esta el select, ahora falta el Move ...
 // MOVE PAGE FUNCTION, to move inside One PDF
-function movePage(_this, pdf_id, direct) {
+function movePage(_this, pages_text, pdf_id, direct) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
+  var pages_pos = document.getElementById('pages_pos').value
+  if (pages_pos!=""){
+    document.getElementById('pages_pos').value = ""
+    _page_pos = parseInt(pages_pos);
+  }
+  
+  let pages_list = pages_text.split(",")
+  
   if (direct == "up"){
-    val = parseInt(_page) + 1
-    if (val == pages.value){
+    _page_pos = _page_pos + 1
+    if (_page_pos == pages_list.length-1){
       _this.disabled = true
     }
+    val = pages_list[_page_pos]
   }
   if (direct == "down"){
-    val = parseInt(_page) - 1
-    if (val == 1){
+    _page_pos = _page_pos - 1
+    if (_page_pos == 0){
       _this.disabled = true
     }
+    val = pages_list[_page_pos]
   }
   if (direct == "set"){
     val = parseInt(_page)
-    console.log(val)
-    if (val <= 1){
+    _page_pos = pages_list.indexOf((val).toString())
+    
+    if (_page_pos == 0){
       document.getElementById('btn_arrow_left').disabled = true
     }
-    if (val >= pages.value){
+    if (_page_pos == pages_list.length-1){
       document.getElementById('btn_arrow_right').disabled = true
     }
   }
+  
   // clear the canvas
   canvas.clear();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  document.getElementById('current_page').value = (val).toString();
-  if (val >= 1 && val <=pages.value){
+  document.getElementById('current_page').value = val;
+  if (_page_pos >= 0 && _page_pos < pages_list.length){
     goPage(val, pdf_id);
   }
 }
@@ -292,16 +312,14 @@ function openPage(_this, pdf_path, _pdf_id, _i) {
   path_page = pdf_path + (_i).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
 
-  head_page = "head_page_" + (_pdf_id).toString() + "_" + (_i).toString()
   val = parseInt(_i)
+  head_page = "head_page_" + (_pdf_id).toString() + "_" + (_i).toString()
   document.getElementById(head_page).value = (val).toString();
   foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
-  // val = parseInt(_i) + 1
   document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
   
   page = "page_" + _pdf_id + "_" + _i
   full_page = "full_page_" + _pdf_id + "_" + _i
-  // console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
     document.getElementById(full_page).checked = true;
@@ -323,11 +341,22 @@ function openCheck(_this, _pdf_id, _i) {
   }
 }
 
-function checkAll(_this) {
+function checkAll(_this, _pdf_id) {
+  // console.log("checkAll");
   var checkboxes = document.getElementsByName('page');
-  // console.log(checkboxes);
+  var all_page = "allpage_" + _pdf_id;
+  var all_check = document.getElementById(all_page).checked;
+  var check_val
+
+  if (all_check == true) { check_val = true; }
+  else { check_val = false; }
+
   for (var checkbox of checkboxes) {
-      checkbox.checked = this.checked;
+    let mycheck = checkbox.value.split("_");
+    if (parseInt(mycheck[1])>1 && _pdf_id==mycheck[0]){
+      var mypage = "page_" + checkbox.value;
+      document.getElementById(mypage).checked = check_val;
+    }
   }
 }
 
@@ -353,7 +382,6 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
   }
   if (direct == "set"){
     val = parseInt(_pages)
-    console.log(val)
     if (val <= 1){
       document.getElementById('btn_arrow_left').disabled = true
     }
@@ -366,9 +394,7 @@ function movePages(_this, pdf_path, _pdf_id, _i, _pages, direct) {
   }
 
   page = "page_" + _pdf_id + "_" + _canvas_page
-  // console.log(page)
   full_page = "full_page_" + _pdf_id + "_" + _i
-  // console.log(full_page)
   check = document.getElementById(page).checked;
   if (check==true){
     document.getElementById(full_page).checked = true;
@@ -386,21 +412,23 @@ function goPages(val, pdf_path) {
 }
 
 // Function to set current page on keypress
-// function setPage(val)
 var current_page = document.getElementById("current_page");
 if (current_page) {
   current_page.addEventListener("keypress", function(event) {
     // If the user presses the "Enter" key on the keyboard
     if (event.key === "Enter") {
+      var select_page = "page_" + document.getElementById('select_page').value
       _page = document.getElementById("current_page").value;
+      document.getElementById(select_page).value = _page
       // Cancel the default action, if needed
       event.preventDefault();
-      movePage(this, parseInt(current_page.name), "set");
+      _pages_text = document.getElementById('pages_text').value
+      movePage(this, _pages_text, parseInt(current_page.name), "set");
     }
   });
 }
 
-function selectPages(_val, pdf_path) {
+function selectPages(_val, _pdf_id, pdf_path) {
   document.getElementById('btn_arrow_left').disabled = false
   document.getElementById('btn_arrow_right').disabled = false
   if (_val == 1){
@@ -409,35 +437,22 @@ function selectPages(_val, pdf_path) {
   if (_val == full_pages.value){
     document.getElementById('btn_arrow_right').disabled = true
   }
+  
+  page = "page_" + _pdf_id + "_" + _val
+  full_page = "full_page_" + _pdf_id + "_" + _canvas_page
+  check = document.getElementById(page).checked;
+  if (check==true){
+    document.getElementById(full_page).checked = true;
+  }
+  else{
+    document.getElementById(full_page).checked = false;
+  }
+
   val = parseInt(_val)
   _canvas_page = val
-  // document.getElementById('current_page').value = (val).toString();
   goPages(parseInt(val), pdf_path)
 }
 
-var full_current_page = document.getElementById("full_current_page");
-// _page = document.getElementById("full_current_page").value;
-if (full_current_page) {
-  console.log("full");
-  // console.log(_page);
-  // console.log(full_current_page)
-  // full_current_page.focus();
-  
-  full_current_page.addEventListener("keypress", function(event) {
-    // If the user presses the "Enter" key on the keyboard
-    if (event.key === "Enter") {
-      // _page = document.getElementById("full_current_page").value;
-      // Cancel the default action, if needed
-      event.preventDefault();
-      console.log("OK.......");
-      // _pdf_path = document.getElementById("full_path").value;
-      // _pdf_id = parseInt(full_current_page.name);
-      // _i = document.getElementById("full_i").value;
-      // _pages = document.getElementById("full_npages").value;
-      // movePages(this, _pdf_path, _pdf_id, _i, _pages, "set");
-    }
-  });
-}
 
 // Function to inactive canvas and hide/show buttons
 function cancelCanvas(edit_id) {
@@ -456,10 +471,6 @@ function cancelCanvas(edit_id) {
 function removePDF(url, pdf_id, pdf_name) {
   pdfs_remove = pdfs_remove + '/' + pdf_name
   document.getElementById('pdfs_remove').value = pdfs_remove
-
-  // pdf_rem_selec = document.getElementById('pdf_id_' + pdf_id)
-  // pdf_rem_selec.remove();
-  console.log(pdf_id);
   document.getElementById('pdf_id_' + pdf_id + '_li').remove();
   document.getElementById('page_' + pdf_id + '_tab').remove();
 }

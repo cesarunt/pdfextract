@@ -42,7 +42,9 @@
                     <li style="padding:0 0 0 5px;">
                         <span>
                         <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
-                            <i class="fas fa-copy" style="margin-right: 0;"></i>
+                            <i class="fas fa-copy" style="margin-right: 0;"><br>
+                            <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ pdf.pdf_i }}]</b>
+                            </i>
                             <div>{{ pdf.pdf_name }}</div>
                         </a>
                         </span>

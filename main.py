@@ -562,9 +562,9 @@ def action_thesis_mul():
                 # pdf_ids.append(item[0])
             band_parcial = True
             # pdf_info_id = list(pdfs.items())[i][0]
-        # print(pdfs)
-        # print(pdf_ids)
-        # input("... enter ...")
+        print(pdfs)
+        print(pdf_ids)
+        input("... enter ...")
          
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
@@ -692,14 +692,13 @@ def action_thesis_mul():
                     result_invalid_process.append(filename + " ...supera el Nro páginas")
                 
                 if result_split == 1:
-                    # -----------
-                    # # Put data on pdf_info
+                    # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
                     if band_parcial == True:
                         pdf_info_id = list(pdfs.items())[i][0]
                     else:
                         pdf_info_id = pdf_ids[i]
-                    #     ---------
+                    
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs)  # Call pdf process function
@@ -715,8 +714,11 @@ def action_thesis_mul():
                 
                 if result_valid > 0 :
                     result_save = True
+                    # print("Pages to Save")
+                    # print(pdfs[pdf_info_id])
+                    # input("......... pages ...........")
                     try:
-                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, current_date)
+                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, pdfs[pdf_info_id], current_date)
                     except:
                         print("Error en registro de PRO PDF detail")
                 if result_invalid > 0 and result_valid == 0 :
@@ -762,7 +764,6 @@ def project_pdfs(id):
     if current_user.is_authenticated:
         project = get_projectById(id)
         pdfs = get_projectPDFById(id)
-        
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
     else:
         return render_template('project_pdfs.html')
@@ -770,6 +771,8 @@ def project_pdfs(id):
 
 @main.route('/<pdf_id>')
 def project_pdf(pdf_id):
+    listpages = []
+
     if current_user.is_authenticated:
         # action = request.values.get("action")
         # action = request.form.get('action')
@@ -777,11 +780,19 @@ def project_pdf(pdf_id):
         # if _type == isinstance(_type, str):
         project = get_projectById(pro_id)
         pdfs = get_projectPDFById(pro_id)
-        pdf = get_pdfDetailById(pdf_id)
+        pdf = get_pdfDetailById(pro_id, pdf_id)
         """Verificar pdf_details, encontrados y no encontradps"""
-        list_npages = list(range(1, int(pdf['npages']+1)))
-        list_npages = [str(int) for int in list_npages]
-        pdf['listnpages'] = list_npages
+        # list_npages = list(range(1, int(pdf['npages']+1)))
+        pages_zero = pdf['pages'].replace('[','').replace(']','').replace(' ','')
+        pages_list = pages_zero.split(',')
+
+        for pag in pages_list:
+            listpages.append(int(pag) + 1)
+        pages_one = str(listpages).replace('[','').replace(']','').replace(' ','')
+
+        pdf['pages_zero_text'] = pages_zero
+        pdf['pages_one_text'] = pages_one
+        pdf['pages_one_list'] = listpages
         # get data for pdf_file
         pdf_path = {
                 'name':        pdf['name'],
@@ -870,7 +881,7 @@ def pdf_post(pdf_id):
                 msg_att = "Error en registro del atributo"
             
             try:
-                response_pdf = put_newPDFdetail(pdf_id, id, "", "", 1)
+                response_pdf = put_newPDFdetail(pdf_id, id, "", 1, 1)
                 if response_pdf is True:
                     msg_pdf = "PDF detail registrado con éxito"
             except:
@@ -897,7 +908,7 @@ def pdf_post(pdf_id):
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
             pdfs = get_projectPDFById(pro_id)
-            pdf = get_pdfDetailById(pdf_id)
+            pdf = get_pdfDetailById(pro_id, pdf_id)
             """Verificar pdf_details, encontrados y no encontradps"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]

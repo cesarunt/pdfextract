@@ -161,10 +161,11 @@ function showAlertPage(message, alert) {
 }
 
 // ACTIVATE ATTRIBUTE FUNCTION
-function activeAttribute(edit_id, pdf_id) {
+function activeAttribute(edit_id, pages_text, pdf_id) {
   // Abled select option
   let detail_id = edit_id.split("_")
   let detail_edit = detail_id[1].split("-")
+  let pages_list = pages_text.split(",")
   _det_id = detail_edit[0]
   _det_attribute = detail_edit[1]
   _det_name = detail_edit[2]
@@ -184,7 +185,26 @@ function activeAttribute(edit_id, pdf_id) {
 
   // Abled updated button (blue color), and opacity 1
   document.getElementById("btn_save_canvas").disabled = false
-  document.getElementById('current_page').innerHTML = (select_att.value).toString()
+  document.getElementById('current_page').disabled = false
+  document.getElementById('current_page').value = (select_att.value).toString()
+  document.getElementById('btn_arrow_left').disabled = false
+  document.getElementById('btn_arrow_right').disabled = false
+  var val = select_att.value
+  var num_pages = document.getElementById('num_pages').val
+  if (val <= 1){
+    document.getElementById('btn_arrow_left').disabled = true
+  }
+  if (val >= num_pages){
+    document.getElementById('btn_arrow_right').disabled = true
+  }
+  _page = val
+  // {{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}
+  document.getElementById('select_page').value = _det_id + "-" + _det_attribute
+  document.getElementById('pages_text').value = pages_text
+  let _page_pos = pages_list.indexOf((val).toString())
+  console.log("Current POS")
+  console.log(_page_pos)
+  document.getElementById('pages_pos').value = _page_pos
 
   if (!select_att.value){
     alert("Debe seleccionar la página")
@@ -234,6 +254,17 @@ function closeAttribute(edit_id) {
 
   // Disabled updated button (blue color), and opacity 1
   document.getElementById("btn_save_canvas").disabled = true
+  document.getElementById('current_page').disabled = true
+  document.getElementById('btn_arrow_left').disabled = true
+  document.getElementById('btn_arrow_right').disabled = true
+  var val = _page
+  if (val <= 1){
+    document.getElementById('btn_arrow_left').disabled = true
+  }
+  if (val >= pages.value){
+    document.getElementById('btn_arrow_right').disabled = true
+  }
+  // document.getElementById('current_page').value = (select_att.value).toString()
 
   // clear the canvas
   //   ctx.clearRect(0, 0, canvas.width, canvas.height);

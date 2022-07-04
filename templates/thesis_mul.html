@@ -58,7 +58,7 @@
                                                         {% for pdf in pdfs %}
                                                         <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
                                                             <div style="font-size: smaller;">
-                                                                <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="all_page" value="" onclick="checkAll(this)" disabled>&nbsp;Seleccionar todo&nbsp;
+                                                                <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="allpage_{{pdf.pdf_id}}" value="" onclick="checkAll(this, '{{pdf.pdf_id}}')">&nbsp;Seleccionar todo&nbsp;
                                                             </div>
                                                             <div class="col-sm-12" id="page_{{pdf.pdf_id}}_tab">
                                                                 {% for i in range(pdf.npages) %}
@@ -94,7 +94,7 @@
                                                                                     <input type="hidden" name="canvas_page" id="canvas_page" value="{{ pdf.npages }}" />
                                                                                 </div>
                                                                                 <label for="state" class="form-label" style="margin-top: -0.4rem; position: fixed; padding-left: 350px;">
-                                                                                    <select id="head_page_{{pdf.pdf_id}}_{{i}}" class="form-select" style="display: inline-block; width: auto; font-size:small; padding-right: 1.9rem;" required onchange="selectPages(this.value, '{{ pdf.pdf_path }}')">
+                                                                                    <select id="head_page_{{pdf.pdf_id}}_{{i}}" class="form-select" style="display: inline-block; width: auto; font-size:small; padding-right: 1.9rem;" required onchange="selectPages(this.value, '{{pdf.pdf_id}}', '{{ pdf.pdf_path }}')">
                                                                                         {% for x in range(pdf.npages) %}
                                                                                         <option value="{{x}}">{{x + 1}}</option>
                                                                                         {% endfor %}

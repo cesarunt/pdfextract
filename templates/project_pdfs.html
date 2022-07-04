@@ -20,7 +20,8 @@
                                             {% for detail in pdf.foundlist %}
                                                 {% if detail.det_visible == 1 %}
                                                 <li style="padding:3px 0 0 0;">
-                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 170px; background-color: white; border: 0px solid #666;" class="d-none">
+                                                    {% if detail.det_i > 8 %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: -181px; z-index: 1;" class="d-none">
                                                         {% if detail.det_value %}
                                                         <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
                                                         {% else %}
@@ -30,22 +31,35 @@
                                                             <i class="fas fa-save"> T </i>
                                                         </button>    
                                                     </div>
+                                                    {% else %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: 31px; z-index: 1;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
+                                                        {% endif %}
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> T </i>
+                                                        </button>    
+                                                    </div>
+                                                    {% endif %}
                                                     <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
-                                                    <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
-                                                        <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size:x-small; padding-right: 1.5rem;" required onchange="selectPage(this.value, '{{ pdf.id }}')" disabled>
-                                                            {% for x in pdf.listnpages %}
-                                                            <option value="{{x}}">{{x}}</option>
-                                                            {% endfor %}
-                                                            <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
-                                                        </select>
-                                                    </label>
-                                                    <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{ pdf.id }}')" style="opacity: 0.5;">
+                                                    
+                                                    <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{pdf.pages_one_text}}', '{{ pdf.id }}')" style="opacity: 0.5;">
                                                         <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                         <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
                                                         <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
                                                         <input type="hidden" id="det_height-{{detail.det_name}}" value="{{detail.det_height}}" />
                                                         <i class="fas fa-vector-square"></i>
                                                     </button>
+                                                    <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
+                                                        <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size:x-small; padding-right: 1.5rem;" required onchange="selectPage(this.value, '{{pdf.pages_zero_text}}', '{{ pdf.id }}')" disabled>
+                                                            {% for x in pdf.pages_one_list %}
+                                                            <option value="{{x}}">{{ x }}</option>
+                                                            {% endfor %}
+                                                            <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
+                                                        </select>
+                                                    </label>
                                                     <button type="button" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
                                                         <i class="fas fa-window-close"></i>
                                                     </button>
@@ -82,11 +96,14 @@
                                                 </button>
                                             </div>
                                             &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
-                                            <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;">
+                                            <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;" disabled>
+                                            <input type="hidden" id="select_page" value="" />
+                                            <input type="hidden" id="pages_text" value="" />
+                                            <input type="hidden" id="pages_pos" value="" />
                                             <div id="buttons-actions" style="width: 41%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
                                                 <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
-                                                <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'down')"><i class="fas fa-arrow-alt-circle-left"></i></button>
-                                                <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{ pdf.id }}', 'up')"><i class="fas fa-arrow-alt-circle-right"></i></button>
+                                                <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'down')" disabled><i class="fas fa-arrow-alt-circle-left"></i></button>
+                                                <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'up')" disabled><i class="fas fa-arrow-alt-circle-right"></i></button>
                                             </div>
                                         </div>
                                         <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px;">
