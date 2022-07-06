@@ -34,6 +34,14 @@ var _pages_text = ""
 var _canvas_page = 0
 var _band_page = false
 
+document.getElementById('down_title').value = document.getElementById('text_título').textContent
+document.getElementById('down_author').value = document.getElementById('text_autor').textContent
+document.getElementById('down_year').value = document.getElementById('text_año').textContent
+document.getElementById('down_objective').value = document.getElementById('text_objetivo').textContent
+document.getElementById('down_method').value = document.getElementById('text_metodología').textContent
+document.getElementById('down_results').value = document.getElementById('text_resultados').textContent
+document.getElementById('down_conclussion').value = document.getElementById('text_conclusiones').textContent
+
 // Function to show alerts
 function showPDFAlert(message, alert) {
   alertPDF_wrapper.innerHTML = `

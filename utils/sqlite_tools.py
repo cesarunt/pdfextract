@@ -425,7 +425,7 @@ def get_projectById(id):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
+                    SELECT a.pro_id, a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
@@ -434,20 +434,21 @@ def get_projectById(id):
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
         project.append({
-                'pro_title':      record[0],
-                'pro_uniid':      record[1],
-                'pro_uni':        record[2],
-                'pro_department': record[3],
-                'pro_province':   record[4],
-                'pro_district':   record[5],
-                'pro_career':     record[6],
-                'pro_comment':    record[7],
-                'pro_type_a':     record[8],
-                'pro_type_m':     record[9],
-                'pro_n_articles': record[10],
-                'pro_n_process':  record[11],
-                'pro_user':       record[12],
-                'pro_created':    record[13],
+                'pro_id':         record[0],
+                'pro_title':      record[1],
+                'pro_uniid':      record[2],
+                'pro_uni':        record[3],
+                'pro_department': record[4],
+                'pro_province':   record[5],
+                'pro_district':   record[6],
+                'pro_career':     record[7],
+                'pro_comment':    record[8],
+                'pro_type_a':     record[9],
+                'pro_type_m':     record[10],
+                'pro_n_articles': record[11],
+                'pro_n_process':  record[12],
+                'pro_user':       record[13],
+                'pro_created':    record[14],
             })
         cursor.close()
     except sqlite3.Error as error:

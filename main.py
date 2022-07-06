@@ -128,7 +128,6 @@ def build_document(title, text_pdf, language):
             p = document.add_paragraph()
             # line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             try:
-                # p = document.add_paragraph(str(value.encode('utf-8').decode("utf-8")))
                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             except:
                 delete_paragraph(p)
@@ -140,6 +139,43 @@ def build_document(title, text_pdf, language):
                 line = p.add_run(str(html))
 
             if key == "B": line.bold = True
+            
+    return document
+
+def build_pdf(title, text_thesis, text_scheme):
+    document = Document() 
+    document.add_heading(title)
+
+    # add a paragraphs
+    p = document.add_paragraph()
+    for key, value in text_thesis:
+        try:
+            line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+        except:
+            delete_paragraph(p)
+            p = document.add_paragraph()
+            html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
+            html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+            html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+            html = ILLEGAL_XML_CHARS_RE.sub("", html)
+            line = p.add_run(str(html))
+        if key == "K": line.italic = True
+    
+    document.add_heading("Esquema")
+    # add a paragraphs
+    p = document.add_paragraph()
+    for key, value in text_scheme:
+        try:
+            line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+        except:
+            delete_paragraph(p)
+            p = document.add_paragraph()
+            html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
+            html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+            html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+            html = ILLEGAL_XML_CHARS_RE.sub("", html)
+            line = p.add_run(str(html))
+        if key == "B": line.bold = True
             
     return document
 
@@ -562,9 +598,9 @@ def action_thesis_mul():
                 # pdf_ids.append(item[0])
             band_parcial = True
             # pdf_info_id = list(pdfs.items())[i][0]
-        print(pdfs)
-        print(pdf_ids)
-        input("... enter ...")
+        # print(pdfs)
+        # print(pdf_ids)
+        # input("... enter ...")
          
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
@@ -994,7 +1030,7 @@ def paper_mul_load():
             print('File(s) successfully uploaded')
             return render_template('paper_mul.html', resultLoad=upload, pro_id=pro_id)
 
-# CLOSE PAPER
+# CLOSE AND SAVE PAPER
 @main.route("/<source>")
 def close_paper_mul(source):
     url = "/" + source
@@ -1007,18 +1043,67 @@ def save_paper_mul():
     
     return send_file(down_image, as_attachment=True)
 
-# CLOSE THESIS
+# CLOSE AND SAVE THESIS
 @main.route("/<source>")
 def close_thesis_mul(source):
     url = "/" + source
     return redirect(url)
 
-@main.route("/save_paper_mul", methods=["POST"])
+@main.route("/save_thesis_mul", methods=["POST"])
 def save_thesis_mul():
     if request.method == "POST":
         down_image = request.form.get('down_image')
         
     return send_file(down_image, as_attachment=True)
+
+# SAVE PDF AND PROJECT
+@main.route("/save_pdf_mul", methods=["POST"])
+def save_pdf_mul():
+    global text_thesis, text_scheme
+    text_thesis = []
+    text_scheme = []
+
+    if request.method == "POST":
+        down_title       = request.form.get('down_title')
+        down_author      = request.form.get('down_author')
+        down_year        = request.form.get('down_year')
+        down_objective   = request.form.get('down_objective')
+        down_method      = request.form.get('down_method')
+        down_results     = request.form.get('down_results')
+        down_conclussion = request.form.get('down_conclussion')
+
+        # FOR THESIS
+        text_thesis.append(tuple(["N", down_author]))
+        text_thesis.append(tuple(["N", " ("+str(down_year)+"). "]))
+        text_thesis.append(tuple(["K", down_title]))
+        text_thesis.append(tuple(["N", " [UNIVERSITY of ...]. "]))
+        text_thesis.append(tuple(["N", "\nhttp://..."]))
+
+        # FOR SCHEME
+        text_scheme.append(tuple(["N", down_author]))
+        text_scheme.append(tuple(["N", " ("+str(down_year)+") en su investigación titulada "]))
+        text_scheme.append(tuple(["B", down_title]))
+        text_scheme.append(tuple(["N", ". El objetivo de estudio fue " + str(down_objective)]))
+        text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue " + str(down_method)]))
+        text_scheme.append(tuple(["N", ". Los principales resutlados fueron " + str(down_results)]))
+        text_scheme.append(tuple(["N", ". Se concluye que " + str(down_conclussion)]))
+
+        if (len(text_thesis) > 1 and len(text_scheme) > 1):
+            now = datetime.now()
+            document = build_pdf("Tesis", text_thesis, text_scheme)
+            file_save = app.config['MULTIPLE_OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            document.save(file_save)
+            result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+    
+    return send_file(result_pdf, as_attachment=True)
+
+@main.route("/save_pro_mul", methods=["POST"])
+def save_pro_mul():
+    if request.method == "POST":
+        down_image = request.form.get('down_pro')
+        
+    return send_file(down_image, as_attachment=True)
+
 
 # INIT PROJECT
 if __name__ == '__main__':
