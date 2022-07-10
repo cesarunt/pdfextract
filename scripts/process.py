@@ -430,32 +430,29 @@ def pdf_process(files_split, pdf_info_id, pdfs):
         if objective and objective_band == False:
             addText_view(objective, 4, page+1)
             objective_band = True
-        # if resumen_text and resumen_band == False:
-        #     addText_view(resumen_text, 5, page+1)
-        #     resumen_band = True
-        if len(methodology_text)>0 and methodology_band == False:
-            addText_view(methodology_text, 5, page+1)
-            methodology_band = True
-        if len(typelevel)>0 and typelevel_band == False:
-            addText_view(typelevel, 6, page+1)
-            methodology_band = True
+        # if len(methodology_text)>0 and methodology_band == False:
+        #     addText_view(methodology_text, 5, page+1)
+        #     methodology_band = True
         if approach and approach_band == False:
-            addText_view(approach, 7, page+1)
+            addText_view(approach, 5, page+1)
             approach_band = True
         if design and design_band == False:
-            addText_view(design, 8, page+1)
+            addText_view(design, 6, page+1)
             design_band = True
+        if len(typelevel)>0 and typelevel_band == False:
+            addText_view(typelevel, 7, page+1)
+            typelevel_band = True
         if len(samples)>0 and samples_band == False:
-            addText_view(samples, 9, page+1)
+            addText_view(samples, 8, page+1)
             samples_band = True
         if len(tools_text)>0 and tools_band == False:
-            addText_view(tools_text, 10, page+1)
+            addText_view(tools_text, 9, page+1)
             tools_band = True
         if len(result_text)>0 and result_band == False:
-            addText_view(result_text, 11, page+1)
+            addText_view(result_text, 10, page+1)
             result_band = True
         if len(conclusion_text)>0 and conclusion_band == False:
-            addText_view(conclusion_text, 12, page+1)
+            addText_view(conclusion_text, 11, page+1)
             conclusion_band = True
 
         if title_ctrl == True and title_text!="" and np == length-1 :
@@ -467,25 +464,25 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                 addText_view(year, 3, 1)
             if objective_band == False:
                 addText_view(objective, 4, 1)
-            # if resumen_band == False:
-            #     addText_view(resumen_text, 5, 1)
-            if methodology_band == False:
-                addText_view(methodology_text, 5, 1)
-            if typelevel_band == False:
-                addText_view(typelevel, 6, 1)
+            # if methodology_band == False:
+            #     addText_view(methodology_text, 5, 1)
             if approach_band == False:
-                addText_view(approach, 7, 1)
+                addText_view(approach, 5, 1)
             if design_band == False:
-                addText_view(design, 8, 1)
+                addText_view(design, 6, 1)
+            if typelevel_band == False:
+                addText_view(typelevel, 7, 1)
             if samples_band == False:
-                addText_view(samples, 9, 1)
+                addText_view(samples, 8, 1)
             if tools_band == False:
-                addText_view(tools_text, 10, 1)
+                addText_view(tools_text, 9, 1)
             if result_band == False:
-                addText_view(result_text, 11, page-1)
+                addText_view(result_text, 10, page-1)
             if conclusion_band == False:
-                addText_view(conclusion_text, 12, page)
-                addText_view("-", 13, 1)
+                addText_view(conclusion_text, 11, page)
+                
+            addText_view("http://", 12, 1)
+            addText_view("_", 13, 1)
             
             # RESUMEN ...........
             resumen_text_list = resumen_text.split("\n")

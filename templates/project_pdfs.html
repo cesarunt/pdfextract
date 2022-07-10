@@ -27,7 +27,7 @@
                                                             <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
                                                             {% endif %}
                                                             <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
-                                                                <i class="fas fa-save"> T </i>
+                                                                <i class="fas fa-save"> Text </i>
                                                             </button>    
                                                         </div>
                                                         {% else %}
@@ -38,13 +38,12 @@
                                                             <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
                                                             {% endif %}
                                                             <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
-                                                                <i class="fas fa-save"> T </i>
+                                                                <i class="fas fa-save"> Text </i>
                                                             </button>    
                                                         </div>
                                                         {% endif %}
                                                         <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
-                                                        
-                                                        <button type="button" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{pdf.pages_one_text}}', '{{ pdf.id }}')" style="opacity: 0.5;">
+                                                        <button type="button" name="vectors" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{pdf.pages_one_text}}', '{{ pdf.id }}')" style="opacity: 0.5;">
                                                             <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                             <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
                                                             <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
@@ -59,10 +58,10 @@
                                                                 <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
                                                             </select>
                                                         </label>
-                                                        <button type="button" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
+                                                        <button type="button" name="closes" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
                                                             <i class="fas fa-window-close"></i>
                                                         </button>
-                                                        <button type="submit" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
+                                                        <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
                                                             <i class="fas fa-backspace"></i>    
                                                         </button>
                                                         
@@ -91,7 +90,7 @@
                                             <div id="buttons-header" style="width: 720px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
                                                 <div id="buttons-close" style="width: 41%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
                                                     <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
-                                                        <i class="fas fa-save"> &nbsp;Canvas</i>
+                                                        <i class="fas fa-save"> &nbsp;Imagen</i>
                                                     </button>
                                                 </div>
                                                 &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
@@ -115,10 +114,15 @@
                                                 <input type="hidden" name="down_author" id="down_author" value="" />
                                                 <input type="hidden" name="down_year" id="down_year" value="" />
                                                 <input type="hidden" name="down_objective" id="down_objective" value="" />
-                                                <input type="hidden" name="down_method" id="down_method" value="" />
+                                                <input type="hidden" name="down_approach" id="down_approach" value="" />
+                                                <input type="hidden" name="down_design" id="down_design" value="" />
+                                                <input type="hidden" name="down_level" id="down_level" value="" />
+                                                <input type="hidden" name="down_sample" id="down_sample" value="" />
+                                                <input type="hidden" name="down_tools" id="down_tools" value="" />
                                                 <input type="hidden" name="down_results" id="down_results" value="" />
-                                                <input type="hidden" name="down_conclussion" id="down_conclussion" value="" />
-
+                                                <input type="hidden" name="down_conclussions" id="down_conclussions" value="" />
+                                                <input type="hidden" name="down_link" id="down_link" value="" />
+                                                <input type="hidden" name="down_page" id="down_page" value="" />
                                                 <input type="hidden" name="down_pdf" id="down_pdf" value="{{ pdf.id }}" />
                                                 <p style="text-align: center; margin: 25px 0;">
                                                     <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;">
@@ -130,18 +134,18 @@
                                         </div>
                                     </div>
                                 </div>
-                            
                         {% else %}
                             <div class="row" style="padding: 0 1rem;">
-                                <div class="mb-3 d-none">
-                                    <form method="POST" action="export_paper_mul" enctype="multipart/form-data">
-                                        <input type="hidden" name="export_att" id="export_att" value="{{ result_file_down }}" />
-                                        <p style="text-align: center; margin: 15px 0 0 0;">
-                                            <button class="btn btn-primary" id="saveImage_btn" type="submit" style="font-size: small;" disabled>Exportar</button>
-                                        </p>
-                                    </form>
+                                {% for pdf in pdfs %}
+                                <div style="margin: 5px 0;">
+                                    <a style="font-size: 0.8rem; border-bottom:#EEE 1px solid; text-align: justify; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                                        <i class="fas fa-copy" style="font-size: large; margin-right: 0;"><br>
+                                        <b style="font-size:0.75rem; font-family:'Lato'; color: #498DB7;"> [{{ pdf.pdf_i }}]</b>
+                                        </i>
+                                        <div style="padding: 0 10px 10px;">{{ pdf.pdf_fullname }}</div>
+                                    </a>
                                 </div>
-                                <canvas id="canvas" class="d-none"></canvas>
+                                {% endfor %}
                             </div>
                         {% endif %}
                     </div>

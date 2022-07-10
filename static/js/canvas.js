@@ -172,6 +172,17 @@ function activeAttribute(edit_id, pages_text, pdf_id) {
   var select_att = document.getElementById('page_'+_det_id+'-'+_det_attribute)
   select_att.disabled = false
   select_att.style.border = '1px solid #0d6efd'
+
+  // Disabled all controls by name
+  var vectors = document.getElementsByName('vectors');
+  for (var vector of vectors){
+    let vector_id = vector.id
+    let get_id = vector_id.split("_")
+    document.getElementById("vector_"+get_id[1]).disabled = true;
+    document.getElementById("remove_"+get_id[1]).disabled = true;
+    document.getElementById("remove_"+get_id[1]).style.opacity = 0.5
+  }
+
   // Abled vector button
   document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 1
   // Abled close button
@@ -241,6 +252,17 @@ function closeAttribute(edit_id) {
   var select_att = document.getElementById('page_'+_det_id+'-'+_det_attribute)
   select_att.disabled = true
   select_att.style.border = '1px solid #ced4da'
+
+  // Abled all controls by name
+  var vectors = document.getElementsByName('vectors');
+  for (var vector of vectors){
+    let vector_id = vector.id
+    let get_id = vector_id.split("_")
+    document.getElementById("vector_"+get_id[1]).disabled = false;
+    document.getElementById("remove_"+get_id[1]).disabled = false;
+    document.getElementById("remove_"+get_id[1]).style.opacity = 1
+  }
+
   // Disabled vector button
   document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 0.5
   // Disabled close button
@@ -289,54 +311,62 @@ function cancelAttribute(edit_id) {
 }
 
 // REMOVE ATTRIBUTE
-function delAttribute(url, edit_id) {
-  // Disabled select option
-  let detail_id = edit_id.split("_")
-  let detail_edit = detail_id[1].split("-")
-  _det_id = detail_edit[0]
-  // console.log(_det_id)
-  
-  // Create a new FormData instance
-  var data = new FormData();
-  // Create a XMLHTTPRequest instance
-  var request = new XMLHttpRequest();
+function delAttribute(url, att_name, edit_id) {
 
-  // Set the response type
-  request.responseType = "json";
-
-  var action = "remove_attribute";
-  data.append("action", action);
-  data.append("det_id", _det_id);
-
-  // request load handler (transfer complete)
-  request.addEventListener("load", function (e) {
-    if (request.status == 200) {
-      /// Disabled updated button (blue color), and opacity 1
-      update_att.disabled = true      
-      // alert(`Eliminación Exitosa`, "success");
-      showAlertPage('Atributo eliminado con éxito', 'success')
-      location.reload();
-    }
-    else {
-      // alert(`Alerta en eliminación`, "warning");
-      showAlertPage('Atributo no fue eliminado', 'warning')
-    }
-    if (request.status == 300) {
-      // alert(`${request.response.message}`, "warning");
-      showAlertPage(`${request.response.message}`, 'warning')
-    }
+  if (confirm('Desea eliminar el atributo ' + att_name)) {
+    // Save it!
+    // Disabled select option
+    let detail_id = edit_id.split("_")
+    let detail_edit = detail_id[1].split("-")
+    _det_id = detail_edit[0]
+    // console.log(_det_id)
     
-  });
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
 
-  // request error handler
-  request.addEventListener("error", function (e) {
-    // alert(`Error eliminando el atributo`, "danger");
-    showAlertPage('Error eliminando atributo', 'danger')
-  });
+    // Set the response type
+    request.responseType = "json";
 
-  // Open and send the request
-  request.open("POST", url);
-  request.send(data);
+    var action = "remove_attribute";
+    data.append("action", action);
+    data.append("det_id", _det_id);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        /// Disabled updated button (blue color), and opacity 1
+        update_att.disabled = true      
+        // alert(`Eliminación Exitosa`, "success");
+        showAlertPage('Atributo eliminado con éxito', 'success')
+        location.reload();
+      }
+      else {
+        // alert(`Alerta en eliminación`, "warning");
+        showAlertPage('Atributo no fue eliminado', 'warning')
+      }
+      if (request.status == 300) {
+        // alert(`${request.response.message}`, "warning");
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+      
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      // alert(`Error eliminando el atributo`, "danger");
+      showAlertPage('Error eliminando atributo', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
+  }
+  else {
+    // Do nothing!
+    console.log('Nothing');
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------

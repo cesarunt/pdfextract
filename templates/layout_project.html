@@ -35,38 +35,37 @@
                 <li style="margin:10px 0 0; border-top: 1px solid #e6ecf5;"></li>
                 
                 {% if current_user.is_authenticated %}
-                    <li>
-                        <a style="padding-left: 1rem;" href="{{ url_for('main.project_pdfs', id=pro_id) }}"><b>PDFs</b></a>
-                    </li>
-                    {% for pdf in pdfs %}
-                    <li style="padding:0 0 0 5px;">
-                        <span>
-                        <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
-                            <i class="fas fa-copy" style="margin-right: 0;"><br>
-                            <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ pdf.pdf_i }}]</b>
-                            </i>
-                            <div>{{ pdf.pdf_name }}</div>
-                        </a>
-                        </span>
-                        <!-- <button type="button" id="close_{{pdf.det_id}}" style="padding: 0;" class="btn" onclick="closeAttribute(this.id)">
-                            <i class="fas fa-window-close" style="color:firebrick;"></i>
-                        </button> -->
-                    </li>
-                    {% endfor %}
-                    <div class="mb-3" style="margin-bottom: 0 !important;">
-                        <form method="POST" action="save_pro_mul" enctype="multipart/form-data">
-                            <input type="hidden" name="down_pro" id="down_pro" value="{{ project.pro_id }}" />
-                            <p style="text-align: center; margin: 15px 0; color: #222;">
-                                <button class="btn btn-success" id="save_pro" type="submit" style="font-size: medium;">
-                                    &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
-                                </button><br>
-                                <span>Descargar Proyecto</span>
-                            </p>
-                        </form>
-                    </div>
+                    {% if pdf %}
+                        <li>
+                            <a style="padding-left: 1rem;" href="{{ url_for('main.project_pdfs', id=pro_id) }}"><b>PDFs</b></a>
+                        </li>
+                        {% for pdf in pdfs %}
+                        <li style="padding:0 0 0 5px;">
+                            <span>
+                            <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                                <i class="fas fa-copy" style="margin-right: 0;"><br>
+                                <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ pdf.pdf_i }}]</b>
+                                </i>
+                                <div>{{ pdf.pdf_name }}</div>
+                            </a>
+                            </span>
+                        </li>
+                        {% endfor %}
+                        <div class="mb-3" style="margin-bottom: 0 !important;">
+                            <form method="POST" action="save_pro_mul" enctype="multipart/form-data">
+                                <input type="hidden" name="down_pro" id="down_pro" value="{{ project.pro_id }}" />
+                                <p style="text-align: center; margin: 15px 0; color: #222;">
+                                    <button class="btn btn-success" id="save_pro" type="submit" style="font-size: medium;">
+                                        &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
+                                    </button><br>
+                                    <span>Descargar Proyecto</span>
+                                </p>
+                            </form>
+                        </div>
+                    {% endif %}
                 {% endif %}
 
-                {% if not current_user.is_authenticated %}
+                <!-- {% if not current_user.is_authenticated %}
                     <li style="text-align: center; font-size: smaller; padding: 5px 0;">
                         <p style="color: #444; margin: 0 auto;">Procesa PDFs, ingresando aquí</p>
                     </li>
@@ -79,7 +78,7 @@
                     <p style="color: #6d1e1c; text-align: center; font-size: medium; padding: 5px 10px;">
                         <a href="{{ url_for('auth.logout') }}" style="font-weight: 600; padding: 5px 0;">Cerrar Sesión</a>
                     </p>
-                {% endif %}
+                {% endif %} -->
             </ul>
         </nav>
         <div id="body" class="active">

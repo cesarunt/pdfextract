@@ -34,13 +34,45 @@ var _pages_text = ""
 var _canvas_page = 0
 var _band_page = false
 
-document.getElementById('down_title').value = document.getElementById('text_título').textContent
-document.getElementById('down_author').value = document.getElementById('text_autor').textContent
-document.getElementById('down_year').value = document.getElementById('text_año').textContent
-document.getElementById('down_objective').value = document.getElementById('text_objetivo').textContent
-document.getElementById('down_method').value = document.getElementById('text_metodología').textContent
-document.getElementById('down_results').value = document.getElementById('text_resultados').textContent
-document.getElementById('down_conclussion').value = document.getElementById('text_conclusiones').textContent
+if (document.getElementById('text_título')){
+  document.getElementById('down_title').value = document.getElementById('text_título').textContent
+}
+if (document.getElementById('text_autor')){
+  document.getElementById('down_author').value = document.getElementById('text_autor').textContent
+}
+if (document.getElementById('text_año')){
+  document.getElementById('down_year').value = document.getElementById('text_año').textContent
+}
+if (document.getElementById('text_objetivo')){
+  document.getElementById('down_objective').value = document.getElementById('text_objetivo').textContent
+}
+if (document.getElementById('text_enfoque')){
+  document.getElementById('down_approach').value = document.getElementById('text_enfoque').textContent
+}
+if (document.getElementById('text_diseño')){
+  document.getElementById('down_design').value = document.getElementById('text_diseño').textContent
+}
+if (document.getElementById('text_nivel')){
+  document.getElementById('down_level').value = document.getElementById('text_nivel').textContent
+}
+if (document.getElementById('text_muestra')){
+  document.getElementById('down_sample').value = document.getElementById('text_muestra').textContent
+}
+if (document.getElementById('text_instrumentos')){
+  document.getElementById('down_tools').value = document.getElementById('text_instrumentos').textContent
+}
+if (document.getElementById('text_resultados')){
+  document.getElementById('down_results').value = document.getElementById('text_resultados').textContent
+}
+if (document.getElementById('text_conclusiones')){
+  document.getElementById('down_conclussions').value = document.getElementById('text_conclusiones').textContent
+}
+if (document.getElementById('text_enlace')){
+  document.getElementById('down_link').value = document.getElementById('text_enlace').textContent
+}
+if (document.getElementById('text_página')){
+  document.getElementById('down_page').value = document.getElementById('text_página').textContent
+}
 
 // Function to show alerts
 function showPDFAlert(message, alert) {

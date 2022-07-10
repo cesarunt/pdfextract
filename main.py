@@ -124,9 +124,7 @@ def build_document(title, text_pdf, language):
     # add a paragraphs
     if language != '' :
         for key, value in text_pdf:
-            # doc = docx.Document()
             p = document.add_paragraph()
-            # line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             try:
                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             except:
@@ -137,18 +135,17 @@ def build_document(title, text_pdf, language):
                 html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
                 html = ILLEGAL_XML_CHARS_RE.sub("", html)
                 line = p.add_run(str(html))
-
             if key == "B": line.bold = True
             
     return document
 
-def build_pdf(title, text_thesis, text_scheme):
+def build_pdf(title, text_scheme):
     document = Document() 
     document.add_heading(title)
 
-    # add a paragraphs
     p = document.add_paragraph()
-    for key, value in text_thesis:
+    for key, value in text_scheme:
+        value = value.replace('\n', ' ').replace('\r', '')
         try:
             line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
         except:
@@ -160,22 +157,64 @@ def build_pdf(title, text_thesis, text_scheme):
             html = ILLEGAL_XML_CHARS_RE.sub("", html)
             line = p.add_run(str(html))
         if key == "K": line.italic = True
-    
-    document.add_heading("Esquema")
-    # add a paragraphs
-    p = document.add_paragraph()
-    for key, value in text_scheme:
-        try:
-            line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-        except:
-            delete_paragraph(p)
-            p = document.add_paragraph()
-            html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
-            html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-            html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-            html = ILLEGAL_XML_CHARS_RE.sub("", html)
-            line = p.add_run(str(html))
-        if key == "B": line.bold = True
+            
+    return document
+
+def build_project(title, text_schemes):
+    document = Document() 
+
+    for key, details in text_schemes.items():
+        text_scheme = []
+        # for key, value in details:
+        det_title     = details['details'][0]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_author    = details['details'][1]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_year      = details['details'][2]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_objective = details['details'][3]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_approach  = details['details'][4]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_design    = details['details'][5]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_level     = details['details'][6]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_sample    = details['details'][7]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_tools     = details['details'][8]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_results    = details['details'][9]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_conclussions = details['details'][10]['det_value'].replace('\n', ' ').replace('\r', '')
+        
+        # for key, value in details:
+        # FOR SCHEME
+        text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+")" ]))
+        text_scheme.append(tuple(["N", " en su investigación titulada "]))
+        text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+        text_scheme.append(tuple(["N", ". El objetivo de estudio fue"]))
+        text_scheme.append(tuple(["N", " " + str(det_objective)]))
+        text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue de enfoque"]))
+        text_scheme.append(tuple(["N", " " + str(det_approach)]))
+        text_scheme.append(tuple(["N", ", con un diseño,"]))
+        text_scheme.append(tuple(["N", " " + str(det_design)]))
+        text_scheme.append(tuple(["N", ", de nivel,"]))
+        text_scheme.append(tuple(["N", " " + str(det_level)]))
+        text_scheme.append(tuple(["N", ", la muestra se conformó por"]))
+        text_scheme.append(tuple(["N", " " + str(det_sample)]))
+        text_scheme.append(tuple(["N", " y se aplicaron como instrumentos"]))
+        text_scheme.append(tuple(["N", " " + str(det_tools)]))
+        text_scheme.append(tuple(["N", ". Los principales resultados fueron"]))
+        text_scheme.append(tuple(["N", " " + str(det_results)]))
+        text_scheme.append(tuple(["N", ". Se concluye que"]))
+        text_scheme.append(tuple(["N", " " + str(det_conclussions)]))
+
+        document.add_heading(str(int(key)+1)+".")
+        p = document.add_paragraph()
+        for key, value in text_scheme:
+            try:
+                line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+            except:
+                delete_paragraph(p)
+                p = document.add_paragraph()
+                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
+                html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+                html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+                html = ILLEGAL_XML_CHARS_RE.sub("", html)
+                line = p.add_run(str(html))
+            if key == "K": line.italic = True
+        p.add_run("\n")
             
     return document
 
@@ -387,7 +426,6 @@ def add_variable():
             one_project = []
             # return redirect(request.url)
             return jsonify({'key_id': key_id})
-            # return render_template('upload_form.html', name=current_user.name.split()[0], project = one_project, key_id=key_id, universities=list_universities, keywords=list_keywords, title=title)
 
 """
     FORM SEARCH DATABASES
@@ -810,13 +848,9 @@ def project_pdf(pdf_id):
     listpages = []
 
     if current_user.is_authenticated:
-        # action = request.values.get("action")
-        # action = request.form.get('action')
-        # _type = type(pdf_id)
-        # if _type == isinstance(_type, str):
         project = get_projectById(pro_id)
         pdfs = get_projectPDFById(pro_id)
-        pdf = get_pdfDetailById(pro_id, pdf_id)
+        pdf = get_pdfDetailByIds(pro_id, pdf_id)
         """Verificar pdf_details, encontrados y no encontradps"""
         # list_npages = list(range(1, int(pdf['npages']+1)))
         pages_zero = pdf['pages'].replace('[','').replace(']','').replace(' ','')
@@ -944,7 +978,7 @@ def pdf_post(pdf_id):
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
             pdfs = get_projectPDFById(pro_id)
-            pdf = get_pdfDetailById(pro_id, pdf_id)
+            pdf = get_pdfDetailByIds(pro_id, pdf_id)
             """Verificar pdf_details, encontrados y no encontradps"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]
@@ -1059,8 +1093,7 @@ def save_thesis_mul():
 # SAVE PDF AND PROJECT
 @main.route("/save_pdf_mul", methods=["POST"])
 def save_pdf_mul():
-    global text_thesis, text_scheme
-    text_thesis = []
+    global text_scheme
     text_scheme = []
 
     if request.method == "POST":
@@ -1068,29 +1101,42 @@ def save_pdf_mul():
         down_author      = request.form.get('down_author')
         down_year        = request.form.get('down_year')
         down_objective   = request.form.get('down_objective')
-        down_method      = request.form.get('down_method')
+        down_approach    = request.form.get('down_approach')
+        down_design      = request.form.get('down_design')
+        down_level       = request.form.get('down_level')
+        down_sample      = request.form.get('down_sample')
+        down_tools       = request.form.get('down_tools')
         down_results     = request.form.get('down_results')
-        down_conclussion = request.form.get('down_conclussion')
-
-        # FOR THESIS
-        text_thesis.append(tuple(["N", down_author]))
-        text_thesis.append(tuple(["N", " ("+str(down_year)+"). "]))
-        text_thesis.append(tuple(["K", down_title]))
-        text_thesis.append(tuple(["N", " [UNIVERSITY of ...]. "]))
-        text_thesis.append(tuple(["N", "\nhttp://..."]))
+        down_conclussions= request.form.get('down_conclussions')
+        # down_link        = request.form.get('down_link')
+        # down_page        = request.form.get('down_page')
 
         # FOR SCHEME
-        text_scheme.append(tuple(["N", down_author]))
-        text_scheme.append(tuple(["N", " ("+str(down_year)+") en su investigación titulada "]))
-        text_scheme.append(tuple(["B", down_title]))
-        text_scheme.append(tuple(["N", ". El objetivo de estudio fue " + str(down_objective)]))
-        text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue " + str(down_method)]))
-        text_scheme.append(tuple(["N", ". Los principales resutlados fueron " + str(down_results)]))
-        text_scheme.append(tuple(["N", ". Se concluye que " + str(down_conclussion)]))
+        text_scheme.append(tuple(["N", str(down_author) + " ("+str(down_year)+")" ]))
+        text_scheme.append(tuple(["N", " en su investigación titulada "]))
+        text_scheme.append(tuple(["K", '"' + str(down_title) + '"']))
+        text_scheme.append(tuple(["N", ". El objetivo de estudio fue"]))
+        text_scheme.append(tuple(["N", " " + str(down_objective)]))
+        text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue de enfoque"]))
+        text_scheme.append(tuple(["N", " " + str(down_approach)]))
+        text_scheme.append(tuple(["N", ", con un diseño,"]))
+        text_scheme.append(tuple(["N", " " + str(down_design)]))
+        text_scheme.append(tuple(["N", ", de nivel,"]))
+        text_scheme.append(tuple(["N", " " + str(down_level)]))
+        text_scheme.append(tuple(["N", ", la muestra se conformó por"]))
+        text_scheme.append(tuple(["N", " " + str(down_sample)]))
+        text_scheme.append(tuple(["N", " y se aplicaron como instrumentos"]))
+        text_scheme.append(tuple(["N", " " + str(down_tools)]))
+        text_scheme.append(tuple(["N", ". Los principales resultados fueron"]))
+        text_scheme.append(tuple(["N", " " + str(down_results)]))
+        text_scheme.append(tuple(["N", ". Se concluye que"]))
+        text_scheme.append(tuple(["N", " " + str(down_conclussions)]))
+        # text_scheme.append(tuple(["N", ". Link:"]))
+        # text_scheme.append(tuple(["N", " " + str(down_link)]))
 
-        if (len(text_thesis) > 1 and len(text_scheme) > 1):
+        if (len(text_scheme) > 1):
             now = datetime.now()
-            document = build_pdf("Tesis", text_thesis, text_scheme)
+            document = build_pdf("Esquema", text_scheme)
             file_save = app.config['MULTIPLE_OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
@@ -1099,10 +1145,20 @@ def save_pdf_mul():
 
 @main.route("/save_pro_mul", methods=["POST"])
 def save_pro_mul():
+    global text_schemes
+    text_schemes = []
+
     if request.method == "POST":
-        down_image = request.form.get('down_pro')
+        pro_id = request.form.get('down_pro')
+        text_schemes = get_pdfDetailByProId(pro_id)
+        if (len(text_schemes) > 1):
+            now = datetime.now()
+            document = build_project("Esquema", text_schemes)
+            file_save = app.config['MULTIPLE_OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            document.save(file_save)
+            result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
         
-    return send_file(down_image, as_attachment=True)
+    return send_file(result_pdf, as_attachment=True)
 
 
 # INIT PROJECT
