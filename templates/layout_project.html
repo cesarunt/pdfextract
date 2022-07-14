@@ -33,7 +33,6 @@
                     </select>
                 </li>
                 <li style="margin:10px 0 0; border-top: 1px solid #e6ecf5;"></li>
-                
                 {% if current_user.is_authenticated %}
                     {% if pdf %}
                         <li>
@@ -64,21 +63,6 @@
                         </div>
                     {% endif %}
                 {% endif %}
-
-                <!-- {% if not current_user.is_authenticated %}
-                    <li style="text-align: center; font-size: smaller; padding: 5px 0;">
-                        <p style="color: #444; margin: 0 auto;">Procesa PDFs, ingresando aquí</p>
-                    </li>
-                    <p style="color: #1c80c2; text-align: center; font-size: medium; padding: 5px 10px;">
-                        <a href="{{ url_for('auth.login') }}" style="font-weight: 600; padding: 5px 0;">Iniciar Sesión</a>
-                    </p>
-                {% endif %}
-                {% if current_user.is_authenticated %}
-                    <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
-                    <p style="color: #6d1e1c; text-align: center; font-size: medium; padding: 5px 10px;">
-                        <a href="{{ url_for('auth.logout') }}" style="font-weight: 600; padding: 5px 0;">Cerrar Sesión</a>
-                    </p>
-                {% endif %} -->
             </ul>
         </nav>
         <div id="body" class="active">
@@ -140,7 +124,9 @@
     <!-- Uploads files -->
     <script src="{{ url_for('static', filename='js/form-pdf.js') }}"></script>
     <!-- Canvas draw -->
+    {% if pdf %}
     <script src="{{ url_for('static', filename='js/canvas.js') }}"></script>
+    {% endif %}
 </body>
 
 </html>

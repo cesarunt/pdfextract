@@ -181,9 +181,9 @@ def build_project(title, text_schemes):
         # for key, value in details:
         # FOR SCHEME
         text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+")" ]))
-        text_scheme.append(tuple(["N", " en su investigación titulada "]))
+        text_scheme.append(tuple(["N", ". en su investigación titulada "]))
         text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-        text_scheme.append(tuple(["N", ". El objetivo de estudio fue"]))
+        text_scheme.append(tuple(["N", ". El objetivo de estudio fue "]))
         text_scheme.append(tuple(["N", " " + str(det_objective)]))
         text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue de enfoque"]))
         text_scheme.append(tuple(["N", " " + str(det_approach)]))
@@ -215,6 +215,47 @@ def build_project(title, text_schemes):
                 line = p.add_run(str(html))
             if key == "K": line.italic = True
         p.add_run("\n")
+    
+    document.add_heading("Referencias")
+    for key, details in text_schemes.items():
+        text_scheme = []
+        det_title     = details['details'][0]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_author    = details['details'][1]['det_value'].replace('\n', ' ').replace('\r', '')
+        det_year      = details['details'][2]['det_value'].replace('\n', ' ').replace('\r', '')
+        down_link     = details['details'][11]['det_value'].replace('\n', ' ').replace('\r', '')
+        down_link_pag = details['details'][11]['det_npage']
+        down_page     = details['details'][12]['det_value'].replace('\n', ' ').replace('\r', '')
+        # down_page_pag = details['details'][12]['det_npage'].replace('\n', ' ').replace('\r', '')
+        # print("NPAGES", down_link_pag)
+
+        # Si es mayor.............................................'''''''''''''''''''''''''.........................................................
+        if (down_link_pag>40):
+            # TESIS
+            text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
+            text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+            text_scheme.append(tuple(["N", ". Obtenido de \n"]))
+            text_scheme.append(tuple(["N", '"' + str(down_link) + '"']))
+        else:
+            # REVISTAS
+            text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
+            text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+            text_scheme.append(tuple(["N", '", ' + str(down_page) + '."']))
+            text_scheme.append(tuple(["N", '" doi:DOI..."']))
+
+        p = document.add_paragraph()
+        for key, value in text_scheme:
+            try:
+                line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+            except:
+                delete_paragraph(p)
+                p = document.add_paragraph()
+                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
+                html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+                html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+                html = ILLEGAL_XML_CHARS_RE.sub("", html)
+                line = p.add_run(str(html))
+            if key == "K": line.italic = True
+            if key == "L": line.color = "#CB7825"
             
     return document
 
@@ -775,7 +816,7 @@ def action_thesis_mul():
                     
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs)  # Call pdf process function
+                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages)  # Call pdf process function
                     LANGUAGE_PAGE = language
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -1131,8 +1172,6 @@ def save_pdf_mul():
         text_scheme.append(tuple(["N", " " + str(down_results)]))
         text_scheme.append(tuple(["N", ". Se concluye que"]))
         text_scheme.append(tuple(["N", " " + str(down_conclussions)]))
-        # text_scheme.append(tuple(["N", ". Link:"]))
-        # text_scheme.append(tuple(["N", " " + str(down_link)]))
 
         if (len(text_scheme) > 1):
             now = datetime.now()

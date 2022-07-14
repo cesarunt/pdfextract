@@ -26,7 +26,7 @@ def addText_view(line, att_id, page):
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, pdf_info_id, pdfs):
+def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
     fname.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -430,9 +430,6 @@ def pdf_process(files_split, pdf_info_id, pdfs):
         if objective and objective_band == False:
             addText_view(objective, 4, page+1)
             objective_band = True
-        # if len(methodology_text)>0 and methodology_band == False:
-        #     addText_view(methodology_text, 5, page+1)
-        #     methodology_band = True
         if approach and approach_band == False:
             addText_view(approach, 5, page+1)
             approach_band = True
@@ -464,8 +461,6 @@ def pdf_process(files_split, pdf_info_id, pdfs):
                 addText_view(year, 3, 1)
             if objective_band == False:
                 addText_view(objective, 4, 1)
-            # if methodology_band == False:
-            #     addText_view(methodology_text, 5, 1)
             if approach_band == False:
                 addText_view(approach, 5, 1)
             if design_band == False:
@@ -481,7 +476,7 @@ def pdf_process(files_split, pdf_info_id, pdfs):
             if conclusion_band == False:
                 addText_view(conclusion_text, 11, page)
                 
-            addText_view("http://", 12, 1)
+            addText_view("http://", 12, pdf_npages)
             addText_view("_", 13, 1)
             
             # RESUMEN ...........
