@@ -2,6 +2,7 @@
 from utils.config import cfg
 import sqlite3
 import secrets
+import json
 import os
 
 global data_base
@@ -43,7 +44,7 @@ def get_pdfsByProId(cursor, tablename, pro_id):
     pdf_ids = list(ids)
     for record in records:
         pdf_ids.append(record[0])
-
+        
     return records, tuple(pdf_ids)
 
 def get_col_names(cursor, tablename):
@@ -327,7 +328,7 @@ def get_listProvinces(department):
             provinces.append({
                     'prv_id':        record[0],
                     'prv_name':      record[1],
-                        })
+                    })
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
@@ -357,7 +358,7 @@ def get_listDistricts(province, department):
             districts.append({
                     'dis_id':        record[0],
                     'dis_name':      record[1],
-                        })
+                    })
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
@@ -767,10 +768,10 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pdf_name="{name}", pro_pdf_created="{current_date}"
+                    UPDATE "{table_name}" SET pdf_name='{name}', pro_pdf_created="{current_date}"
                     WHERE pro_id = {pro_id} AND pdf_id = {pdf_id}
                 """
-        # print("UPDATE Canvas",query)
+        
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -850,7 +851,10 @@ def get_pdfDetailByProId(pro_id):
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        
+        # print("RECORDS")
+        # for record in records:
+        #     print(record)
+        # input("..... records .....")
         i = 0
         for record in records:
             if pdf_records[i][0] == record[1]:

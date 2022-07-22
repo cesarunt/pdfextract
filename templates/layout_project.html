@@ -19,7 +19,11 @@
 <body>
     <!-- SECTION BODY, START -->
     <div class="wrapper">
+        {% if pdf %}
         <nav id="sidebar" class="">
+        {% else %}
+        <nav id="sidebar" class="active">
+        {% endif %}
             <div class="sidebar-header">
                 <a href="{{ url_for('main.home') }}">
                     <img src="../../static/img/esca-logo.png" alt="bootraper logo" class="app-logo">
@@ -65,7 +69,11 @@
                 {% endif %}
             </ul>
         </nav>
+        {% if pdf %}
         <div id="body" class="active">
+        {% else %}
+        <div id="body" class="">
+        {% endif %}
             <!-- navbar navigation component -->
             <nav class="navbar navbar-expand-lg navbar-white bg-white" style="min-height: 55px;">
                 <button type="button" id="sidebarCollapse" class="btn btn-light" style="border-color: gray;">

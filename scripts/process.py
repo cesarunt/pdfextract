@@ -1,3 +1,4 @@
+from curses.ascii import isdigit
 import os, re
 import datetime
 import numpy as np
@@ -29,7 +30,9 @@ def removeAuthorsDuplicates(lst):
 def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
-    fname.sort(key=lambda f: int(re.sub('\D', '', f)))
+    # fname.sort(key=lambda f: int(re.sub('\D', '', f)))
+    precedes = [x for x in fname if '.DS_Store' not in x]
+    fname = sorted(precedes)
     length = len(fname)
 
     global text_pdf
@@ -110,6 +113,9 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     # PATTERN_OBJE = []
     level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
 
+    print("PDFs")
+    print(pdfs)
+
     if len(pdfs)>0:
         list_pages = pdfs[str(pdf_id)]
         length = len(list_pages)
@@ -117,18 +123,24 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
         list_pages = range(length)
     
     np = 0
+    print("LIST PAGES")
+    print(list_pages)
     for page in list_pages: #Repeat each operation for each document.
-        # print("page", page)
-        # print("\nPage 0"+str(int(page+1)) +": "+fname[page])
-
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================
         # - Extract text with functions PDFminer
-        text_page = convert_pdf_to_text((files_split+'/{}').format(fname[page])) #Extract text with PDF_to_text Function call
-        text_html = convert_pdf_to_html((files_split+'/{}').format(fname[page])) #Extract text with PDF_to_html Function call
+        # output_filename = files_split+'/'+pdf_info_id+"page"+'_{}.pdf'.format(page+1)
+        file_page = files_split+'/'+pdf_info_id+'page'+'_{}.pdf'.format(page+1)
+        print("File Page")
+        print(file_page)
+        text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
+        text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
         # print(text_html)
         # 2. GET THE LANGUAGE
+        # print("text_html")
+        # print(text_html)
+        # input("...")
         # ============================================================================================
 
         if language_band == False:

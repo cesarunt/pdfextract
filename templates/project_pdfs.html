@@ -61,10 +61,15 @@
                                                         <button type="button" name="closes" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
                                                             <i class="fas fa-window-close"></i>
                                                         </button>
+                                                        {% if detail.det_i > 2 %}
                                                         <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
                                                             <i class="fas fa-backspace"></i>    
                                                         </button>
-                                                        
+                                                        {% else %}
+                                                        <button type="submit" name="removes" disabled id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" style="opacity: 0.25; background-color: white; color: red; border: 1px dotted gray;">
+                                                            <i class="fas fa-backspace"></i>    
+                                                        </button>
+                                                        {% endif %}
                                                     </li>
                                                     {% endif %}
                                                 {% endfor %}
@@ -137,13 +142,15 @@
                         {% else %}
                             <div class="row" style="padding: 0 1rem;">
                                 {% for pdf in pdfs %}
-                                <div style="margin: 5px 0;">
-                                    <a style="font-size: 0.8rem; border-bottom:#EEE 1px solid; text-align: justify; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
-                                        <i class="fas fa-copy" style="font-size: large; margin-right: 0;"><br>
-                                        <b style="font-size:0.75rem; font-family:'Lato'; color: #498DB7;"> [{{ pdf.pdf_i }}]</b>
-                                        </i>
-                                        <div style="padding: 0 10px 10px;">{{ pdf.pdf_fullname }}</div>
-                                    </a>
+                                <div class="col-sm-6 col-md-6">
+                                    <div style="margin: 5px 0 10px;">
+                                        <a style="font-size: 0.8rem; border-bottom:#EEE 1px solid; text-align: justify; display: inline-flex; width: 96%; padding: 1px 0 6px;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                                            <i class="fas fa-copy" style="font-size: large; margin-right: 0;"><br>
+                                            <b style="font-size:0.75rem; font-family:'Lato'; color: #498DB7;"> [{{ pdf.pdf_i }}]</b>
+                                            </i>
+                                            <div style="padding: 0 10px 5px;">{{ pdf.pdf_fullname }}</div>
+                                        </a>
+                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>

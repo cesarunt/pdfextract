@@ -17,7 +17,7 @@ def pdf_remove(file, files_split):
     for i in range(length): 
         os.remove(files_split+"/{}".format(file[i])) #Remove existed pdf documents in folder.
 
-def pdf_splitter(path, files_split):
+def pdf_splitter(path, files_split, pdf_info_id):
     # fname = os.path.splitext(os.path.basename(path))[0]
     # 0: No results
     # 1: Files created
@@ -38,11 +38,11 @@ def pdf_splitter(path, files_split):
                 pdf_writer = PdfFileWriter()
                 pdf_writer.addPage(pdf.getPage(page))
                 name_file = path.split("/")[-1].split(".pdf")[0]
-                output_filename = files_split+'/'+name_file+'_{}.pdf'.format(page+1)
+                output_filename = files_split+'/'+pdf_info_id+"page"+'_{}.pdf'.format(page+1)
                 with open(output_filename, 'wb') as out:
                     pdf_writer.write(out)
                 # print('Created: ' + name_file+'_{}.pdf'.format(page+1))
-            print('Created ' + str(pdf_npages) + ' pdfs, to ' + name_file +'.pdf')
+            print('Created ' + str(pdf_npages) + ' pdfs')
             result = 1
     except:
         result = 0

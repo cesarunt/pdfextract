@@ -85,7 +85,6 @@ def build_document_(title, text_pdf, language):
             p = document.add_paragraph()
 
             patt = re.search(rf"\b{keywords}\b", value, re.IGNORECASE)
-            # print("values")
             if patt != None:
                 text_1 = value[:patt.start(0)]
                 text_2 = keywords
@@ -162,43 +161,58 @@ def build_pdf(title, text_scheme):
 
 def build_project(title, text_schemes):
     document = Document() 
+    text_scheme = []
 
     for key, details in text_schemes.items():
         text_scheme = []
-        # for key, value in details:
-        det_title     = details['details'][0]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_author    = details['details'][1]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_year      = details['details'][2]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_objective = details['details'][3]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_approach  = details['details'][4]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_design    = details['details'][5]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_level     = details['details'][6]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_sample    = details['details'][7]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_tools     = details['details'][8]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_results    = details['details'][9]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_conclussions = details['details'][10]['det_value'].replace('\n', ' ').replace('\r', '')
-        
+        pdfs = dict()
+        for detail in details['details']:
+            pdfs[detail['det_name']] = detail['det_value']
+
+        # input(".........................")
         # for key, value in details:
         # FOR SCHEME
-        text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+")" ]))
-        text_scheme.append(tuple(["N", ". en su investigación titulada "]))
-        text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-        text_scheme.append(tuple(["N", ". El objetivo de estudio fue "]))
-        text_scheme.append(tuple(["N", " " + str(det_objective)]))
-        text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue de enfoque"]))
-        text_scheme.append(tuple(["N", " " + str(det_approach)]))
-        text_scheme.append(tuple(["N", ", con un diseño,"]))
-        text_scheme.append(tuple(["N", " " + str(det_design)]))
-        text_scheme.append(tuple(["N", ", de nivel,"]))
-        text_scheme.append(tuple(["N", " " + str(det_level)]))
-        text_scheme.append(tuple(["N", ", la muestra se conformó por"]))
-        text_scheme.append(tuple(["N", " " + str(det_sample)]))
-        text_scheme.append(tuple(["N", " y se aplicaron como instrumentos"]))
-        text_scheme.append(tuple(["N", " " + str(det_tools)]))
-        text_scheme.append(tuple(["N", ". Los principales resultados fueron"]))
-        text_scheme.append(tuple(["N", " " + str(det_results)]))
-        text_scheme.append(tuple(["N", ". Se concluye que"]))
-        text_scheme.append(tuple(["N", " " + str(det_conclussions)]))
+        if (pdfs['autor'] and pdfs['año']):
+            det_author    = pdfs['autor'].replace('\n', ' ').replace('\r', '')
+            det_year      = pdfs['año'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+")" ]))
+        if (pdfs['título']):
+            det_title     = pdfs['título'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ". en su investigación titulada "]))
+            text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+        if ('objetivo' in pdfs):
+            det_objective   = pdfs['objetivo'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ". El objetivo de estudio fue "]))
+            text_scheme.append(tuple(["N", " " + str(det_objective)]))
+        if ('enfoque' in pdfs):
+            det_approach  = pdfs['enfoque'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ". A nivel metodológico la investigación fue de enfoque"]))
+            text_scheme.append(tuple(["N", " " + str(det_approach)]))
+        if ('diseño' in pdfs):
+            det_design    = pdfs['diseño'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ", con un diseño,"]))
+            text_scheme.append(tuple(["N", " " + str(det_design)]))
+        if ('nivel' in pdfs):
+            det_level     = pdfs['nivel'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ", de nivel,"]))
+            text_scheme.append(tuple(["N", " " + str(det_level)]))
+        if ('muestra' in pdfs):
+            det_sample    = pdfs['muestra'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ", la muestra se conformó por"]))
+            text_scheme.append(tuple(["N", " " + str(det_sample)]))
+        if ('instrumentos' in pdfs):
+            # if (pdfs['instrumentos'] is not None):
+            det_tools     = pdfs['instrumentos'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", " y se aplicaron como instrumentos"]))
+            text_scheme.append(tuple(["N", " " + str(det_tools)]))
+        if ('resultados' in pdfs):
+            det_results    = pdfs['resultados'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ". Los principales resultados fueron"]))
+            text_scheme.append(tuple(["N", " " + str(det_results)]))
+        if ('conclusiones' in pdfs):
+            det_conclussions = pdfs['conclusiones'].replace('\n', ' ').replace('\r', '')
+            text_scheme.append(tuple(["N", ". Se concluye que"]))
+            text_scheme.append(tuple(["N", " " + str(det_conclussions)]))
 
         document.add_heading(str(int(key)+1)+".")
         p = document.add_paragraph()
@@ -219,28 +233,34 @@ def build_project(title, text_schemes):
     document.add_heading("Referencias")
     for key, details in text_schemes.items():
         text_scheme = []
-        det_title     = details['details'][0]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_author    = details['details'][1]['det_value'].replace('\n', ' ').replace('\r', '')
-        det_year      = details['details'][2]['det_value'].replace('\n', ' ').replace('\r', '')
-        down_link     = details['details'][11]['det_value'].replace('\n', ' ').replace('\r', '')
-        down_link_pag = details['details'][11]['det_npage']
-        down_page     = details['details'][12]['det_value'].replace('\n', ' ').replace('\r', '')
-        # down_page_pag = details['details'][12]['det_npage'].replace('\n', ' ').replace('\r', '')
-        # print("NPAGES", down_link_pag)
+        pdfs = dict()
+        for detail in details['details']:
+            pdfs[detail['det_name']] = detail['det_value']
+            if detail['det_name'] == 'enlace':
+                size_doc = detail['det_npage']
 
-        # Si es mayor.............................................'''''''''''''''''''''''''.........................................................
-        if (down_link_pag>40):
-            # TESIS
-            text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
-            text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-            text_scheme.append(tuple(["N", ". Obtenido de \n"]))
-            text_scheme.append(tuple(["N", '"' + str(down_link) + '"']))
-        else:
-            # REVISTAS
-            text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
-            text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-            text_scheme.append(tuple(["N", '", ' + str(down_page) + '."']))
-            text_scheme.append(tuple(["N", '" doi:DOI..."']))
+        if (pdfs['título'] and pdfs['autor'] and 'año' in pdfs):
+            det_title     = pdfs['título'].replace('\n', ' ').replace('\r', '')
+            det_author    = pdfs['autor'].replace('\n', ' ').replace('\r', '')
+            det_year      = pdfs['año'].replace('\n', ' ').replace('\r', '')
+        if ('enlace' in pdfs) and ('página' in pdfs):
+            down_link     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
+            # down_link_pag = 40 #details['details'][11]['det_npage']
+            down_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
+
+            # Si es mayor................................................................................
+            if (size_doc>40):
+                # TESIS
+                text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
+                text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+                text_scheme.append(tuple(["N", ". Obtenido de \n"]))
+                text_scheme.append(tuple(["N", '"' + str(down_link) + '"']))
+            else:
+                # REVISTAS
+                text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
+                text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
+                text_scheme.append(tuple(["N", '", ' + str(down_page) + '."']))
+                text_scheme.append(tuple(["N", '" doi:DOI..."']))
 
         p = document.add_paragraph()
         for key, value in text_scheme:
@@ -271,7 +291,6 @@ class SearchForm(Form):
 def home():
     print("__home__")
     if current_user.is_authenticated:
-        # print("user auth")
         list_projects = get_listProjects(5)
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
     else:
@@ -309,8 +328,6 @@ def update_form(id):
         list_keywords = get_listKeywords()
         list_keywordsOne = get_listKeywordsById(id)
         list_keywordsOneId = [val['key_id'] for val in list_keywordsOne]
-        print("ONE Project")
-        print(one_project)
         key_id = ""
         list_provinces = get_listProvinces(one_project[0]['pro_department'])
         list_districts = get_listDistricts(one_project[0]['pro_province'], one_project[0]['pro_department'])
@@ -419,7 +436,6 @@ def save_upload():
         if save_type == "new" :
             response_project, id = put_newProject(project)
             if response_project is True:
-                print("Proyecto registrado con éxito")
                 if keywords != None:
                     for key in keywords:
                         response_pkdetail = put_newPKdetail(id, key, current_date)
@@ -427,8 +443,6 @@ def save_upload():
             id = request.form['save_id']
             response_project = upd_projectById(id, project)
             if response_project is True:
-                print("Proyecto actualizado con éxito")
-                # print(keywords)
                 if keywords != None:
                     for key in keywords:
                         response_pkdetail = put_newPKdetail(id, key, current_date)
@@ -459,8 +473,6 @@ def add_variable():
             msg_variable = "Error en registro de variable"
         
         finally:
-            print(msg_variable)
-            print(key_id)
             list_universities = get_listUniversities()
             list_keywords = get_listKeywords()
             title = request.values.get("title")
@@ -483,7 +495,6 @@ def search_db():
             if len(keyword) > 1:
                 list_projects = get_squareProjects_ByWord(keyword)
                 num_projects = len(list_projects)
-                # print("len projects: " + str(num_projects))
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword)
     else:
         return render_template('db_form.html', keyword = "")
@@ -514,7 +525,6 @@ def paper_one_load():
                 # file.save(os.path.join(app.config["UPLOAD_PATH_UP"], filename))
                 file.save(os.path.join(app.config["SINGLE_UPLOAD"], filename))
                 file_pdf = filename
-                print("File saved")
                 if (upload == True):
                     return res
             else:
@@ -532,24 +542,20 @@ def thesis_one_load():
         # Code for One pdf
         if "filesize" in request.cookies:
             if not allowed_file_filesize(request.cookies["filesize"], app.config["MAX_CONTENT_LENGTH"]):
-                # print("Filesize exceeded maximum limit")
                 return redirect(request.url)
             file = request.files["file"]
             filesize = request.cookies.get("filesize")
 
             if file.filename == "":
-                # print("No filename")
                 return redirect(request.url)
             if int(filesize) > 0 :
                 res = make_response(jsonify({"message": f"El PDF fue cargado con éxito."}), 200)
-                # print("File uploaded")
                 upload = True
             if allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
                 # file.save(os.path.join(app.config["UPLOAD_PATH_UP"], filename))
                 file.save(os.path.join(app.config["SINGLE_UPLOAD"], filename))
                 file_pdf = filename
-                print("File saved")
                 if (upload == True):
                     return res
             else:
@@ -583,7 +589,6 @@ def thesis_mul_load():
     if request.method == "POST":
         file_pdfs = []
         pro_id = request.form.get('pro_id')
-        print("PRO_ID", pro_id)
         # Code for multiple pdfs
         if 'files[]' not in request.files:
             return redirect(request.url)
@@ -591,7 +596,6 @@ def thesis_mul_load():
         files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d/%m/%Y")
         pdfs = []
-        # fname = os.listdir(app.config['MULTIPLE_SPLIT_IMG'])
 
         files = request.files.getlist('files[]')
         
@@ -625,7 +629,6 @@ def thesis_mul_load():
 
                 if pdf_info_id:
                     pdf_ids.append(pdf_info_id)
-                    print("Splitter IMG")
                     img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
                     pdf['pdf_id'] = pdf_info_id
                     pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
@@ -677,13 +680,10 @@ def action_thesis_mul():
                 # pdf_ids.append(item[0])
             band_parcial = True
             # pdf_info_id = list(pdfs.items())[i][0]
-        # print(pdfs)
-        # print(pdf_ids)
-        # input("... enter ...")
          
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
-            document = Document() 
+            document = Document()
             print("NumPDFs Cargados", len(file_pdfs))
             # print(file_pdfs)
             if len(pdfs_remove):
@@ -691,9 +691,8 @@ def action_thesis_mul():
                 for pdf_rem in pdfs_remove :
                     if pdf_rem != "":
                         file_pdfs.remove(pdf_rem)
-                        print("PDF removido", pdf_rem)
+                        # print("PDF removido", pdf_rem)
 
-            print("NumPDFs Por Procesar", len(file_pdfs))
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
@@ -727,7 +726,6 @@ def action_thesis_mul():
                     text = ""
                     try:
                         text = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
-                        print(text)
                     except Exception as e:
                         print(e)
                         print("Error generate text")
@@ -735,8 +733,6 @@ def action_thesis_mul():
                     if text is None or text == "":
                         text = "..."
                     result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
-                    # print("Save and update")
-                    # result2 = upd_PPdetail(id, pro_id, pdf_id, text, current_date)
                     result_split = 1
                 
                 if action == "save_text":
@@ -769,8 +765,6 @@ def action_thesis_mul():
                 #         msg_pdf = "Error en registro de PDFdetail"
                     
                 #     finally:
-                #         print(msg_att)
-                #         print(msg_pdf)
                 #         result_split = 1
                 
                 if action == "remove_attribute":
@@ -784,21 +778,18 @@ def action_thesis_mul():
                         msg_pdf = "Error en eliminación de PDFdetail"
                     
                     finally:
-                        print(msg_pdf)
                         result_split = 1
 
                 # 1. SPLIT PDF
                 # print("\n------------------- START SPLIT PROCESS -------------------")
                 if action is None:
-                    # print("filename", filename)
-                    # print("Remove PDF")
+                    if band_parcial == True:
+                        pdf_info_id = list(pdfs.items())[i][0]
+                    else:
+                        pdf_info_id = pdf_ids[i]
                     # 1. Remove and split PDF
-                    # input("........")
-                    pdf_remove(fname, app.config['MULTIPLE_SPLIT_PDF'])
-                    # print("Splitter PDF")
-                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'])   # Call pdf splitter function
+                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id)   # Call pdf splitter function
                 
-                # print("result_split", result_split)
                 if result_split == 0:
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...NO se procesó")
@@ -809,14 +800,16 @@ def action_thesis_mul():
                 if result_split == 1:
                     # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
-                    if band_parcial == True:
-                        pdf_info_id = list(pdfs.items())[i][0]
-                    else:
-                        pdf_info_id = pdf_ids[i]
+                    # if band_parcial == True:
+                    #     pdf_info_id = list(pdfs.items())[i][0]
+                    # else:
+                    #     pdf_info_id = pdf_ids[i]
                     
                     # 2. Process PDF
                     # print("\n------------------ START EXTRACT PROCESS ------------------")
                     _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages)  # Call pdf process function
+                    print("TITLE")
+                    print(title_text)
                     LANGUAGE_PAGE = language
                     if len(text_pdf) > 1 :
                         now = datetime.now()
@@ -829,9 +822,6 @@ def action_thesis_mul():
                 
                 if result_valid > 0 :
                     result_save = True
-                    # print("Pages to Save")
-                    # print(pdfs[pdf_info_id])
-                    # input("......... pages ...........")
                     try:
                         _ = put_newPPdetail(pro_id, pdf_info_id, title_text, pdfs[pdf_info_id], current_date)
                     except:
@@ -941,10 +931,8 @@ def pdf_post(pdf_id):
                 if i == 0:
                     dictPage = dictVal
                     page = int(dictVal['page'])
-                # print(str(dictVal['page']), " -> ", str(dictVal['x']))
                 i += 1
                 image = cfg.FILES.GLOBAL_PATH + '/' + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
-                # print("image... ", image)
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
@@ -956,7 +944,6 @@ def pdf_post(pdf_id):
                     language = "eng"
                 try:
                     text_page = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
-                    print(text)
                 except Exception as e:
                         print(e)
                         print("Error generate text")
@@ -966,8 +953,7 @@ def pdf_post(pdf_id):
                 text = "..."
             result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, dictPage)
 
-            # Solo guardar el titulo
-            if det_attribute == 2 and result1:
+            if det_attribute == 1 and result1:
                 result2 = upd_PPdetail(det_id, pro_id, pdf_id, text, current_date)
             result_split = 1
         
@@ -999,8 +985,6 @@ def pdf_post(pdf_id):
                 msg_pdf = "Error en registro de PDFdetail ..."
             
             finally:
-                print(msg_att)
-                print(msg_pdf)
                 result_split = 1
         
         if action == "remove_attribute":
@@ -1059,7 +1043,6 @@ def action_thesis_search():
         
         if len(keyword) > 1:
             pdfs = get_listThesisByWord(keyword)
-            print("len pdfs: " + str(len(pdfs)))
         
     return render_template('thesis_search.html', _pdfs = pdfs)
 
@@ -1087,12 +1070,9 @@ def paper_mul_load():
         pro_id = request.form.get('pro_id')
         # Code for multiple pdfs
         if 'files[]' not in request.files:
-            print('No file part')
             return redirect(request.url)
 
         files = request.files.getlist('files[]')
-        print("files...")
-        print(files)
 
         for file in files:
             file_pdfs.append(file.filename)
