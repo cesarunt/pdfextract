@@ -74,69 +74,67 @@ def validate_path(path):
 
     return new_path
 
-def build_document_(title, text_pdf, language):
-    document.add_heading(title)
-    keywords = "sample"
-    texts = []
+# def build_document_(title, text_pdf, language):
+#     document.add_heading(title)
+#     keywords = "sample"
+#     texts = []
 
-    # add a paragraphs
-    if language != '' :
-        for key, value in text_pdf:
-            p = document.add_paragraph()
+#     # add a paragraphs
+#     if language != '' :
+#         for key, value in text_pdf:
+#             p = document.add_paragraph()
 
-            patt = re.search(rf"\b{keywords}\b", value, re.IGNORECASE)
-            if patt != None:
-                text_1 = value[:patt.start(0)]
-                text_2 = keywords
-                text_3 = value[patt.end(0):]
-                texts = [tuple(["N", text_1]), tuple(["I", text_2]), tuple(["N", text_3])]
-                band = True
-            else:
-                texts = [tuple([key, value])]
+#             patt = re.search(rf"\b{keywords}\b", value, re.IGNORECASE)
+#             if patt != None:
+#                 text_1 = value[:patt.start(0)]
+#                 text_2 = keywords
+#                 text_3 = value[patt.end(0):]
+#                 texts = [tuple(["N", text_1]), tuple(["I", text_2]), tuple(["N", text_3])]
+#                 band = True
+#             else:
+#                 texts = [tuple([key, value])]
 
-            for key_text, value_text in texts :
-                # line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-                try:
-                    # p = document.add_paragraph(str(value.encode('utf-8').decode("utf-8")))
-                    line = p.add_run(str(value_text.encode('utf-8').decode("utf-8")))
-                except:
-                    delete_paragraph(p)
-                    p = document.add_paragraph()
-                    html = value_text.encode("ascii", "xmlcharrefreplace").decode("utf-8")
-                    html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-                    html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-                    html = ILLEGAL_XML_CHARS_RE.sub("", html)
-                    # p = document.add_paragraph(str(html.encode('utf-8').decode("utf-8")))
-                    line = p.add_run(str(html.encode('utf-8').decode("utf-8")))
+#             for key_text, value_text in texts :
+#                 # line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+#                 try:
+#                     line = p.add_run(str(value_text.encode('utf-8').decode("utf-8")))
+#                 except:
+#                     delete_paragraph(p)
+#                     p = document.add_paragraph()
+#                     html = value_text.encode("ascii", "xmlcharrefreplace").decode("utf-8")
+#                     html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+#                     html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+#                     html = ILLEGAL_XML_CHARS_RE.sub("", html)
+#                     line = p.add_run(str(html.encode('utf-8').decode("utf-8")))
 
-                if key_text == "B": line.bold = True
-                if key_text == "I": line.bold = True; line.italic = True; line.font.size = Pt(12) #line.font.color.rgb = RGBColor(0x22, 0x8b, 0x22)
+#                 if key_text == "B": line.bold = True
+#                 if key_text == "I": line.bold = True; line.italic = True; line.font.size = Pt(12) #line.font.color.rgb = RGBColor(0x22, 0x8b, 0x22)
             
-            texts = []
+#             texts = []
 
-    return document
+#     return document
 
-def build_document(title, text_pdf, language):
-    # document = Document() 
-    document.add_heading(title)
+# def build_document(title, text_pdf, language):
+#     # document = Document() 
+#     document.add_heading(title)
 
-    # add a paragraphs
-    if language != '' :
-        for key, value in text_pdf:
-            p = document.add_paragraph()
-            try:
-                line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-            except:
-                delete_paragraph(p)
-                p = document.add_paragraph()
-                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
-                html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-                html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-                html = ILLEGAL_XML_CHARS_RE.sub("", html)
-                line = p.add_run(str(html))
-            if key == "B": line.bold = True
+#     # add a paragraphs
+#     if language != '' :
+#         for key, value in text_pdf:
+#             p = document.add_paragraph()
+#             try:
+#                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
+#             except:
+#                 delete_paragraph(p)
+#                 p = document.add_paragraph()
+#                 html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
+#                 html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
+#                 html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
+#                 html = ILLEGAL_XML_CHARS_RE.sub("", html)
+#                 line = p.add_run(str(html))
+#             if key == "B": line.bold = True
             
-    return document
+#     return document
 
 def build_pdf(title, text_scheme):
     document = Document() 
@@ -169,7 +167,6 @@ def build_project(title, text_schemes):
         for detail in details['details']:
             pdfs[detail['det_name']] = detail['det_value']
 
-        # input(".........................")
         # for key, value in details:
         # FOR SCHEME
         if (pdfs['autor'] and pdfs['año']):
@@ -230,7 +227,7 @@ def build_project(title, text_schemes):
             if key == "K": line.italic = True
         p.add_run("\n")
     
-    document.add_heading("Referencias")
+    document.add_heading("REFERENCIAS")
     for key, details in text_schemes.items():
         text_scheme = []
         pdfs = dict()
@@ -289,12 +286,10 @@ class SearchForm(Form):
 # Home
 @main.route('/home')
 def home():
-    print("__home__")
     if current_user.is_authenticated:
         list_projects = get_listProjects(5)
         return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
     else:
-        print("user none")
         return render_template('login.html')
 
 @main.route('/province/<department>')
@@ -355,8 +350,6 @@ def upload_home(id):
         return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=id)
     else:
         return render_template('upload_home.html')
-
-# Papers
 
 # Thesis
 @main.route('/thesis_one')
@@ -531,7 +524,6 @@ def paper_one_load():
                 print("That file extension is not allowed")
                 return redirect(request.url)
 
-
 # --------------------------------------------------------
 @main.route('/thesis_one', methods=['POST'])
 def thesis_one_load():
@@ -596,7 +588,6 @@ def thesis_mul_load():
         files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d/%m/%Y")
         pdfs = []
-
         files = request.files.getlist('files[]')
         
         # 1. Remove and split IMG
@@ -646,7 +637,7 @@ def thesis_mul_load():
 def action_thesis_mul():
     global file_pdfs
     global pdf_ids
-    text_pdf = []
+    # text_pdf = []
     pdfs = {}
 
     if request.method == "POST":
@@ -677,21 +668,17 @@ def action_thesis_mul():
                     temp_page = item[0]
                 pages.append(int(item[1]))
                 pdfs[item[0]] = pages
-                # pdf_ids.append(item[0])
             band_parcial = True
-            # pdf_info_id = list(pdfs.items())[i][0]
          
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
             document = Document()
             print("NumPDFs Cargados", len(file_pdfs))
-            # print(file_pdfs)
             if len(pdfs_remove):
                 pdfs_remove = pdfs_remove.split("/")
                 for pdf_rem in pdfs_remove :
                     if pdf_rem != "":
                         file_pdfs.remove(pdf_rem)
-                        # print("PDF removido", pdf_rem)
 
             i = 0
             for filename in file_pdfs :
@@ -756,7 +743,6 @@ def action_thesis_mul():
                 #             msg_att = "Atributo registrado con éxito"
                 #     except:
                 #         msg_att = "Error en registro del atributo"
-                    
                 #     try:
                 #         response_pdf = put_newPDFdetail(pdf_id, id)
                 #         if response_pdf is True:
@@ -781,7 +767,6 @@ def action_thesis_mul():
                         result_split = 1
 
                 # 1. SPLIT PDF
-                # print("\n------------------- START SPLIT PROCESS -------------------")
                 if action is None:
                     if band_parcial == True:
                         pdf_info_id = list(pdfs.items())[i][0]
@@ -796,29 +781,21 @@ def action_thesis_mul():
                 if result_split == 2:
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...supera el Nro páginas")
-                
                 if result_split == 1:
                     # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
-                    # if band_parcial == True:
-                    #     pdf_info_id = list(pdfs.items())[i][0]
-                    # else:
-                    #     pdf_info_id = pdf_ids[i]
-                    
                     # 2. Process PDF
-                    # print("\n------------------ START EXTRACT PROCESS ------------------")
-                    _, text_pdf, language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages)  # Call pdf process function
-                    print("TITLE")
-                    print(title_text)
+                    language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages)  # Call pdf process function
                     LANGUAGE_PAGE = language
-                    if len(text_pdf) > 1 :
-                        now = datetime.now()
-                        document = build_document(filename, text_pdf, language)
-                        file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-                        document.save(file_save)
-                        result_valid += 1
-                        result_file_text = "Antecedente Múltiple"
-                        result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+                    result_valid = 1
+                    # if len(text_pdf) > 1 :
+                    #     now = datetime.now()
+                    #     document = build_document(filename, text_pdf, language)
+                    #     file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+                    #     document.save(file_save)
+                    #     result_valid += 1
+                    #     result_file_text = "Antecedente Múltiple"
+                    #     result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                 
                 if result_valid > 0 :
                     result_save = True
@@ -831,16 +808,13 @@ def action_thesis_mul():
                     result_file_text = "No fue posible procesar"
                 if len(result_invalid_process) > 0 :
                     result_invalid_text = (',  \n'.join(result_invalid_process))
-                
                 i = i + 1
             
-            # Save results on database
-            # Get data from project_info
+            # Save results on database, Get data from project_info
             project = get_projectById(pro_id)
             n_process = int(project[0]["pro_n_process"]) + 1
 
-            # Put data on pro_pdf_details
-            # Update data on project_info
+            # Put data on pro_pdf_details, Update data on project_info
             saveDB = upd_projectProcess(pro_id, result_valid, n_process)
             if saveDB is True:
                 print("Se actualizó con éxito project_info")
@@ -883,7 +857,6 @@ def project_pdf(pdf_id):
         pdfs = get_projectPDFById(pro_id)
         pdf = get_pdfDetailByIds(pro_id, pdf_id)
         """Verificar pdf_details, encontrados y no encontradps"""
-        # list_npages = list(range(1, int(pdf['npages']+1)))
         pages_zero = pdf['pages'].replace('[','').replace(']','').replace(' ','')
         pages_list = pages_zero.split(',')
 
@@ -903,7 +876,6 @@ def project_pdf(pdf_id):
                 }
         pdf['pdf_path'] = pdf_path
         # pdfs, for the left panel
-        # pdf, for the content page
         return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
     else:
         return render_template('project_pdfs.html')
@@ -912,7 +884,7 @@ def project_pdf(pdf_id):
 @main.route("/<pdf_id>", methods=["POST"])
 def pdf_post(pdf_id):
     global file_pdfs
-    text_pdf = []
+    # text_pdf = []
     text_page = ""
 
     if request.method == "POST":
@@ -926,7 +898,6 @@ def pdf_post(pdf_id):
             i = 0
             text = ""
             dictPage = None
-            # page = int(request.values.get("page"))
             for dictVal in dictCanvas:
                 if i == 0:
                     dictPage = dictVal
@@ -1040,7 +1011,6 @@ def action_thesis_search():
 
     if request.method == "POST":
         keyword = request.values.get("keyword") 
-        
         if len(keyword) > 1:
             pdfs = get_listThesisByWord(keyword)
         
@@ -1129,8 +1099,6 @@ def save_pdf_mul():
         down_tools       = request.form.get('down_tools')
         down_results     = request.form.get('down_results')
         down_conclussions= request.form.get('down_conclussions')
-        # down_link        = request.form.get('down_link')
-        # down_page        = request.form.get('down_page')
 
         # FOR SCHEME
         text_scheme.append(tuple(["N", str(down_author) + " ("+str(down_year)+")" ]))
@@ -1176,7 +1144,6 @@ def save_pro_mul():
             file_save = app.config['MULTIPLE_OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-        
     return send_file(result_pdf, as_attachment=True)
 
 

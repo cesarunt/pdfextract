@@ -14,9 +14,9 @@ from utils.config import PATTERN_METHOD_EN, cfg
 # def clear_report(files_output):
 #     open(files_output+"/background.txt", "w").close()
 
-def addText_background(type, line):
-    if line != "":
-        text_pdf.append(tuple([type, line]))
+# def addText_background(type, line):
+#     if line != "":
+#         text_pdf.append(tuple([type, line]))
 
 def addText_view(line, att_id, page):
     try:    
@@ -35,15 +35,15 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     fname = sorted(precedes)
     length = len(fname)
 
-    global text_pdf
+    # global text_pdf
     global pdf_id
     global attributes
 
     pdf_id = pdf_info_id
     print("pdf_id", pdf_id)
     attributes = []
-    text_pdf = []
-    is_article = True
+    # text_pdf = []
+    # is_article = True
 
     page = 0
     language = "es"
@@ -113,9 +113,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     # PATTERN_OBJE = []
     level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
 
-    print("PDFs")
-    print(pdfs)
-
     if len(pdfs)>0:
         list_pages = pdfs[str(pdf_id)]
         length = len(list_pages)
@@ -123,24 +120,16 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
         list_pages = range(length)
     
     np = 0
-    print("LIST PAGES")
-    print(list_pages)
     for page in list_pages: #Repeat each operation for each document.
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================
         # - Extract text with functions PDFminer
-        # output_filename = files_split+'/'+pdf_info_id+"page"+'_{}.pdf'.format(page+1)
         file_page = files_split+'/'+pdf_info_id+'page'+'_{}.pdf'.format(page+1)
-        print("File Page")
-        print(file_page)
         text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
         text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
         # print(text_html)
         # 2. GET THE LANGUAGE
-        # print("text_html")
-        # print(text_html)
-        # input("...")
         # ============================================================================================
 
         if language_band == False:
@@ -490,63 +479,7 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
                 
             addText_view("http://", 12, pdf_npages)
             addText_view("_", 13, 1)
-            
-            # RESUMEN ...........
-            resumen_text_list = resumen_text.split("\n")
-            for item in resumen_text_list :
-                if 'ISSN' in item or 'http' in item : resumen_text_list.remove(item)
-            resumen_text_list = [x for x in resumen_text_list if x]
-
-            # print("\nRESUMEN")
-            resumen_text = (' '.join(resumen_text_list))
-
-            addText_background("B", "\nRESUMEN")
-            resumen_text = resumen_text.replace("\n\n", "#")
-            resumen_text = resumen_text.replace("\n", " ")
-            resumen_text = resumen_text.replace("#", "\n\n")
-            addText_background("N", resumen_text)
-            
-            # print("AUTORES ...")
-            article_print = ""
-            if article_band : article_print = "Revista"
-            addText_background("B", "\nANTECEDENTES") 
-            addText_background("N", authors_text  + ' ('+str(year)+') en su estudio titulado "' + title_text.replace('\n', ' ') + '". (Articulo cientifico - '+ article_print +'). Objetivo:' + objective)
-
-            # METODOLOGIA ................
-            addText_background("B", "\nMETODOLOGIA")
-
-            if methodology_text=="":
-                addText_background("N", "No existe información específica sobre Metodología o Métodos.")
-            else:
-                addText_background("N", methodology_text)
-                        
-            addText_background("N", "Muestra: ")
-            addText_background("N", samples)
-
-            addText_background("B", "\nRESULTADOS")
-            result_text = list(filter(lambda x : x != '', result_text.split('\n\n')))
-            # result_text = result_text.replace("\n", "")
-            # result_text = result_text.replace(".  ", ".\n\n")
-            if result_text=="":
-                addText_background("N", "No existe información específica sobre Resultados.")
-            else:
-                addText_background("N", result_text)
-                
-            addText_background("B", "\nCONCLUSIONES")
-            if conclusion_text=="":
-                addText_background("N", "No existe información específica sobre Conclusiones.")
-            else:
-                addText_background("N", conclusion_text)
-            
-            # Create the REFERENCE
-            # doi_print = ""
-            # if doi_band :   doi_print = doi_text
-            # elif URL_band : doi_print = 'Obtenido de: ' + URL_text
-            # reference_text = authors_text + ' ('+str(year)+'). ' + title_text.capitalize().replace('\n', ' ') + '. ' + article_text + '. ' + doi_print
-            # addText_background("B", '\nREFERENCIAS')
-            # addText_background("N", reference_text)
-            # print('text_pdf', text_pdf)
         
         np += 1
 
-    return is_article, text_pdf, language, title_text
+    return language, title_text

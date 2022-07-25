@@ -166,18 +166,17 @@
                                         {% else %}
                                         <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
                                         {% endif %}
-                                        {% if result_save %}
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%;">{{ result_file_text }}</label>
-                                        {% else %}
-                                        <label id="file_PDF_label" style="margin: 0.5rem 0; width: 100%; font-size: small; color: darkred;">{{ result_invalid_text }}</label>
-                                        {% endif %}
                                     </div>
                                     {% if result_save %}
+                                    
                                     <div class="mb-3" style="margin-bottom: 0 !important;">
-                                        <form method="POST" action="save_thesis_mul" enctype="multipart/form-data">
-                                            <input type="hidden" name="down_image" id="down_image" value="{{ result_file_down }}" />
-                                            <p style="text-align: center; margin: 5px 0 25px;">
-                                                <button class="btn btn-secondary" id="saveImage_btn" type="submit" style="font-size: medium;">Guardar</button>
+                                        <form method="POST" action="save_pro_mul" enctype="multipart/form-data">
+                                            <input type="hidden" name="down_pro" id="down_pro" value="{{ pro_id }}" />
+                                            <p style="text-align: center; margin: 15px 0; color: #222;">
+                                                <button class="btn btn-primary" id="save_pro" type="submit" style="font-size: medium;">
+                                                    &nbsp;Descargar Proyecto&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
+                                                </button><br>
+                                                <!-- <span>Descargar Proyecto</span> -->
                                             </p>
                                             <p style="text-align: center; margin: 0 0 15px 0;">
                                                 <span>Los PDFs fueron procesados correctamente, si desea actualizarlos. Ingrese aqui </span>
@@ -193,11 +192,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 text-center" style="font-size: small !important;">
+            <!-- <div class="col-md-12 text-center" style="font-size: small !important;">
                 <a href="{{ url_for('main.project_list') }}">
                     <button type="button" class="btn btn-primary" style="margin: 1rem;">Ver Proyectos</button>
                 </a>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
