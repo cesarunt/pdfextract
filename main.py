@@ -74,68 +74,6 @@ def validate_path(path):
 
     return new_path
 
-# def build_document_(title, text_pdf, language):
-#     document.add_heading(title)
-#     keywords = "sample"
-#     texts = []
-
-#     # add a paragraphs
-#     if language != '' :
-#         for key, value in text_pdf:
-#             p = document.add_paragraph()
-
-#             patt = re.search(rf"\b{keywords}\b", value, re.IGNORECASE)
-#             if patt != None:
-#                 text_1 = value[:patt.start(0)]
-#                 text_2 = keywords
-#                 text_3 = value[patt.end(0):]
-#                 texts = [tuple(["N", text_1]), tuple(["I", text_2]), tuple(["N", text_3])]
-#                 band = True
-#             else:
-#                 texts = [tuple([key, value])]
-
-#             for key_text, value_text in texts :
-#                 # line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-#                 try:
-#                     line = p.add_run(str(value_text.encode('utf-8').decode("utf-8")))
-#                 except:
-#                     delete_paragraph(p)
-#                     p = document.add_paragraph()
-#                     html = value_text.encode("ascii", "xmlcharrefreplace").decode("utf-8")
-#                     html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-#                     html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-#                     html = ILLEGAL_XML_CHARS_RE.sub("", html)
-#                     line = p.add_run(str(html.encode('utf-8').decode("utf-8")))
-
-#                 if key_text == "B": line.bold = True
-#                 if key_text == "I": line.bold = True; line.italic = True; line.font.size = Pt(12) #line.font.color.rgb = RGBColor(0x22, 0x8b, 0x22)
-            
-#             texts = []
-
-#     return document
-
-# def build_document(title, text_pdf, language):
-#     # document = Document() 
-#     document.add_heading(title)
-
-#     # add a paragraphs
-#     if language != '' :
-#         for key, value in text_pdf:
-#             p = document.add_paragraph()
-#             try:
-#                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-#             except:
-#                 delete_paragraph(p)
-#                 p = document.add_paragraph()
-#                 html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
-#                 html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-#                 html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-#                 html = ILLEGAL_XML_CHARS_RE.sub("", html)
-#                 line = p.add_run(str(html))
-#             if key == "B": line.bold = True
-            
-#     return document
-
 def build_pdf(title, text_scheme):
     document = Document() 
     document.add_heading(title)
@@ -148,7 +86,8 @@ def build_pdf(title, text_scheme):
         except NameError:
             pass
         text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
-        line = p.add_run(str(text))
+        html = ILLEGAL_XML_CHARS_RE.sub("", text)
+        line = p.add_run(str(html))
         """
         try:
             line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
@@ -222,17 +161,14 @@ def build_project(title, text_schemes):
         document.add_heading(str(int(key)+1)+".")
         p = document.add_paragraph()
         for key, value in text_scheme:
-            value = value.replace('\n', ' ').replace('\r', '')
+            text = value.replace('\n', ' ').replace('\r', '')
             try:
-                line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-            except:
-                delete_paragraph(p)
-                p = document.add_paragraph()
-                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
-                html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-                html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-                html = ILLEGAL_XML_CHARS_RE.sub("", html)
-                line = p.add_run(str(html))
+                text = unicode(text, 'utf-8')
+            except NameError:
+                pass
+            text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+            html = ILLEGAL_XML_CHARS_RE.sub("", text)
+            line = p.add_run(str(html))
             if key == "K": line.italic = True
         p.add_run("\n")
     
@@ -270,17 +206,14 @@ def build_project(title, text_schemes):
 
         p = document.add_paragraph()
         for key, value in text_scheme:
-            value = value.replace('\n', ' ').replace('\r', '')
+            text = value.replace('\n', ' ').replace('\r', '')
             try:
-                line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
-            except:
-                delete_paragraph(p)
-                p = document.add_paragraph()
-                html = str(value).encode("ascii", "xmlcharrefreplace").decode("utf-8")
-                html = re.sub(r"&#(\d+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0)), html)
-                html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
-                html = ILLEGAL_XML_CHARS_RE.sub("", html)
-                line = p.add_run(str(html))
+                text = unicode(text, 'utf-8')
+            except NameError:
+                pass
+            text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+            html = ILLEGAL_XML_CHARS_RE.sub("", text)
+            line = p.add_run(str(html))
             if key == "K": line.italic = True
             if key == "L": line.color = "#CB7825"
             
