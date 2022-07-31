@@ -12,7 +12,7 @@ from utils.sqlite_tools import *
 from __init__ import create_app, db
 
 import cv2
-import pytesseract
+import pytesseract, unicodedata
 from docx import Document
 from docx.shared import Pt 
 from fold_to_ascii import fold
@@ -142,7 +142,14 @@ def build_pdf(title, text_scheme):
 
     p = document.add_paragraph()
     for key, value in text_scheme:
-        value = value.replace('\n', ' ').replace('\r', '')
+        text = value.replace('\n', ' ').replace('\r', '')
+        try:
+            text = unicode(text, 'utf-8')
+        except NameError:
+            pass
+        text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+        line = p.add_run(str(text))
+        """
         try:
             line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
         except:
@@ -153,6 +160,7 @@ def build_pdf(title, text_scheme):
             html = re.sub(r"&#[xX]([0-9a-fA-F]+);?", lambda c: strip_illegal_xml_characters(c.group(1), c.group(0), base=16), html)
             html = ILLEGAL_XML_CHARS_RE.sub("", html)
             line = p.add_run(str(html))
+        """
         if key == "K": line.italic = True
             
     return document
@@ -214,6 +222,7 @@ def build_project(title, text_schemes):
         document.add_heading(str(int(key)+1)+".")
         p = document.add_paragraph()
         for key, value in text_scheme:
+            value = value.replace('\n', ' ').replace('\r', '')
             try:
                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             except:
@@ -261,6 +270,7 @@ def build_project(title, text_schemes):
 
         p = document.add_paragraph()
         for key, value in text_scheme:
+            value = value.replace('\n', ' ').replace('\r', '')
             try:
                 line = p.add_run(str(value.encode('utf-8').decode("utf-8")))
             except:
