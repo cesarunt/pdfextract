@@ -115,7 +115,7 @@
                                         </div>
                                         <div class="mb-3" style="margin-bottom: 0 !important;">
                                             <form method="POST" action="save_pdf_mul" enctype="multipart/form-data">
-                                                <input type="hidden" name="down_title" id="down_title" value="" />
+                                                <!-- <input type="hidden" name="down_title" id="down_title" value="" />
                                                 <input type="hidden" name="down_author" id="down_author" value="" />
                                                 <input type="hidden" name="down_year" id="down_year" value="" />
                                                 <input type="hidden" name="down_objective" id="down_objective" value="" />
@@ -127,8 +127,9 @@
                                                 <input type="hidden" name="down_results" id="down_results" value="" />
                                                 <input type="hidden" name="down_conclussions" id="down_conclussions" value="" />
                                                 <input type="hidden" name="down_link" id="down_link" value="" />
-                                                <input type="hidden" name="down_page" id="down_page" value="" />
+                                                <input type="hidden" name="down_page" id="down_page" value="" /> -->
                                                 <input type="hidden" name="down_pdf" id="down_pdf" value="{{ pdf.id }}" />
+                                                <input type="hidden" name="down_pro" id="down_pro" value="{{ project.pro_id }}" />
                                                 <p style="text-align: center; margin: 25px 0;">
                                                     <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;">
                                                         &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;

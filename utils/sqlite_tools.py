@@ -40,12 +40,11 @@ def get_pdfsByProId(cursor, tablename, pro_id):
             """
     cursor.execute(query)
     records = cursor.fetchall()
-
-    pdf_ids = list(ids)
+    pdf_ids = tuple()
     for record in records:
-        pdf_ids.append(record[0])
-        
-    return records, tuple(pdf_ids)
+        pdf_ids = pdf_ids + (record[0], 0)
+
+    return records, pdf_ids
 
 def get_col_names(cursor, tablename):
     """Get column names of a table, given its name and a cursor
@@ -840,6 +839,10 @@ def get_pdfDetailByProId(pro_id):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         pdf_records, pdf_ids = get_pdfsByProId(cursor, 'pro_pdf_details', pro_id)
+        # pdf_ids = tuple(i for i in pdf_ids)
+        print("get_pdfDetailByProId")
+        print(pdf_records)
+        print(pdf_ids)
         # print("Connected to SQLite")
         query = f"""
                     SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
@@ -847,7 +850,7 @@ def get_pdfDetailByProId(pro_id):
                     WHERE  b.det_info IN {pdf_ids} and b.det_visible = 1
                     ORDER BY b.det_id ASC
                 """ 
-        # print('pdf_details', query)
+        print('pdf_details', query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
