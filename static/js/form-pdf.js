@@ -129,7 +129,7 @@ function clicPDFProgressMul() {
 // Function to Process Part
 function clicProcessPart() {
   // Change value process hidden
-  document.getElementById("process").value = '0';
+  document.getElementById("process").value = '1';
 }
 
 // Function to upload file ANALYTIC

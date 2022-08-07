@@ -481,8 +481,8 @@ def report():
 def save_upload():
     id = 0
     keywords = ""
-    msg_project = ""
-    msg_pkdetail = ""
+    # msg_project = ""
+    # msg_pkdetail = ""
     if request.method == 'POST':
         current_date = date.today().strftime("%d/%m/%Y")
         try:
@@ -721,8 +721,9 @@ def thesis_mul_load():
         print("PDFs: ", pdfs)
 
         if (upload == True):
+            one_project = get_projectById(pro_id)
             print('File(s) successfully uploaded')
-            return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, pro_id=pro_id)
+            return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, project=one_project[0], pro_id=pro_id)
 
 # 
 # FUNCTION TO PROCESS PDF 
@@ -731,7 +732,6 @@ def thesis_mul_load():
 def action_thesis_mul():
     global file_pdfs
     global pdf_ids
-    # text_pdf = []
     pdfs = {}
 
     if request.method == "POST":
@@ -750,10 +750,13 @@ def action_thesis_mul():
         
         pro_id = request.form.get('pro_id')
         process = request.form.get('process')
+        print("process", process)
         _pages = request.form.getlist('page')
+        print("_pages", _pages)
+        print("len _pages", len(_pages))
         pdfs_remove = request.form.get('pdfs_remove')
 
-        if process == '0' and len(_pages) > 0:
+        if process == '1' and len(_pages) > 0:
             temp_page = ""
             for _page in _pages:
                 item = _page.split("_")
@@ -763,7 +766,8 @@ def action_thesis_mul():
                 pages.append(int(item[1]))
                 pdfs[item[0]] = pages
             band_parcial = True
-         
+        
+        print("pdfs", pdfs)
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
             document = Document()
@@ -777,7 +781,7 @@ def action_thesis_mul():
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
-                fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
+                # fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
@@ -830,22 +834,6 @@ def action_thesis_mul():
                 # if action == "save_attribute":
                 #     current_date = date.today().strftime("%d/%m/%Y")
                 #     att_value =  request.values.get("new_att")
-
-                #     try:
-                #         response_att, id = put_newPDFattribute(att_value, current_date)
-                #         if response_att is True:
-                #             msg_att = "Atributo registrado con éxito"
-                #     except:
-                #         msg_att = "Error en registro del atributo"
-                #     try:
-                #         response_pdf = put_newPDFdetail(pdf_id, id)
-                #         if response_pdf is True:
-                #             msg_pdf = "PDF detail registrado con éxito"
-                #     except:
-                #         msg_pdf = "Error en registro de PDFdetail"
-                    
-                #     finally:
-                #         result_split = 1
                 
                 if action == "remove_attribute":
                     det_id = int(request.values.get("det_id"))
@@ -893,6 +881,8 @@ def action_thesis_mul():
                 
                 if result_valid > 0 :
                     result_save = True
+                    print("pdf_info_id", pdf_info_id)
+                    print("pdfs[pdf_info_id]", pdfs[pdf_info_id])
                     try:
                         _ = put_newPPdetail(pro_id, pdf_info_id, title_text, pdfs[pdf_info_id], current_date)
                     except:
@@ -916,7 +906,7 @@ def action_thesis_mul():
         else:
             result_file_text = "El servidor está procesando, espere un momento."
     
-    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, pro_id=pro_id)
+    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, project=project[0], pro_id=pro_id)
 
 """
     PROJECT PDF 
@@ -1034,9 +1024,11 @@ def pdf_post(pdf_id):
         if action == "save_attribute":
             current_date = date.today().strftime("%d/%m/%Y")
             att_value =  request.values.get("new_att")
+            print("att_value", att_value)
+            att_type = "A"
 
             try:
-                response_att, id = put_newPDFattribute(att_value, current_date)
+                response_att, id = put_newPDFattribute(att_value, att_type, current_date)
                 if response_att is True:
                     msg_att = "Atributo registrado con éxito"
             except:

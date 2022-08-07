@@ -106,8 +106,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     conclusion_title = ""
 
     result_res = False
-    listQuan = []
-    listQual = []
     pagelines_list = []
 
     # PATTERN_OBJE = []
@@ -117,14 +115,16 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
         list_pages = pdfs[str(pdf_id)]
         length = len(list_pages)
     else:
-        list_pages = range(length)
+        # list_pages = range(length)
+        list_pages = range(pdf_npages)
     
+    # print("list_pages", len(list_pages))
     np = 0
     for page in list_pages: #Repeat each operation for each document.
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================
         # - Extract text with functions PDFminer
-        file_page = files_split+'/'+pdf_info_id+'page'+'_{}.pdf'.format(page+1)
+        file_page = files_split+'/'+str(pdf_info_id)+'page'+'_{}.pdf'.format(page+1)
         text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
         text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text

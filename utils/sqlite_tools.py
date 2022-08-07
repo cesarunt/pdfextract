@@ -441,7 +441,6 @@ def get_projectById(id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     SELECT a.pro_id, a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
@@ -630,18 +629,16 @@ def get_userById(id):
             # print("The SQLite connection is closed")
         return user
 
-def put_newPDFattribute(name, current_date):
+def put_newPDFattribute(name, type, current_date):
     table_name = 'pdf_attributes'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (att_name, att_fecha) 
-                    VALUES ("{name} ", "{current_date}")
+                    INSERT INTO "{table_name}" (att_name, att_type, att_fecha) 
+                    VALUES ("{name} ", "{type}", "{current_date}")
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -652,7 +649,6 @@ def put_newPDFattribute(name, current_date):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            # print("The SQLite connection is closed")
         
         return result, id
 
@@ -662,12 +658,10 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage, det_visible)
                     VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}", "{det_visible}")
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -677,7 +671,6 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            # print("The SQLite connection is closed")
         
         return result
 
@@ -688,12 +681,10 @@ def del_itemPDFdetail(det_id):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET det_visible=0
                     WHERE det_id = {det_id}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -703,28 +694,23 @@ def del_itemPDFdetail(det_id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            # print("The SQLite connection is closed")
         
         return result
 
 # ----------------------------------- SAVE AFTER PROCESS -----------------------------------
 def put_newPDF(pdf=dict()):
     table_name = 'pdf_info'
-    result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pdf_name, pdf_npages, pdf_size, pdf_created) 
                     VALUES ("{pdf['name']} ", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
         sqliteConnection.commit()
-        result = True
     except sqlite3.Error as error:
         print("Failed to insert data from sqlite table", error)
     finally:
@@ -740,12 +726,10 @@ def put_newPPdetail(id, pdf, name, pages, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_pages, pro_pdf_created)
                     VALUES ("{id} ", "{pdf}", "{name}", "{pages}", "{current_date}")
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()

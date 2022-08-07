@@ -10,9 +10,9 @@
                 <div class="card">
                     <h6 class="card-header">Extraer de información de PDFs</h6>
                     <div class="card-body">
-                        {% if project %}
+                        <!-- {% if project %}
                         <h5 class="card-title-info">{{ project.pro_title}} </h5>
-                        {% endif %}
+                        {% endif %} -->
                         <!-- <form class=""> -->
                             {% if not result_file_text %}
                             <div class="row">
@@ -24,6 +24,7 @@
                                             <label id="files_label" style="margin: 0.5rem 0; width: 100%;">Seleccionar PDFs</label><br>
                                             <input type="file" class="form-control" id="file_pdf" name="files[]" multiple="true" autocomplete="off" required>
                                             <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" />
+                                            <input type="hidden" name="process" id="process" value="0" />
                                             <div class="line"></div>
                                             <button class="btn btn-secondary" id="progressPDF_btn" onclick="clicPDFProgressMul()" type="submit">
                                                 <i class="fas fa-file-upload"></i> &nbsp;Cargar PDFs
@@ -57,9 +58,19 @@
                                                     <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
                                                         {% for pdf in pdfs %}
                                                         <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
-                                                            <div style="font-size: smaller;">
-                                                                <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="allpage_{{pdf.pdf_id}}" value="" onclick="checkAll(this, '{{pdf.pdf_id}}')">&nbsp;Seleccionar todo&nbsp;
+                                                            <div class="col-sm-12" style="font-size: smaller; display: inline-flex;">
+                                                                <div class="col-sm-6 col-md-6">
+                                                                    <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="allpage_{{pdf.pdf_id}}" value="" onclick="checkAll(this, '{{pdf.pdf_id}}')">&nbsp;Seleccionar todas las páginas&nbsp;
+                                                                </div>
+                                                                <div class="col-sm-6 col-md-6">
+                                                                    <input class="form-check-input" type="radio" name="radios_{{pdf.pdf_id}}" id="radio1" checked>
+                                                                    <label class="form-check-label" for="radio1">Antecedentes</label>
+                                                                    &nbsp;&nbsp;
+                                                                    <input class="form-check-input" type="radio" name="radios_{{pdf.pdf_id}}" id="radio2">
+                                                                    <label class="form-check-label" for="radio2">Marco Teórico</label>
+                                                                </div>
                                                             </div>
+                                                            <hr style="margin:10px 0;">
                                                             <div class="col-sm-12" id="page_{{pdf.pdf_id}}_tab">
                                                                 {% for i in range(pdf.npages) %}
                                                                 <div class="form-check form-check-inline" style="padding-left: 0; margin-right: 2px; font-size:small; color: #666;">
@@ -72,12 +83,12 @@
                                                                         <span id="popup" class="fa-fw select-all fas"></span>
                                                                     </button>
                                                                     <div style="margin: 0 15px;">
-                                                                    {% if i==0 or i==1 %}
+                                                                        {% if i==0 or i==1 %}
                                                                         <input class="form-check-input" style="margin-left: 0;" type="checkbox" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}" checked disabled>&nbsp;Pag. {{i+1}}&nbsp;
                                                                         <input class="form-check-input" style="margin-left: 0;" type="hidden" name="page" value="{{pdf.pdf_id}}_{{i}}">
-                                                                    {% else %}
+                                                                        {% else %}
                                                                         <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="page" id="page_{{pdf.pdf_id}}_{{i}}" value="{{pdf.pdf_id}}_{{i}}">&nbsp;Pag. {{i+1}}&nbsp;
-                                                                    {% endif %}
+                                                                        {% endif %}
                                                                     </div>
                                                                     <!-- Modal -->
                                                                     <div class="modal fade" id="exampleModal_{{pdf.pdf_id}}_{{i}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
