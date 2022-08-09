@@ -493,6 +493,7 @@ function saveAttribute(url) {
   console.log("saveAttribute")
   // let text = "text_" + det_name
   var new_att = document.getElementById('new_attribute')
+  var det_type = document.getElementById('det_type')
   console.log(new_att.value)
 
   // Reject if the file input is empty & throw alert
@@ -514,6 +515,7 @@ function saveAttribute(url) {
   var action = "save_attribute";
   data.append("action", action);
   data.append("new_att", new_att.value);
+  data.append("det_type", det_type.value);
 
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {

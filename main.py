@@ -748,12 +748,10 @@ def action_thesis_mul():
         result_invalid = 0
         result_invalid_process = []
         
+        # AQUI ES DONDE HAY QUE VERIFICAR EL TYPE_A O TYPE_M ...
         pro_id = request.form.get('pro_id')
         process = request.form.get('process')
-        print("process", process)
         _pages = request.form.getlist('page')
-        print("_pages", _pages)
-        print("len _pages", len(_pages))
         pdfs_remove = request.form.get('pdfs_remove')
 
         if process == '1' and len(_pages) > 0:
@@ -857,6 +855,16 @@ def action_thesis_mul():
                     # 1. Remove and split PDF
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id)   # Call pdf splitter function
                 
+                # pdf_nameid = request.form.get('pdf_nameid')
+                # print("pdf_nameid", pdf_nameid)
+                type_name = "type_" + str(pdf_info_id)
+                type_val = request.form.get(type_name)
+                
+                # if type_val == "A":
+                    # Generar los atributos con tipo A
+                # if type_val == "M":
+                    # Generar los atributos con tipo M
+
                 if result_split == 0:
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...NO se procesó")
@@ -867,17 +875,9 @@ def action_thesis_mul():
                     # Put data on pdf_info
                     current_date = date.today().strftime("%d/%m/%Y")
                     # 2. Process PDF
-                    language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages)  # Call pdf process function
+                    language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
                     LANGUAGE_PAGE = language
                     result_valid = 1
-                    # if len(text_pdf) > 1 :
-                    #     now = datetime.now()
-                    #     document = build_document(filename, text_pdf, language)
-                    #     file_save = app.config['MULTIPLE_OUTPUT']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-                    #     document.save(file_save)
-                    #     result_valid += 1
-                    #     result_file_text = "Antecedente Múltiple"
-                    #     result_file_down = app.config['MULTIPLE_FORWEB']+'/background_multiple_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                 
                 if result_valid > 0 :
                     result_save = True
@@ -1024,8 +1024,8 @@ def pdf_post(pdf_id):
         if action == "save_attribute":
             current_date = date.today().strftime("%d/%m/%Y")
             att_value =  request.values.get("new_att")
+            att_type =  request.values.get("det_type")
             print("att_value", att_value)
-            att_type = "A"
 
             try:
                 response_att, id = put_newPDFattribute(att_value, att_type, current_date)

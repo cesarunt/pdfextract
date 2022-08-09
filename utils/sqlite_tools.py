@@ -824,9 +824,9 @@ def get_pdfDetailByProId(pro_id):
         cursor = sqliteConnection.cursor()
         pdf_records, pdf_ids = get_pdfsByProId(cursor, 'pro_pdf_details', pro_id)
         # pdf_ids = tuple(i for i in pdf_ids)
-        print("get_pdfDetailByProId")
-        print(pdf_records)
-        print(pdf_ids)
+        # print("get_pdfDetailByProId")
+        # print(pdf_records)
+        # print(pdf_ids)
         # print("Connected to SQLite")
         query = f"""
                     SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
@@ -834,7 +834,7 @@ def get_pdfDetailByProId(pro_id):
                     WHERE  b.det_info IN {pdf_ids} and b.det_visible = 1
                     ORDER BY b.det_id ASC
                 """ 
-        print('pdf_details', query)
+        # print('pdf_details', query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -897,7 +897,7 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         # print(pdf_info)
         pdf_name, pdf_npages, pdf_pages = pdf_info
         query = f"""
-                    SELECT b.det_id, b.det_attribute, c.att_name, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
+                    SELECT b.det_id, b.det_attribute, c.att_name, c.att_type, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
                     ORDER BY b.det_id ASC
@@ -913,14 +913,15 @@ def get_pdfDetailByIds(pro_id, pdf_id):
             pdf_foundlist.append({
                     'det_id':       record[0],
                     'det_attribute':record[1],
-                    'det_name':     record[2], 
-                    'det_value':    record[3],
-                    'det_npage':    record[4],
-                    'det_visible':  record[5],
-                    'det_x':        record[6],
-                    'det_y':        record[7],
-                    'det_width':    record[8],
-                    'det_height':   record[9],
+                    'det_name':     record[2],
+                    'det_type':     record[3],
+                    'det_value':    record[4],
+                    'det_npage':    record[5],
+                    'det_visible':  record[6],
+                    'det_x':        record[7],
+                    'det_y':        record[8],
+                    'det_width':    record[9],
+                    'det_height':   record[10],
                     'det_i':        i
                     })
         pdf = {

@@ -19,6 +19,7 @@
                                                 {% for detail in pdf.foundlist %}
                                                     {% if detail.det_visible == 1 %}
                                                     <li style="padding:3px 0 0 0;">
+                                                        <input type="hidden" id="det_type" value="{{detail.det_type}}" />
                                                         {% if detail.det_i > 8 %}
                                                         <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: -181px; z-index: 1;" class="d-none">
                                                             {% if detail.det_value %}

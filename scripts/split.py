@@ -25,10 +25,6 @@ def pdf_splitter(path, files_split, pdf_info_id):
     result = 0
     pdf = PdfFileReader(path)
     pdf_npages = pdf.getNumPages()
-    # print("Numpages", range(pdf.getNumPages()))
-    # if pdf.getNumPages() > cfg.FILES.MAX_NUMPAGES:
-    #     result = 2
-    # else:
     """
     Generating PDFs from splitter
     """
@@ -37,15 +33,9 @@ def pdf_splitter(path, files_split, pdf_info_id):
             for page in range(pdf.getNumPages()):
                 pdf_writer = PdfFileWriter()
                 pdf_writer.addPage(pdf.getPage(page))
-                name_file = path.split("/")[-1].split(".pdf")[0]
-                # print("name_file", name_file)
-                # print("files_split", files_split)
-                # print("pdf_info_id", pdf_info_id)
-                # print("page", page)
-                # print("page type", type(page))
+                # name_file = path.split("/")[-1].split(".pdf")[0]
                 output_filename   = files_split+'/'+str(pdf_info_id)+'page'+'_{}.pdf'.format(str(page+1))
                 # output_filename = files_split+'/'+pdf_info_id+"page"+'_{}.pdf'.format(page+1)
-                # print("output_filename", output_filename)
                 with open(output_filename, 'wb') as out:
                     pdf_writer.write(out)
                 # print('Created: ' + name_file+'_{}.pdf'.format(page+1))

@@ -27,7 +27,7 @@ def addText_view(line, att_id, page):
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
+def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
     # fname.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -84,7 +84,8 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     URL_band = False
     year = 0                # 03. FIND THE PUBLISHING YEAR
     year_band = False
-    objective = ""          # 04. FIND THE PATTERN OBJECTIVE
+    # OBJECTIVE PATTERN
+    objective = ""
     objective_band = False
     typelevel = ""          #  -. FIND THE PATTERN TYPE
     typelevel_band = False
@@ -99,14 +100,36 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
     result_text = ""
     result_band = False
     result_title = ""
-
-    # Conslusion
     conclusion_text = ""
     conclusion_band = False
     conclusion_title = ""
-
     result_res = False
     pagelines_list = []
+
+    # PAPER PATTERN
+    paper = ""
+    paper_band = False
+    # VOLUMEN PATTERN
+    volume = ""
+    volume_band = False
+    # PAGE PATTERN
+    pagem = ""
+    pagem_band = False
+    # DEFINITION PATTERN
+    definition = ""
+    definition_band = False
+    # IMPORTANCE PATTERN
+    importance = ""
+    importance_band = False
+    # MODELS PATTERN
+    models = ""
+    models_band = False
+    # MODELS PATTERN
+    models = ""
+    models_band = False
+    # CONCEPT PATTERN
+    concept = ""
+    concept_band = False
 
     # PATTERN_OBJE = []
     level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
@@ -419,66 +442,124 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages):
                     conclusion_text = conclusion_text.replace("\n", "")
                     conclusion_text = conclusion_text.replace("._", ".\n\n")
 
-        if title_text and title_band == False:
-            addText_view(title_text, 1, page+1)
-            title_band = True
-        if authors_text and authors_band == False:
-            addText_view(authors_text, 2, page+1)
-            authors_band = True
-        if year and year_band == False:
-            addText_view(year, 3, page+1)
-            year_band = True
-        if objective and objective_band == False:
-            addText_view(objective, 4, page+1)
-            objective_band = True
-        if approach and approach_band == False:
-            addText_view(approach, 5, page+1)
-            approach_band = True
-        if design and design_band == False:
-            addText_view(design, 6, page+1)
-            design_band = True
-        if len(typelevel)>0 and typelevel_band == False:
-            addText_view(typelevel, 7, page+1)
-            typelevel_band = True
-        if len(samples)>0 and samples_band == False:
-            addText_view(samples, 8, page+1)
-            samples_band = True
-        if len(tools_text)>0 and tools_band == False:
-            addText_view(tools_text, 9, page+1)
-            tools_band = True
-        if len(result_text)>0 and result_band == False:
-            addText_view(result_text, 10, page+1)
-            result_band = True
-        if len(conclusion_text)>0 and conclusion_band == False:
-            addText_view(conclusion_text, 11, page+1)
-            conclusion_band = True
+        if type_val == "A":
+            if title_text and title_band == False:
+                addText_view(title_text, 1, page+1)
+                title_band = True
+            if authors_text and authors_band == False:
+                addText_view(authors_text, 2, page+1)
+                authors_band = True
+            if year and year_band == False:
+                addText_view(year, 3, page+1)
+                year_band = True
+            if objective and objective_band == False:
+                addText_view(objective, 4, page+1)
+                objective_band = True
+            if approach and approach_band == False:
+                addText_view(approach, 5, page+1)
+                approach_band = True
+            if design and design_band == False:
+                addText_view(design, 6, page+1)
+                design_band = True
+            if len(typelevel)>0 and typelevel_band == False:
+                addText_view(typelevel, 7, page+1)
+                typelevel_band = True
+            if len(samples)>0 and samples_band == False:
+                addText_view(samples, 8, page+1)
+                samples_band = True
+            if len(tools_text)>0 and tools_band == False:
+                addText_view(tools_text, 9, page+1)
+                tools_band = True
+            if len(result_text)>0 and result_band == False:
+                addText_view(result_text, 10, page+1)
+                result_band = True
+            if len(conclusion_text)>0 and conclusion_band == False:
+                addText_view(conclusion_text, 11, page+1)
+                conclusion_band = True
 
-        if title_ctrl == True and title_text!="" and np == length-1 :
-            if authors_band == False:
-                addText_view(authors_text, 1, 1)
-            if title_band == False:
-                addText_view(title_text, 2, 1)
-            if year_band == False:
-                addText_view(year, 3, 1)
-            if objective_band == False:
-                addText_view(objective, 4, 1)
-            if approach_band == False:
-                addText_view(approach, 5, 1)
-            if design_band == False:
-                addText_view(design, 6, 1)
-            if typelevel_band == False:
-                addText_view(typelevel, 7, 1)
-            if samples_band == False:
-                addText_view(samples, 8, 1)
-            if tools_band == False:
-                addText_view(tools_text, 9, 1)
-            if result_band == False:
-                addText_view(result_text, 10, page-1)
-            if conclusion_band == False:
-                addText_view(conclusion_text, 11, page)
-                
-            addText_view("http://", 12, pdf_npages)
-            addText_view("_", 13, 1)
+            if title_ctrl == True and title_text!="" and np == length-1 :
+                if title_band == False:
+                    addText_view(title_text, 1, 1)
+                if authors_band == False:
+                    addText_view(authors_text, 2, 1)
+                if year_band == False:
+                    addText_view(year, 3, 1)
+                if objective_band == False:
+                    addText_view(objective, 4, 1)
+                if approach_band == False:
+                    addText_view(approach, 5, 1)
+                if design_band == False:
+                    addText_view(design, 6, 1)
+                if typelevel_band == False:
+                    addText_view(typelevel, 7, 1)
+                if samples_band == False:
+                    addText_view(samples, 8, 1)
+                if tools_band == False:
+                    addText_view(tools_text, 9, 1)
+                if result_band == False:
+                    addText_view(result_text, 10, page-1)
+                if conclusion_band == False:
+                    addText_view(conclusion_text, 11, page)
+                    
+                addText_view("http://", 12, pdf_npages)
+                addText_view("_", 13, 1)
+        
+        if type_val == "M":
+            if title_text and title_band == False:
+                addText_view(title_text, 14, page+1)
+                title_band = True
+            if authors_text and authors_band == False:
+                addText_view(authors_text, 15, page+1)
+                authors_band = True
+            if year and year_band == False:
+                addText_view(year, 16, page+1)
+                year_band = True
+            if paper and paper_band == False:
+                addText_view(paper, 17, page+1)
+                paper_band = True
+            if volume and volume_band == False:
+                addText_view(volume, 18, page+1)
+                volume_band = True
+            if pagem and pagem_band == False:
+                addText_view(pagem, 19, page+1)
+                pagem_band = True
+            if definition and definition_band == False:
+                addText_view(definition, 20, page+1)
+                definition_band = True
+            if importance and importance_band == False:
+                addText_view(importance, 21, page+1)
+                importance_band = True
+            if models and models_band == False:
+                addText_view(models, 22, page+1)
+                models_band = True
+            if concept and concept_band == False:
+                addText_view(concept, 23, page+1)
+                concept_band = True
+
+            if title_ctrl == True and title_text!="" and np == length-1 :
+                if title_band == False:
+                    addText_view(title_text, 14, 1)
+                if authors_band == False:
+                    addText_view(authors_text, 15, 1)
+                if year_band == False:
+                    addText_view(year, 16, 1)
+                if paper_band == False:
+                    addText_view(paper, 17, 1)
+                if volume_band == False:
+                    addText_view(volume, 18, 1)
+                if pagem_band == False:
+                    addText_view(pagem, 19, 1)
+                if definition_band == False:
+                    addText_view(definition, 20, 1)
+                if importance_band == False:
+                    addText_view(importance, 21, 1)
+                if models_band == False:
+                    addText_view(models, 22, 1)
+                if concept_band == False:
+                    addText_view(concept, 23, 1)
+                    
+                # addText_view("http://", 12, pdf_npages)
+                # addText_view("_", 13, 1)
         
         np += 1
 
