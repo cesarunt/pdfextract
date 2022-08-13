@@ -64,10 +64,22 @@
                                                                 </div>
                                                                 <div class="col-sm-6 col-md-6">
                                                                     <input type="hidden" name="pdf_nameid" id="pdf_nameid" value="{{pdf.pdf_id}}" />
+                                                                    {% if (project.pro_type_a == 1) %}
                                                                     <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" checked>
+                                                                    {% else %}
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" disabled>
+                                                                    {% endif %}
+                                                                    <label class="form-check-label" for="radio1">Antecedentes</label><br>
+                                                                    {% if (project.pro_type_m == 1) %}
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2">
+                                                                    {% else %}
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2" disabled>
+                                                                    {% endif %}
+                                                                    <label class="form-check-label" for="radio2">Marco Teórico</label>
+                                                                    <!-- <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" checked>
                                                                     <label class="form-check-label" for="radio1">Antecedentes</label><br>
                                                                     <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2">
-                                                                    <label class="form-check-label" for="radio2">Marco Teórico</label>
+                                                                    <label class="form-check-label" for="radio2">Marco Teórico</label> -->
                                                                 </div>
                                                             </div>
                                                             <hr style="margin:10px 0;">

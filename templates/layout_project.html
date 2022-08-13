@@ -31,9 +31,23 @@
             </div>
             <ul class="list-unstyled components text-secondary">
                 <li>
-                    <select name="type_global" class="form-select" style="width: 90%; margin: 0 1rem;">
-                        <option value="antecedentes" selected>ANTECEDENTES</option>
+                    <select name="type_global" id="type_global" class="form-select" style="width: 90%; margin: 0 1rem;">
+                        <option value="antecedentes" selected>TODOS</option>
+                        {% if (project.pro_type_a == 1) %}
+                        <option value="antecedentes">ANTECEDENTES</option>
+                        {% endif %}
+                        {% if (project.pro_type_m == 1) %}
                         <option value="marco_teorico">MARCO TEORICO</option>
+                        {% endif %}
+                        {% if (project.pro_type_a == 1 and project.pro_type_m == 1) or project.pro_type_a == 1 or project.pro_type_m == 1  %}
+                            <p class="card-text-info">Tipo Investigación</p>
+                            {% if project.pro_type_a == 1 %}
+                                <span class="card-text-info"><b>Antecedentes</b></span>
+                            {% endif %}
+                            {% if project.pro_type_m == 1 %}
+                                <span class="card-text-info"><b>Marco Teórico</b></span>
+                            {% endif %}
+                        {% endif %}
                     </select>
                 </li>
                 <li style="margin:10px 0 0; border-top: 1px solid #e6ecf5;"></li>
@@ -45,13 +59,16 @@
                         {% for pdf in pdfs %}
                         <li style="padding:0 0 0 5px;">
                             <span>
-                            <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 99%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                            <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 90%;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
                                 <i class="fas fa-copy" style="margin-right: 0;"><br>
                                 <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ pdf.pdf_i }}]</b>
                                 </i>
                                 <div>{{ pdf.pdf_name }}</div>
                             </a>
-                            </span>
+                            <a style="padding: 0; display:inline" href="#">
+                                <span style="margin: 0;" class="fa-fw select-all fas"></span>
+                            </a>
+                            </span>                            
                         </li>
                         {% endfor %}
                         <div class="mb-3" style="margin-bottom: 0 !important;">

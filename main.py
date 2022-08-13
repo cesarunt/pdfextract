@@ -931,7 +931,6 @@ def project_pdfs(id):
     else:
         return render_template('project_pdfs.html')
 
-
 @main.route('/<pdf_id>')
 def project_pdf(pdf_id):
     listpages = []

@@ -514,3 +514,20 @@ function removePDF(url, pdf_id, pdf_name) {
   document.getElementById('pdf_id_' + pdf_id + '_li').remove();
   document.getElementById('page_' + pdf_id + '_tab').remove();
 }
+
+const selectElement = document.querySelector('.form-select');
+
+selectElement.addEventListener('change', (event) => {
+  var x = document.getElementById("type_global");
+  alert("Mostrar los PDFs como " + x.value)
+  // const resultado = document.querySelector('.resultado');
+  // resultado.textContent = `Te gusta el sabor ${event.target.value}`;
+
+});
+
+// document.getElementById("fname").addEventListener("change", myFunction);
+
+// function myFunction() {
+//   var x = document.getElementById("fname");
+//   x.value = x.value.toUpperCase();
+// }
