@@ -36,7 +36,7 @@ def get_pdfsByProId(cursor, tablename, pro_id):
     query = f"""
                 SELECT pdf_id
                 FROM  {tablename}
-                WHERE pro_id = "{pro_id}"
+                WHERE pro_id = "{pro_id}" and pdf_visible = 1
             """
     cursor.execute(query)
     records = cursor.fetchall()
@@ -697,6 +697,30 @@ def del_itemPDFdetail(det_id):
         
         return result
 
+def del_itemPDF(pro_id, pdf_id):
+    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pro_pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    UPDATE "{table_name}" SET pdf_visible=0
+                    WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to delete data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+        
+        return result
+
 # ----------------------------------- SAVE AFTER PROCESS -----------------------------------
 def put_newPDF(pdf=dict()):
     table_name = 'pdf_info'
@@ -720,15 +744,15 @@ def put_newPDF(pdf=dict()):
         
         return id
 
-def put_newPPdetail(id, pdf, name, pages, current_date):
+def put_newPPdetail(id, pdf, name, type_doc, pages, visible, current_date):
     table_name = 'pro_pdf_details'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_pages, pro_pdf_created)
-                    VALUES ("{id} ", "{pdf}", "{name}", "{pages}", "{current_date}")
+                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_pages, pdf_visible, pro_pdf_created)
+                    VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{pages}", "{visible}", "{current_date}")
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -752,7 +776,7 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET pdf_name='{name}', pro_pdf_created="{current_date}"
-                    WHERE pro_id = {pro_id} AND pdf_id = {pdf_id}
+                    WHERE pro_id = {pro_id} AND pdf_id = {pdf_id} and pdf_visible = 1
                 """
         
         sqlite_select_query = query
@@ -768,19 +792,26 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         
         return result
 
-def get_projectPDFById(id):
+def get_projectPDFById(id, type_doc):
     # List of TOP 10
     table_name = 'pro_pdf_details'
     pp_details = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
-        query = f"""
-                    SELECT b.pro_id, b.pdf_id, b.pdf_name, a.pdf_name, a.pdf_npages, a.pdf_size
-                    FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
-                    WHERE  b.pro_id = "{id}"
-                """
+        if type_doc == "T":
+            # print("Connected to SQLite")
+            query = f"""
+                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, a.pdf_name, a.pdf_npages, a.pdf_size
+                        FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
+                        WHERE  b.pro_id = "{id}" AND b.pdf_visible = 1
+                    """
+        else:
+            query = f"""
+                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, a.pdf_name, a.pdf_npages, a.pdf_size
+                        FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
+                        WHERE  b.pro_id = "{id}" AND b.pdf_visible = 1 AND b.pdf_type = "{type_doc}"
+                    """
         # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -801,11 +832,14 @@ def get_projectPDFById(id):
                 'pdf_id':      record[1],
                 'pdf_fullname': text,
                 'pdf_name':    text[0:199],
-                'pdf_file':    record[3],
-                'pdf_npages':  record[4],
-                'pdf_size':    record[5],
+                'pdf_type':    record[3],
+                'pdf_file':    record[4],
+                'pdf_npages':  record[5],
+                'pdf_size':    record[6],
                 'pdf_i':       i
             })
+        
+        # print("LEN", len(pp_details))
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -823,11 +857,6 @@ def get_pdfDetailByProId(pro_id):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         pdf_records, pdf_ids = get_pdfsByProId(cursor, 'pro_pdf_details', pro_id)
-        # pdf_ids = tuple(i for i in pdf_ids)
-        # print("get_pdfDetailByProId")
-        # print(pdf_records)
-        # print(pdf_ids)
-        # print("Connected to SQLite")
         query = f"""
                     SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
                     FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
@@ -887,14 +916,12 @@ def get_pdfDetailByProId(pro_id):
 def get_pdfDetailByIds(pro_id, pdf_id):
     table_name = 'pdf_details'
     pdf = dict()
-    pdf_foundlist = []      #   Atributos
+    pdf_foundlist = []   #   Atributos
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         pdf_info = get_pdfById(cursor, 'pdf_info', pro_id, pdf_id)
-        # print("pdf_info")
-        # print(pdf_info)
         pdf_name, pdf_npages, pdf_pages = pdf_info
         query = f"""
                     SELECT b.det_id, b.det_attribute, c.att_name, c.att_type, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height

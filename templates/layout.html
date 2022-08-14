@@ -26,27 +26,8 @@
                 </a>
             </div>
             <ul class="list-unstyled components text-secondary">
-                <li>
-                    <select name="type_global" class="form-select" style="width: 90%; margin: 0 1rem;">
-                        <option value="antecedentes" selected>TODOS</option>
-                        {% if (project.pro_type_a == 1) %}
-                        <option value="antecedentes" selected>ANTECEDENTES</option>
-                        {% endif %}
-                        {% if (project.pro_type_m == 1) %}
-                        <option value="marco_teorico">MARCO TEORICO</option>
-                        {% endif %}
-                        {% if (project.pro_type_a == 1 and project.pro_type_m == 1) or project.pro_type_a == 1 or project.pro_type_m == 1  %}
-                            <p class="card-text-info">Tipo Investigación</p>
-                            {% if project.pro_type_a == 1 %}
-                                <span class="card-text-info"><b>Antecedentes</b></span>
-                            {% endif %}
-                            {% if project.pro_type_m == 1 %}
-                                <span class="card-text-info"><b>Marco Teórico</b></span>
-                            {% endif %}
-                        {% endif %}
-                    </select>
-                </li>
-                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
+                
+                <!-- <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li> -->
                 
                 {% if current_user.is_authenticated %}
                 <!-- <li>

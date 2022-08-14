@@ -34,46 +34,6 @@ var _pages_text = ""
 var _canvas_page = 0
 var _band_page = false
 
-// if (document.getElementById('text_título')){
-//   document.getElementById('down_title').value = document.getElementById('text_título').textContent
-// }
-// if (document.getElementById('text_autor')){
-//   document.getElementById('down_author').value = document.getElementById('text_autor').textContent
-// }
-// if (document.getElementById('text_año')){
-//   document.getElementById('down_year').value = document.getElementById('text_año').textContent
-// }
-// if (document.getElementById('text_objetivo')){
-//   document.getElementById('down_objective').value = document.getElementById('text_objetivo').textContent
-// }
-// if (document.getElementById('text_enfoque')){
-//   document.getElementById('down_approach').value = document.getElementById('text_enfoque').textContent
-// }
-// if (document.getElementById('text_diseño')){
-//   document.getElementById('down_design').value = document.getElementById('text_diseño').textContent
-// }
-// if (document.getElementById('text_nivel')){
-//   document.getElementById('down_level').value = document.getElementById('text_nivel').textContent
-// }
-// if (document.getElementById('text_muestra')){
-//   document.getElementById('down_sample').value = document.getElementById('text_muestra').textContent
-// }
-// if (document.getElementById('text_instrumentos')){
-//   document.getElementById('down_tools').value = document.getElementById('text_instrumentos').textContent
-// }
-// if (document.getElementById('text_resultados')){
-//   document.getElementById('down_results').value = document.getElementById('text_resultados').textContent
-// }
-// if (document.getElementById('text_conclusiones')){
-//   document.getElementById('down_conclussions').value = document.getElementById('text_conclusiones').textContent
-// }
-// if (document.getElementById('text_enlace')){
-//   document.getElementById('down_link').value = document.getElementById('text_enlace').textContent
-// }
-// if (document.getElementById('text_página')){
-//   document.getElementById('down_page').value = document.getElementById('text_página').textContent
-// }
-
 // Function to show alerts
 function showPDFAlert(message, alert) {
   alertPDF_wrapper.innerHTML = `
@@ -515,19 +475,110 @@ function removePDF(url, pdf_id, pdf_name) {
   document.getElementById('page_' + pdf_id + '_tab').remove();
 }
 
-const selectElement = document.querySelector('.form-select');
+if (document.querySelector('.form-select')){
+  const selectElement = document.querySelector('.form-select');
 
-selectElement.addEventListener('change', (event) => {
-  var x = document.getElementById("type_global");
-  alert("Mostrar los PDFs como " + x.value)
-  // const resultado = document.querySelector('.resultado');
-  // resultado.textContent = `Te gusta el sabor ${event.target.value}`;
+  selectElement.addEventListener('change', (event) => {
+    var type_url = document.getElementById("type_url");
+    var type_doc = document.getElementById("type_doc");
 
-});
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
 
-// document.getElementById("fname").addEventListener("change", myFunction);
+    // Set the response type
+    request.responseType = "json";
 
-// function myFunction() {
-//   var x = document.getElementById("fname");
-//   x.value = x.value.toUpperCase();
-// }
+    var action = "list_by_doc";
+    data.append("action", action);
+    data.append("type_doc", type_doc.value);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        console.log("Listado OK")
+        location.reload();
+      }
+      else {
+        showAlertPage('Listando PDFs', 'warning')
+      }
+      if (request.status == 300) {
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+      
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      showAlertPage('Error listando PDFs', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", type_url.value);
+    request.send(data);
+
+  });
+}
+
+function delPDFOne(pdf_len) {
+
+  if (pdf_len==1){
+    alert('No se puede eliminar el único PDF de este proyecto')
+  }
+}
+
+function delPDFAll(url, pdf_name, pdf_detid) {
+
+  if (confirm('Desea eliminar el PDF ... ' + pdf_name)) {
+    // Save it!
+    
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
+
+    // Set the response type
+    request.responseType = "json";
+
+    var action = "remove_pdf";
+    data.append("action", action);
+    data.append("pdf_detid", pdf_detid);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        /// Disabled updated button (blue color), and opacity 1
+        // update_att.disabled = true      
+        // alert(`Eliminación Exitosa`, "success");
+        showAlertPage('PDF eliminado con éxito', 'success')
+        location.reload();
+      }
+      else {
+        // alert(`Alerta en eliminación`, "warning");
+        showAlertPage('PDF no fue eliminado', 'warning')
+      }
+      if (request.status == 300) {
+        // alert(`${request.response.message}`, "warning");
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      // alert(`Error eliminando el atributo`, "danger");
+      showAlertPage('Error eliminando PDF', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
+  }
+}
+
+function changePDFAll(url, pdf_name, pdf_detid) {
+
+  if (pdf_len==1){
+    alert('No se puede eliminar el único PDF de este proyecto')
+  }
+}

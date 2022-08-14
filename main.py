@@ -692,7 +692,6 @@ def thesis_mul_load():
                 path = os.path.join(app.config['MULTIPLE_UPLOAD'], filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
-                # action = request.values.get("action")
                 file_pdfs.append(path.split("/")[-1])
                 file.save(path)
                 upload = True
@@ -884,7 +883,7 @@ def action_thesis_mul():
                     print("pdf_info_id", pdf_info_id)
                     print("pdfs[pdf_info_id]", pdfs[pdf_info_id])
                     try:
-                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, pdfs[pdf_info_id], current_date)
+                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, pdfs[pdf_info_id], 1, current_date)
                     except:
                         print("Error en registro de PRO PDF detail")
                 if result_invalid > 0 and result_valid == 0 :
@@ -924,10 +923,12 @@ def project_list():
 def project_pdfs(id):
     global pro_id
     pro_id = id
+    global type_doc
+    type_doc = "T"
     if current_user.is_authenticated:
         project = get_projectById(id)
-        pdfs = get_projectPDFById(id)
-        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=None, project=project[0], pro_id=id)
+        pdfs = get_projectPDFById(id, type_doc)
+        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf_type=type_doc, pdf=None, project=project[0], pro_id=id)
     else:
         return render_template('project_pdfs.html')
 
@@ -937,10 +938,10 @@ def project_pdf(pdf_id):
 
     if current_user.is_authenticated:
         project = get_projectById(pro_id)
-        pdfs = get_projectPDFById(pro_id)
+        pdfs = get_projectPDFById(pro_id, type_doc)
         pdf = get_pdfDetailByIds(pro_id, pdf_id)
         """Verificar pdf_details, encontrados y no encontradps"""
-        pages_zero = pdf['pages'].replace('[','').replace(']','').replace(' ','')
+        pages_zero = str(pdf['pages']).replace('[','').replace(']','').replace(' ','')
         pages_list = pages_zero.split(',')
 
         for pag in pages_list:
@@ -959,7 +960,7 @@ def project_pdf(pdf_id):
                 }
         pdf['pdf_path'] = pdf_path
         # pdfs, for the left panel
-        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
+        return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf_len=len(pdfs), pdf_type=type_doc, pdf=pdf, project=project[0], pro_id=pro_id)
     else:
         return render_template('project_pdfs.html')
 
@@ -967,8 +968,10 @@ def project_pdf(pdf_id):
 @main.route("/<pdf_id>", methods=["POST"])
 def pdf_post(pdf_id):
     global file_pdfs
+    global type_doc
     # text_pdf = []
     text_page = ""
+    # type_doc = "T"
 
     if request.method == "POST":
         action = request.values.get("action")
@@ -1024,7 +1027,6 @@ def pdf_post(pdf_id):
             current_date = date.today().strftime("%d/%m/%Y")
             att_value =  request.values.get("new_att")
             att_type =  request.values.get("det_type")
-            print("att_value", att_value)
 
             try:
                 response_att, id = put_newPDFattribute(att_value, att_type, current_date)
@@ -1039,6 +1041,22 @@ def pdf_post(pdf_id):
                     msg_pdf = "PDF detail registrado con éxito"
             except:
                 msg_pdf = "Error en registro de PDFdetail ..."
+            
+            finally:
+                result_split = 1
+        
+        if action == "list_by_doc":
+            type_doc = request.values.get("type_doc")
+            result_split = 1
+        
+        if action == "remove_pdf":
+            pdf_detid = request.values.get("pdf_detid")
+            try:
+                response_pdf = del_itemPDF(pro_id, pdf_detid)
+                if response_pdf is True:
+                    msg_pdf = "PDF eliminado con éxito"
+            except:
+                msg_pdf = "Error en eliminación de PDF"
             
             finally:
                 result_split = 1
@@ -1058,7 +1076,8 @@ def pdf_post(pdf_id):
 
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
-            pdfs = get_projectPDFById(pro_id)
+            print("type_doc:" + type_doc)
+            pdfs = get_projectPDFById(pro_id, type_doc)
             pdf = get_pdfDetailByIds(pro_id, pdf_id)
             """Verificar pdf_details, encontrados y no encontradps"""
             list_npages = list(range(1, int(pdf['npages']+1)))
@@ -1074,7 +1093,7 @@ def pdf_post(pdf_id):
                     }
             pdf['pdf_path'] = pdf_path
 
-            return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf=pdf, project=project[0], pro_id=pro_id)
+            return render_template('project_pdfs.html', name=current_user.name.split()[0], pdfs=pdfs, pdf_type=type_doc, pdf=pdf, project=project[0], pro_id=pro_id)
 
 
 @main.route("/export_paper_mul", methods=["POST"])
