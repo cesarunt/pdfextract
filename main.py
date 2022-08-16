@@ -836,7 +836,7 @@ def action_thesis_mul():
                     det_id = int(request.values.get("det_id"))
                     
                     try:
-                        response_pdf = del_itemPDFdetail(det_id)
+                        response_pdf = del_itemPDF(det_id)
                         if response_pdf is True:
                             msg_pdf = "PDF detail eliminado con éxito"
                     except:
@@ -969,9 +969,7 @@ def project_pdf(pdf_id):
 def pdf_post(pdf_id):
     global file_pdfs
     global type_doc
-    # text_pdf = []
     text_page = ""
-    # type_doc = "T"
 
     if request.method == "POST":
         action = request.values.get("action")
@@ -1048,24 +1046,12 @@ def pdf_post(pdf_id):
         if action == "list_by_doc":
             type_doc = request.values.get("type_doc")
             result_split = 1
-        
-        if action == "remove_pdf":
-            pdf_detid = request.values.get("pdf_detid")
-            try:
-                response_pdf = del_itemPDF(pro_id, pdf_detid)
-                if response_pdf is True:
-                    msg_pdf = "PDF eliminado con éxito"
-            except:
-                msg_pdf = "Error en eliminación de PDF"
-            
-            finally:
-                result_split = 1
-        
+
         if action == "remove_attribute":
             det_id = int(request.values.get("det_id"))
             
             try:
-                response_pdf = del_itemPDFdetail(det_id)
+                response_pdf = del_itemPDF(det_id)
                 if response_pdf is True:
                     msg_pdf = "PDF detail eliminado con éxito"
             except:
@@ -1074,9 +1060,33 @@ def pdf_post(pdf_id):
             finally:
                 result_split = 1
 
+        if action == "remove_pdf":
+            pdf_detid = request.values.get("pdf_detid")
+            try:
+                response_pdf = del_PDF(pro_id, pdf_detid)
+                if response_pdf is True:
+                    msg_pdf = "PDF eliminado con éxito"
+            except:
+                msg_pdf = "Error en eliminación de PDF"
+            
+            finally:
+                result_split = 1
+        
+        if action == "edit_pdf":
+            pdf_detid = request.values.get("pdf_detid")
+            pdf_dettype = request.values.get("pdf_dettype")
+            try:
+                response_pdf = edit_PDF(pro_id, pdf_detid, pdf_dettype)
+                if response_pdf is True:
+                    msg_pdf = "PDF editado con éxito"
+            except:
+                msg_pdf = "Error en edición de PDF"
+            
+            finally:
+                result_split = 1
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
-            print("type_doc:" + type_doc)
+            # print("type_doc:" + type_doc)
             pdfs = get_projectPDFById(pro_id, type_doc)
             pdf = get_pdfDetailByIds(pro_id, pdf_id)
             """Verificar pdf_details, encontrados y no encontradps"""

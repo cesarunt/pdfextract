@@ -32,7 +32,6 @@
             <ul class="list-unstyled components text-secondary">
                 <li>
                     <input type="hidden" name="type_url" id="type_url" value="{{ request.url }}" />
-                    <!-- <input type="hidden" name="type_doc_" id="type_doc_" value="{{ pdf_type }}" /> -->
                     <select name="type_doc" id="type_doc" class="form-select" style="width: 90%; margin: 0 1rem;">
                         {% if pdf_type == 'T' %}
                         <option value="T" selected>TODOS</option>
@@ -74,20 +73,30 @@
                         {% for mypdf in pdfs %}
                         <li style="padding:0 0 0 5px;">
                             <span>
-                            <a style="font-size: 0.75rem; padding: 0.25rem 0.25rem 0.25rem 0.5rem; display: inline-flex; width: 90%;" href="{{ url_for('main.project_pdf', pdf_id=mypdf.pdf_id) }}">
+                            <a style="font-size: 0.75rem; padding: 0rem 0.25rem 0.5rem 0.5rem; display: inline-flex; width: 90%;" href="{{ url_for('main.project_pdf', pdf_id=mypdf.pdf_id) }}">
                                 <i class="fas fa-copy" style="margin-right: 0;"><br>
                                 <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ mypdf.pdf_i }}]</b>
                                 </i>
                                 <div>{{ mypdf.pdf_name }}</div>
                             </a>
                             {% if pdf_len == 1 %}
-                            <a style="padding: 0; display:inline" href="" onclick="delPDFOne('{{pdf_len}}')">
-                                <span style="margin: 0; opacity: 50%;" class="fa-fw select-all fas"></span>
-                            </a>
+                            <div style="margin: 0; display:inline-grid; width: 0;">
+                                <a style="padding: 0; display:inline" href="" title="Eliminar" onclick="delPDFOne('{{pdf_len}}')">
+                                    <span style="margin: 0; opacity: 50%;" class="fa-fw select-all fas"></span>
+                                </a>
+                                <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <span class="fa-fw select-all fas"></span>
+                                </a>
+                            </div>
                             {% else %}
-                            <a style="padding: 0; display:inline" href="" onclick="delPDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_id}}')">
-                                <span style="margin: 0;" class="fa-fw select-all fas"></span>
-                            </a>
+                            <div style="margin: 0; display:inline-grid; width: 0;">
+                                <a style="padding: 0; margin: 0; width: 20px;" href="" title="Eliminar" onclick="delPDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_id}}')">
+                                    <span style="margin: 0;" class="fa-fw select-all fas"></span>
+                                </a>
+                                <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <span class="fa-fw select-all fas"></span>
+                                </a>
+                            </div>
                             {% endif %}
                             </span>                            
                         </li>

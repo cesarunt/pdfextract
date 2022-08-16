@@ -34,6 +34,9 @@ var _pages_text = ""
 var _canvas_page = 0
 var _band_page = false
 
+// Get a reference to the alert wrapper
+var alert_wrapper = document.getElementById("alert_wrapper");
+
 // Function to show alerts
 function showPDFAlert(message, alert) {
   alertPDF_wrapper.innerHTML = `
@@ -576,9 +579,61 @@ function delPDFAll(url, pdf_name, pdf_detid) {
   }
 }
 
-function changePDFAll(url, pdf_name, pdf_detid) {
+function editPDFAll(url, pdf_type, pdf_detid) {
 
-  if (pdf_len==1){
-    alert('No se puede eliminar el único PDF de este proyecto')
+  if (pdf_type=="A"){
+    pdf_from = "Antecedentes"
+    pdf_to = "Marco Teórico"
+    pdf_dettype = "M"
+  }
+  else{
+    pdf_from = "Marco Teórico"
+    pdf_to = "Antecedentes"
+    pdf_dettype = "A"
+  }
+
+  if (confirm('Desea cambiar el PDF? \nDe ' + pdf_from + " a " + pdf_to)) {
+    // Save it!
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
+
+    // Set the response type
+    request.responseType = "json";
+
+    var action = "edit_pdf";
+    data.append("action", action);
+    data.append("pdf_detid", pdf_detid);
+    data.append("pdf_dettype", pdf_dettype);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        /// Disabled updated button (blue color), and opacity 1
+        // update_att.disabled = true      
+        // alert(`PDF actualizado con éxito`, "success");
+        showAlertPage('PDF actualizado correctamente', 'success')
+        // location.reload();
+      }
+      else {
+        // alert(`Alerta en eliminación`, "warning");
+        showAlertPage('PDF no fue actualizado', 'warning')
+      }
+      if (request.status == 300) {
+        // alert(`${request.response.message}`, "warning");
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      // alert(`Error eliminando el atributo`, "danger");
+      showAlertPage('Error actualizando PDF', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
   }
 }

@@ -674,7 +674,7 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
         
         return result
 
-def del_itemPDFdetail(det_id):
+def del_itemPDF(det_id):
     # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     result = False
@@ -697,7 +697,7 @@ def del_itemPDFdetail(det_id):
         
         return result
 
-def del_itemPDF(pro_id, pdf_id):
+def del_PDF(pro_id, pdf_id):
     # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     result = False
@@ -706,6 +706,30 @@ def del_itemPDF(pro_id, pdf_id):
         cursor = sqliteConnection.cursor()
         query = f"""
                     UPDATE "{table_name}" SET pdf_visible=0
+                    WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
+                """
+        # print(query)
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to delete data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+        
+        return result
+
+def edit_PDF(pro_id, pdf_id, pdf_dettype):
+    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
+    table_name = 'pro_pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    UPDATE "{table_name}" SET pdf_type="{pdf_dettype}"
                     WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
                 """
         # print(query)
