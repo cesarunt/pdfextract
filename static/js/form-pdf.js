@@ -533,7 +533,7 @@ function delPDFOne(pdf_len) {
 
 function delPDFAll(url, pdf_name, pdf_detid) {
 
-  if (confirm('Desea eliminar el PDF ... ' + pdf_name)) {
+  if (confirm('Desea eliminar el PDF? \n' + pdf_name)) {
     // Save it!
     
     // Create a new FormData instance
@@ -610,26 +610,62 @@ function editPDFAll(url, pdf_type, pdf_detid) {
     // request load handler (transfer complete)
     request.addEventListener("load", function (e) {
       if (request.status == 200) {
-        /// Disabled updated button (blue color), and opacity 1
-        // update_att.disabled = true      
-        // alert(`PDF actualizado con éxito`, "success");
         showAlertPage('PDF actualizado correctamente', 'success')
-        // location.reload();
+        location.reload();
       }
       else {
-        // alert(`Alerta en eliminación`, "warning");
         showAlertPage('PDF no fue actualizado', 'warning')
       }
       if (request.status == 300) {
-        // alert(`${request.response.message}`, "warning");
         showAlertPage(`${request.response.message}`, 'warning')
       }
     });
 
     // request error handler
     request.addEventListener("error", function (e) {
-      // alert(`Error eliminando el atributo`, "danger");
       showAlertPage('Error actualizando PDF', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
+  }
+}
+
+function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
+
+  if (confirm('Desea duplicar el PDF? \n' + pdf_name)) {
+    // Save it!
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
+
+    // Set the response type
+    request.responseType = "json";
+
+    var action = "double_pdf";
+    data.append("action", action);
+    data.append("pdf_detid", pdf_detid);
+    data.append("pdf_dettype", pdf_type);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        showAlertPage('PDF duplicado correctamente', 'success')
+        location.reload();
+      }
+      else {
+        showAlertPage('PDF no fue duplicado', 'warning')
+      }
+      if (request.status == 300) {
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      showAlertPage('Error duplicando PDF', 'danger')
     });
 
     // Open and send the request

@@ -14,10 +14,6 @@ from utils.config import PATTERN_METHOD_EN, cfg
 # def clear_report(files_output):
 #     open(files_output+"/background.txt", "w").close()
 
-# def addText_background(type, line):
-#     if line != "":
-#         text_pdf.append(tuple([type, line]))
-
 def addText_view(line, att_id, page):
     try:    
         _ = put_newPDFdetail(pdf_id, att_id, line, page, 1)

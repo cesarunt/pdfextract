@@ -46,7 +46,6 @@ def pdf_splitter(path, files_split, pdf_info_id):
     
     return result, pdf_npages
 
-
 def img_remove(file, files_split):
     length = len(file)
     for i in range(length): 

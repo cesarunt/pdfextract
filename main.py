@@ -472,7 +472,6 @@ def thesis_search():
 def report():
     return render_template('report.html')
 
-
 """
     FORM UPLOAD DOCUMENTS
     =====================
@@ -481,8 +480,6 @@ def report():
 def save_upload():
     id = 0
     keywords = ""
-    # msg_project = ""
-    # msg_pkdetail = ""
     if request.method == 'POST':
         current_date = date.today().strftime("%d/%m/%Y")
         try:
@@ -533,7 +530,6 @@ def save_upload():
                 if keywords != None:
                     for key in keywords:
                         response_pkdetail = put_newPKdetail(id, key, current_date)
-        # finally:
         return redirect('/upload/home/'+str(id))
 
 @main.route('/last_variable')
@@ -544,7 +540,6 @@ def last_variable():
 @main.route("/add_variable", methods=["POST"])
 def add_variable():
     id = 0
-    msg_variable = ""
     action = request.values.get("action")
 
     if request.method == 'POST' and action == 'add':
@@ -560,10 +555,10 @@ def add_variable():
             msg_variable = "Error en registro de variable"
         
         finally:
-            list_universities = get_listUniversities()
-            list_keywords = get_listKeywords()
-            title = request.values.get("title")
-            one_project = []
+            # list_universities = get_listUniversities()
+            # list_keywords = get_listKeywords()
+            # title = request.values.get("title")
+            # one_project = []
             # return redirect(request.url)
             return jsonify({'key_id': key_id})
 
@@ -592,8 +587,6 @@ def search_db():
 def paper_one_load():
     global file_pdf
     active_show = "active show"
-    # _analytic = request.form.get('analytic')
-    # 
     if request.method == "POST":
         # Code for One pdf
         if "filesize" in request.cookies:
@@ -639,7 +632,6 @@ def thesis_one_load():
                 upload = True
             if allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
-                # file.save(os.path.join(app.config["UPLOAD_PATH_UP"], filename))
                 file.save(os.path.join(app.config["SINGLE_UPLOAD"], filename))
                 file_pdf = filename
                 if (upload == True):
@@ -747,7 +739,6 @@ def action_thesis_mul():
         result_invalid = 0
         result_invalid_process = []
         
-        # AQUI ES DONDE HAY QUE VERIFICAR EL TYPE_A O TYPE_M ...
         pro_id = request.form.get('pro_id')
         process = request.form.get('process')
         _pages = request.form.getlist('page')
@@ -764,7 +755,7 @@ def action_thesis_mul():
                 pdfs[item[0]] = pages
             band_parcial = True
         
-        print("pdfs", pdfs)
+        # print("pdfs", pdfs)
         # Verify if posible to process
         if get_viewProcess_CPU() is True :
             document = Document()
@@ -854,16 +845,9 @@ def action_thesis_mul():
                     # 1. Remove and split PDF
                     result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id)   # Call pdf splitter function
                 
-                # pdf_nameid = request.form.get('pdf_nameid')
-                # print("pdf_nameid", pdf_nameid)
                 type_name = "type_" + str(pdf_info_id)
                 type_val = request.form.get(type_name)
                 
-                # if type_val == "A":
-                    # Generar los atributos con tipo A
-                # if type_val == "M":
-                    # Generar los atributos con tipo M
-
                 if result_split == 0:
                     result_invalid += 1
                     result_invalid_process.append(filename + " ...NO se procesó")
@@ -883,7 +867,7 @@ def action_thesis_mul():
                     print("pdf_info_id", pdf_info_id)
                     print("pdfs[pdf_info_id]", pdfs[pdf_info_id])
                     try:
-                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, pdfs[pdf_info_id], 1, current_date)
+                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, 0, pdfs[pdf_info_id], 1, current_date)
                     except:
                         print("Error en registro de PRO PDF detail")
                 if result_invalid > 0 and result_valid == 0 :
@@ -940,6 +924,7 @@ def project_pdf(pdf_id):
         project = get_projectById(pro_id)
         pdfs = get_projectPDFById(pro_id, type_doc)
         pdf = get_pdfDetailByIds(pro_id, pdf_id)
+        # print("PDF", pdf)
         """Verificar pdf_details, encontrados y no encontradps"""
         pages_zero = str(pdf['pages']).replace('[','').replace(']','').replace(' ','')
         pages_list = pages_zero.split(',')
@@ -952,10 +937,15 @@ def project_pdf(pdf_id):
         pdf['pages_one_text'] = pages_one
         pdf['pages_one_list'] = listpages
         # get data for pdf_file
+        if int(pdf['double']) > 0:
+            view_id = pdf['double']
+        else:
+            view_id = pdf_id
+            
         pdf_path = {
                 'name':        pdf['name'],
                 'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
-                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + 'page_0.jpg',
+                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(view_id) + 'page_0.jpg',
                 'num_pages':   int(pdf['npages']),
                 }
         pdf['pdf_path'] = pdf_path
@@ -1084,21 +1074,74 @@ def pdf_post(pdf_id):
             
             finally:
                 result_split = 1
+
+        if action == "double_pdf":
+            current_date = date.today().strftime("%d/%m/%Y")
+            pdf_detid   = request.values.get("pdf_detid")
+            pdf_dettype = request.values.get("pdf_dettype")
+            
+            pdf_info = get_pdfInfoById(pdf_detid)
+            pdf_detail = get_pdfDetailById(pro_id, pdf_detid)
+            pdf = {
+                    'name' :     pdf_info[0],
+                    'npages' :   pdf_info[1],
+                    'size' :     pdf_info[2],
+                    'created' :  current_date
+                }
+            pdf_info_id = put_newPDF(pdf)
+            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[0], pdf_detail[3], 1, current_date)
+            
+            if result == True:
+                if pdf_dettype == "A":
+                    put_newPDFdetail(pdf_info_id, 1, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 2, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 3, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 4, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 5, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 6, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 7, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 8, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 9, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 10, "", int(pdf['npages'])-1, 1)
+                    put_newPDFdetail(pdf_info_id, 11, "", int(pdf['npages'])-1, 1)
+                    put_newPDFdetail(pdf_info_id, 12, "http://", int(pdf['npages']), 1)
+                    put_newPDFdetail(pdf_info_id, 13, "_", 1, 1)
+                if pdf_dettype == "M":
+                    put_newPDFdetail(pdf_info_id, 14, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 15, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 16, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 17, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 18, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 19, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 20, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 21, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 22, "", 1, 1)
+                    put_newPDFdetail(pdf_info_id, 23, "", 1, 1)
+            result_split = 1
+
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
-            # print("type_doc:" + type_doc)
-            pdfs = get_projectPDFById(pro_id, type_doc)
             pdf = get_pdfDetailByIds(pro_id, pdf_id)
+            try:
+                pdfs = get_projectPDFById(pro_id, type_doc)
+            except:
+                print("No se puede obtener los PDFs")
             """Verificar pdf_details, encontrados y no encontradps"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]
             pdf['listnpages'] = list_npages
 
+            # AQUI, agregar un campo en una tabla para distinguir si fue duplicado ...
             # get data for pdf_file
+            if pdf['double']>0:
+                view_id = pdf['double']
+            else:
+                view_id = pdf['id']
+
             pdf_path = {
                     'name':        pdf['name'],
                     'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
-                    'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf['id']) + 'page_0.jpg',
+                    'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(view_id) + 'page_0.jpg',
                     'num_pages':   int(pdf['npages']),
                     }
             pdf['pdf_path'] = pdf_path

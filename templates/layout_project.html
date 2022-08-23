@@ -68,16 +68,16 @@
                 {% if current_user.is_authenticated %}
                     {% if pdf %}
                         <li>
-                            <a style="padding-left: 1rem;" href="{{ url_for('main.project_pdfs', id=pro_id) }}"><b>PDFs</b></a>
+                            <a style="padding-left: 1rem; text-align: center;" href="{{ url_for('main.project_pdfs', id=pro_id) }}"><b>PDFs</b></a>
                         </li>
                         {% for mypdf in pdfs %}
-                        <li style="padding:0 0 0 5px;">
+                        <li style="padding:4px 2px 0 2px; margin: 0 0 0 5px; border-bottom: 1px dashed #EEE;">
                             <span>
-                            <a style="font-size: 0.75rem; padding: 0rem 0.25rem 0.5rem 0.5rem; display: inline-flex; width: 90%;" href="{{ url_for('main.project_pdf', pdf_id=mypdf.pdf_id) }}">
-                                <i class="fas fa-copy" style="margin-right: 0;"><br>
+                            <a style="font-size: 0.75rem; padding: 0rem 0.2rem 0.5rem 0.2rem; display: inline-flex; width: 90%;" href="{{ url_for('main.project_pdf', pdf_id=mypdf.pdf_id) }}">
+                                
                                 <b style="font-size: 0.8rem; font-family:'Lato'; color: #498DB7;">[{{ mypdf.pdf_i }}]</b>
-                                </i>
-                                <div>{{ mypdf.pdf_name }}</div>
+                                &nbsp;
+                                <div style="text-align:justify; padding: 0 2px;">{{ mypdf.pdf_name }}</div>
                             </a>
                             {% if pdf_len == 1 %}
                             <div style="margin: 0; display:inline-grid; width: 0;">
@@ -87,6 +87,9 @@
                                 <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
                                     <span class="fa-fw select-all fas"></span>
                                 </a>
+                                <a style="padding: 0; margin: 0; width: 20px;" href="" title="Duplicar" onclick="doublePDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <span class="fa-fw select-all fas"></span>
+                                </a>
                             </div>
                             {% else %}
                             <div style="margin: 0; display:inline-grid; width: 0;">
@@ -95,6 +98,9 @@
                                 </a>
                                 <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
                                     <span class="fa-fw select-all fas"></span>
+                                </a>
+                                <a style="padding: 0; margin: 0; width: 20px;" href="" title="Duplicar" onclick="doublePDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <span class="fa-fw select-all fas"></span>
                                 </a>
                             </div>
                             {% endif %}

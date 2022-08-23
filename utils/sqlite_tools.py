@@ -22,9 +22,37 @@ def get_pdfById(cursor, tablename, pro_id, pdf_id):
     """Get column names of main table, given its name and a cursor (or connection) to the database.
     """
     query = f"""
-                SELECT a.pdf_name, a.pdf_npages, b.pdf_pages
+                SELECT a.pdf_name, a.pdf_npages, b.pdf_double, b.pdf_pages
                 FROM  {tablename} a INNER JOIN pro_pdf_details b ON a.pdf_id = b.pdf_id
                 WHERE a.pdf_id = "{pdf_id}" and b.pro_id = "{pro_id}"
+            """
+    print("QUERY", query)
+    cursor.execute(query)
+    return cursor.fetchone()
+
+# AQUI
+def get_pdfInfoById(pdf_id):
+    """Get column names of main table, given its name and a cursor (or connection) to the database.
+    """
+    sqliteConnection = sqlite3.connect(data_base)
+    cursor = sqliteConnection.cursor()
+    query = f"""
+                SELECT pdf_name, pdf_npages, pdf_size
+                FROM  pdf_info
+                WHERE pdf_id = "{pdf_id}"
+            """
+    cursor.execute(query)
+    return cursor.fetchone()
+
+def get_pdfDetailById(pro_id, pdf_id):
+    """Get column names of main table, given its name and a cursor (or connection) to the database.
+    """
+    sqliteConnection = sqlite3.connect(data_base)
+    cursor = sqliteConnection.cursor()
+    query = f"""
+                SELECT pdf_id, pdf_name, pdf_type, pdf_pages, pdf_visible
+                FROM  pro_pdf_details
+                WHERE pdf_id = "{pdf_id}" and pro_id = "{pro_id}"
             """
     cursor.execute(query)
     return cursor.fetchone()
@@ -729,7 +757,7 @@ def edit_PDF(pro_id, pdf_id, pdf_dettype):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    UPDATE "{table_name}" SET pdf_type="{pdf_dettype}"
+                    UPDATE "{table_name}" SET pdf_type='{pdf_dettype}'
                     WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
                 """
         # print(query)
@@ -753,8 +781,9 @@ def put_newPDF(pdf=dict()):
         cursor = sqliteConnection.cursor()
         query = f"""
                     INSERT INTO "{table_name}" (pdf_name, pdf_npages, pdf_size, pdf_created) 
-                    VALUES ("{pdf['name']} ", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
+                    VALUES ("{pdf['name']}", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
                 """
+        # print("newPDF", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -768,15 +797,15 @@ def put_newPDF(pdf=dict()):
         
         return id
 
-def put_newPPdetail(id, pdf, name, type_doc, pages, visible, current_date):
+def put_newPPdetail(id, pdf, name, type_doc, double, pages, visible, current_date):
     table_name = 'pro_pdf_details'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_pages, pdf_visible, pro_pdf_created)
-                    VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{pages}", "{visible}", "{current_date}")
+                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_double, pdf_pages, pdf_visible, pro_pdf_created)
+                    VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{double}", "{pages}", "{visible}", "{current_date}")
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -787,7 +816,7 @@ def put_newPPdetail(id, pdf, name, type_doc, pages, visible, current_date):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            print("The SQLite connection is closed")
+            print("The SQLite connection is WRONG")
         
         return result
 
@@ -946,7 +975,7 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         pdf_info = get_pdfById(cursor, 'pdf_info', pro_id, pdf_id)
-        pdf_name, pdf_npages, pdf_pages = pdf_info
+        pdf_name, pdf_npages, pdf_double, pdf_pages = pdf_info
         query = f"""
                     SELECT b.det_id, b.det_attribute, c.att_name, c.att_type, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
@@ -979,6 +1008,7 @@ def get_pdfDetailByIds(pro_id, pdf_id):
             'id':        pdf_id,
             'name':      pdf_name,
             'npages':    pdf_npages,
+            'double':    pdf_double,
             'pages':     pdf_pages,
             'foundlist': pdf_foundlist,
         }
