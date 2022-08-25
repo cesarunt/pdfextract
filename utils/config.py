@@ -103,7 +103,7 @@ __C.PROCESS = edict()
 __C.PROCESS.USE_GPU = False
 
 # Percentage to change if posible to process service
-__C.PROCESS.LIMIT_CPU = 90
+__C.PROCESS.LIMIT_CPU = 20
 
 # FILES
 __C.FILES = edict()

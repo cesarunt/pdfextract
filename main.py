@@ -879,6 +879,7 @@ def action_thesis_mul():
             
             # Save results on database, Get data from project_info
             project = get_projectById(pro_id)
+            project01 = project[0]
             n_process = int(project[0]["pro_n_process"]) + 1
 
             # Put data on pro_pdf_details, Update data on project_info
@@ -887,9 +888,10 @@ def action_thesis_mul():
                 print("Se actualizó con éxito project_info")
                     
         else:
+            project01 = None
             result_file_text = "El servidor está procesando, espere un momento."
     
-    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, project=project[0], pro_id=pro_id)
+    return render_template('thesis_mul.html', result_save=result_save, result_file_text=result_file_text, result_invalid_text=result_invalid_text, result_file_down = result_file_down, project=project01, pro_id=pro_id)
 
 """
     PROJECT PDF 

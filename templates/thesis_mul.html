@@ -187,7 +187,10 @@
                                         {% if result_save %}
                                         <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-word.png') }}">
                                         {% else %}
-                                        <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
+                                            <img class="card-img-logo" src="{{ url_for('static', filename='img/doc-error.png') }}">
+                                            <p>
+                                                {{ result_file_text }}
+                                            </p>
                                         {% endif %}
                                     </div>
                                     {% if result_save %}
