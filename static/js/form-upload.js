@@ -3,6 +3,7 @@ var variables_select = document.getElementById("keywords_select");
 var variables_label = document.getElementById("keywords_label");
 var keywords_out = document.getElementById("keywords_out");
 var keywords_in = document.getElementById("keywords_in");
+var keywords = document.getElementById("keywords");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
 var districts = document.getElementById("district");
@@ -101,6 +102,25 @@ if (keyword) {
   });
 }
 
+// ACTIVE FILTER FOR BACKGROUNDS AND FRAMEWORKS
+function activeBack(_this) {
+  document.getElementById("filter_frame").classList.add("d-none");
+  document.getElementById("filter_back").classList.remove("d-none");
+}
+
+function activeFrame(_this) {
+  document.getElementById("filter_back").classList.add("d-none");
+  document.getElementById("filter_frame").classList.remove("d-none");
+}
+
+// SHOW ATTRIBUTES
+function showAttributes(pro_id, pdf_i) {
+  document.getElementById("att_"+pro_id+"_"+pdf_i).classList.remove("d-none");
+}
+
+function closeAttribute(pro_id, pdf_i) {
+  document.getElementById("att_"+pro_id+"_"+pdf_i).classList.add("d-none");
+}
 
 // ADD VARIABLE FUNCTION
 // --------------------------------------------------------------------------------------------------------

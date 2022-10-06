@@ -75,8 +75,8 @@
                             </div>
                             <div class="row g-2">
                                 <div class="mb-3 col-md-4">
-                                    <select name="department" id="department" class="form-select col-md-6" required>
-                                        <option value="" selected>Seleccione el departamento</option>
+                                    <select name="department" id="department" class="form-select col-md-6" style="width: 100% !important;" required>
+                                        <option value="" selected>Departamento</option>
                                         {% for department in departments %}
                                             {% if department.dpt_id == project.pro_department %}
                                             <option value="{{department.dpt_id}}" selected>{{department.dpt_name}}</option>
@@ -140,21 +140,25 @@
                             <div class="line" style="margin: 10px auto;"></div>
                             <div class="col-md-12 col-lg-12 text-center">
                                 <div class="col-sm-12">
-                                    <div class="form-check form-check-inline">
-                                        {% if project.pro_type_a == 1 %}
-                                        <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
-                                        {% else %}
-                                        <input class="form-check-input" type="checkbox" name="type_a" value="A">
-                                        {% endif %}
-                                        <label class="form-check-label" for="inlineCheckbox1">Antecedentes</label>
+                                    <div class="form-check form-check-inline" style="margin-top: 10px;">
+                                        <div class="form-check">
+                                            {% if project.pro_type_a == 0 %}
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A">
+                                            {% else %}
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            {% endif %}
+                                            <label class="form-check-label" for="inlineCheckbox1">Antecedentes</label>
+                                        </div>
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        {% if project.pro_type_m == 1 %}
-                                        <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
-                                        {% else %}
-                                        <input class="form-check-input" type="checkbox" name="type_m" value="M">
-                                        {% endif %}
-                                      <label class="form-check-label" for="inlineCheckbox2">Marco Teórico</label>
+                                    <div class="form-check form-check-inline" style="margin-top: 10px;">
+                                        <div class="form-check">
+                                            {% if project.pro_type_m == 0 %}
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M">
+                                            {% else %}
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            {% endif %}
+                                            <label class="form-check-label" for="inlineCheckbox2">Marco Teórico</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

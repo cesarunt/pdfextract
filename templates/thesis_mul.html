@@ -58,28 +58,59 @@
                                                     <div class="tab-content" id="pills-tabContent" style="padding: 0 5px 10px;">
                                                         {% for pdf in pdfs %}
                                                         <div class="tab-pane fade" id="page_{{pdf.pdf_id}}" role="tabpanel" aria-labelledby="page_tab_{{pdf.pdf_id}}">
-                                                            <div class="col-sm-12" style="font-size: smaller; display: inline-flex;">
-                                                                <div class="col-sm-6 col-md-6" style="width: 55%; margin: 5px;">
-                                                                    <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="allpage_{{pdf.pdf_id}}" value="" onclick="checkAll(this, '{{pdf.pdf_id}}')">&nbsp;Seleccionar todas las páginas&nbsp;
-                                                                </div>
-                                                                <div class="col-sm-6 col-md-6">
+                                                            <div class="col-sm-12 col-md-6" style="width: 100%; margin: 0 0 5px 0;">
+                                                                <input class="form-check-input" style="margin-left: 0;" type="checkbox" name="all_page" id="allpage_{{pdf.pdf_id}}" value="" onclick="checkAll(this, '{{pdf.pdf_id}}')">&nbsp;Seleccionar todas las páginas&nbsp;
+                                                            </div>
+                                                            <div class="col-sm-12 col-md-6" style="font-size: smaller; display: flex;">
+                                                                <div class="col-sm-6" style="width: 80%; margin: 0;">
                                                                     <input type="hidden" name="pdf_nameid" id="pdf_nameid" value="{{pdf.pdf_id}}" />
                                                                     {% if (project.pro_type_a == 1) %}
-                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" checked>
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" onclick="activeBack(this, '{{pdf.pdf_id}}')" checked>
                                                                     {% else %}
-                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" disabled>
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" onclick="activeBack(this, '{{pdf.pdf_id}}')" disabled>
                                                                     {% endif %}
                                                                     <label class="form-check-label" for="radio1">Antecedentes</label><br>
+                                                                    
                                                                     {% if (project.pro_type_m == 1) %}
-                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2">
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2" onclick="activeFrame(this, '{{pdf.pdf_id}}')">
                                                                     {% else %}
-                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2" disabled>
+                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2" onclick="activeFrame(this, '{{pdf.pdf_id}}')" disabled>
                                                                     {% endif %}
                                                                     <label class="form-check-label" for="radio2">Marco Teórico</label>
-                                                                    <!-- <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="A" id="radio1" checked>
-                                                                    <label class="form-check-label" for="radio1">Antecedentes</label><br>
-                                                                    <input class="form-check-input" type="radio" name="type_{{pdf.pdf_id}}" value="M" id="radio2">
-                                                                    <label class="form-check-label" for="radio2">Marco Teórico</label> -->
+                                                                </div>
+                                                                <div class="col-sm-6" id="filter_back_{{pdf.pdf_id}}" style="width: 120%; margin: 0;">
+                                                                    <!-- <input type="hidden" name="pdf_nameid" id="pdf_nameid" value="{{pdf.pdf_id}}" /> -->
+                                                                    <input class="form-check-input" type="radio" name="nation_{{pdf.pdf_id}}" value="N" id="radio1" checked>
+                                                                    <label class="form-check-label" for="radio1">Nacional</label><br>
+                                                                    
+                                                                    <input class="form-check-input" type="radio" name="nation_{{pdf.pdf_id}}" value="I" id="radio2">
+                                                                    <label class="form-check-label" for="radio2">Internacional</label>
+                                                                </div>
+                                                                <div class="col-sm-6 d-none" id="filter_frame_{{pdf.pdf_id}}" style="width: 120%; margin: 0;">
+                                                                    <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
+                                                                        <div class="form-check" style="padding-left: 1.25rem;">
+                                                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
+                                                                            <label class="form-check-label" for="inlineCheckbox1">Definición</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
+                                                                        <div class="form-check" style="padding-left: 1.25rem;">
+                                                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
+                                                                            <label class="form-check-label" for="inlineCheckbox2">Importancia</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
+                                                                        <div class="form-check" style="padding-left: 1.25rem;">
+                                                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
+                                                                            <label class="form-check-label" for="inlineCheckbox1">Modelos</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
+                                                                        <div class="form-check" style="padding-left: 1.25rem;">
+                                                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
+                                                                            <label class="form-check-label" for="inlineCheckbox2">Concept Dimen</label>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <hr style="margin:10px 0;">

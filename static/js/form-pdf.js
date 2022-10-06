@@ -184,11 +184,6 @@ if(cancelPDF_btn)
   })
 }
 
-// Function to update the input placeholder
-function input_pdf_file() {
-//   file_PDF_label.innerText = inputPDF.files[0].name;
-}
-
 // Function to reset the upload
 function resetPDFUpload() {
   // Reset the input video element
@@ -672,4 +667,15 @@ function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
     request.open("POST", url);
     request.send(data);
   }
+}
+
+// ACTIVE FILTER FOR BACKGROUNDS AND FRAMEWORKS
+function activeBack(_this, pdf_id) {
+  document.getElementById("filter_frame_"+pdf_id).classList.add("d-none");
+  document.getElementById("filter_back_"+pdf_id).classList.remove("d-none");
+}
+
+function activeFrame(_this, pdf_id) {
+  document.getElementById("filter_back_"+pdf_id).classList.add("d-none");
+  document.getElementById("filter_frame_"+pdf_id).classList.remove("d-none");
 }

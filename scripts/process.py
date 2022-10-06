@@ -11,22 +11,19 @@ from utils.process_data import *
 from utils.sqlite_tools import *
 from utils.config import PATTERN_METHOD_EN, cfg
 
-# def clear_report(files_output):
-#     open(files_output+"/background.txt", "w").close()
 
-def addText_view(line, att_id, page):
-    try:    
-        _ = put_newPDFdetail(pdf_id, att_id, line, page, 1)
+def addText_view(value, att_id, page):
+    try:
+        _ = put_newPDFdetail(pdf_id, att_id, value, page, 1)
     except:
         print("Error en registro del PDF details")
 
 def removeAuthorsDuplicates(lst):
     return [t for t in (set(tuple(i) for i in lst))]
 
-def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
+def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val):
     # clear_report(files_output)
     fname = os.listdir(files_split+"/")
-    # fname.sort(key=lambda f: int(re.sub('\D', '', f)))
     precedes = [x for x in fname if '.DS_Store' not in x]
     fname = sorted(precedes)
     length = len(fname)
@@ -36,10 +33,7 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
     global attributes
 
     pdf_id = pdf_info_id
-    print("pdf_id", pdf_id)
     attributes = []
-    # text_pdf = []
-    # is_article = True
 
     page = 0
     language = "es"
@@ -111,34 +105,17 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
     # PAGE PATTERN
     pagem = ""
     pagem_band = False
-    # DEFINITION PATTERN
-    definition = ""
-    definition_band = False
-    # IMPORTANCE PATTERN
-    importance = ""
-    importance_band = False
-    # MODELS PATTERN
-    models = ""
-    models_band = False
-    # MODELS PATTERN
-    models = ""
-    models_band = False
-    # CONCEPT PATTERN
-    concept = ""
-    concept_band = False
-
-    # PATTERN_OBJE = []
-    level_appl = False; level_pred = False; level_expi = False; level_rela = False; level_desc = False; level_expo = False
 
     if len(pdfs)>0:
         list_pages = pdfs[str(pdf_id)]
         length = len(list_pages)
     else:
-        # list_pages = range(length)
         list_pages = range(pdf_npages)
     
-    # print("list_pages", len(list_pages))
+    print("PAGES ", list_pages)
+    print("list_pages", len(list_pages))
     np = 0
+    key_att_ids = []
     for page in list_pages: #Repeat each operation for each document.
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================
@@ -147,10 +124,8 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
         text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
         text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
-        # print(text_html)
         # 2. GET THE LANGUAGE
         # ============================================================================================
-
         if language_band == False:
             if page == 0:
                 language = lang_getLanguage(text_page)
@@ -199,14 +174,12 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                         patt = re.search(rf"\b{item}\b", key_on)
                         if patt != None :
                             resumen_font = value
-                            # print("Resumen font: " + str(resumen_font))
                             break
                 if intro_font == 0 : 
                     for item in PATTERN_INTRO :
                         patt = re.search(rf"\b{item}\b", key_on)
                         if patt != None :
                             intro_font = value
-                            # print("\nIntroducción font: " + str(intro_font))
                             break
                 if value > 0 :
                     pageresum_list.append(value)
@@ -294,7 +267,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                                     for key_split in key_name:
                                         # Validar si ya existe
                                         authors_list.insert(len(authors_list)-1, tuple([key_split, value]))
-
                         # 3er recorrido authors_list, para obtener la lista final de __authors_name
                         for key, value in authors_list :
                             if len(key)>1 :
@@ -312,7 +284,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
             # AUTORES (ANTECEDENTES) ............
             if objective == "":     objective = getData_LongText(resumen_text, PATTERN_OBJE, 'E', '. ')
             if objective == "":     objective = getData_LongText(text_page, PATTERN_OBJE, 'E', '. ')
-            # -----------
 
             # Getting Article
             if article_band == False:  article_band, article_text = getData_ResultArticle(text_page, PATTERN_ARTI)
@@ -369,8 +340,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                     methodology_text_, methodology_res, _, _, _ = getData_ResultMethodology(pagelines_list, methodology_pos, PATTERN_METHOD, 20, methodology_res, font_max, font_submax, font_lastmax)
                     if methodology_text_ != "" :
                         methodology_text = methodology_text + methodology_text_
-                    # else :
-                    #     methodology_text = ""
                 if methodology_res :
                     methodology_text_list = methodology_text.split("\n")
                     for item in methodology_text_list:
@@ -391,7 +360,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
             # ============================================================================================
             # finding the title of methodology using PATTERN_RESU
             if result_title=="":
-                # print("\nIntro: " + str(intro_font))
                 result_title, result_pos = getData_TitleResumen_(pagelines_list, PATTERN_RESU, 4, 4, intro_font)
                 # print("\nResult Title:" + result_title + " mode:" + str(pagefonts_mode))
             if result_title != "":
@@ -402,8 +370,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                     result_text_, result_res, _, _, _ = getData_ResultMethodology(pagelines_list, result_pos, PATTERN_RESU, 8, result_res, font_max, font_submax, font_lastmax)
                     if result_text_!= "" :
                         result_text = result_text + result_text_
-                    # else :
-                    #     result_text = ""
                 if result_res :
                     result_text = result_text.replace(".\n\n", "._")
                     result_text_list = result_text.split("\n\n")
@@ -418,7 +384,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
             # finding the title of methodology using PATTERN_METHOD
             if conclusion_title=="":
                 conclusion_title, conclusion_pos = getData_TitleResumen_(pagelines_list, PATTERN_CONC, 9, 9, intro_font)
-                # print("\nConclusions Title:" + conclusion_title)
             if conclusion_title != "":
                 # Desde este punto (pagina) comienza el texto para la sección de conclusiones
                 if conclusion_text == "" :
@@ -427,8 +392,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                     conclusion_text_, conclusion_res, _, _, _ = getData_ResultMethodology(pagelines_list, conclusion_pos, PATTERN_CONC, 18, conclusion_res, font_max, font_submax, font_lastmax)
                     if conclusion_text_!= "" :
                         conclusion_text = conclusion_text + conclusion_text_
-                    # else :
-                        # conclusion_text = ""
                 if conclusion_res :                  
                     conclusion_text = conclusion_text.replace(".\n\n", "._")
                     conclusion_text_list = conclusion_text.split("\n\n")
@@ -519,18 +482,18 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
             if pagem and pagem_band == False:
                 addText_view(pagem, 19, page+1)
                 pagem_band = True
-            if definition and definition_band == False:
-                addText_view(definition, 20, page+1)
-                definition_band = True
-            if importance and importance_band == False:
-                addText_view(importance, 21, page+1)
-                importance_band = True
-            if models and models_band == False:
-                addText_view(models, 22, page+1)
-                models_band = True
-            if concept and concept_band == False:
-                addText_view(concept, 23, page+1)
-                concept_band = True
+                        
+            if len(key_att_ids) == 0:
+                for value in pdf_attributes :
+                    key_result, key_attributes = get_keys_attr(type_val, value)
+                    # print("key_attributes", key_attributes)
+                    if key_result:
+                        for value in key_attributes :
+                            key_att_ids.append(value[0])
+
+                if len(key_att_ids) > 0:
+                    for key in key_att_ids:
+                        addText_view("", key, page+1)
 
             if title_ctrl == True and title_text!="" and np == length-1 :
                 if title_band == False:
@@ -545,18 +508,6 @@ def pdf_process(files_split, pdf_info_id, pdfs, pdf_npages, type_val):
                     addText_view(volume, 18, 1)
                 if pagem_band == False:
                     addText_view(pagem, 19, 1)
-                if definition_band == False:
-                    addText_view(definition, 20, 1)
-                if importance_band == False:
-                    addText_view(importance, 21, 1)
-                if models_band == False:
-                    addText_view(models, 22, 1)
-                if concept_band == False:
-                    addText_view(concept, 23, 1)
-                    
-                # addText_view("http://", 12, pdf_npages)
-                # addText_view("_", 13, 1)
-        
         np += 1
 
     return language, title_text

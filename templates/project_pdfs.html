@@ -9,41 +9,106 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body" style="padding: 1rem 0.5rem;">
-                        {% if pdf %}   
-                            <div id="alert_wrapper"></div>
-                                <div class="row" style="padding: 0 1rem 2rem; margin-top: -10px;">
-                                    <div class="col-sm-3" style="padding: 0;">
-                                        <div class="pagination" style="text-align: left; position: fixed;">
-                                            <div id="div_found" class="text-center">
-                                                <!-- ATRIBUTOS ENCONTRADOS -->
-                                                {% for detail in pdf.foundlist %}
-                                                    {% if detail.det_visible == 1 %}
-                                                    <li style="padding:3px 0 0 0;">
-                                                        <input type="hidden" id="det_type" value="{{detail.det_type}}" />
-                                                        {% if detail.det_i > 8 %}
-                                                        <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: -181px; z-index: 1;" class="d-none">
-                                                            {% if detail.det_value %}
-                                                            <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
-                                                            {% else %}
-                                                            <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
-                                                            {% endif %}
-                                                            <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
-                                                                <i class="fas fa-save"> Text </i>
-                                                            </button>    
-                                                        </div>
+                        {% if pdf %}
+                        <div id="alert_wrapper"></div>
+                        <div class="row" style="padding: 0 1rem 2rem; margin-top: -10px;">
+                            <div class="col-sm-3" style="padding: 0;">
+                                <div class="pagination" style="text-align: left; position: fixed;">
+                                    <div id="div_found" class="text-center">
+                                        <!-- ATRIBUTOS ENCONTRADOS -->
+                                        {% if pdf.type == 'A' %}
+                                            <!-- <p>Antecedentes</p> -->
+                                            {% for detail in pdf.foundlist %}
+                                                {% if detail.det_visible == 1 %}
+                                                <li style="padding:3px 0 0 0;">
+                                                    <input type="hidden" id="det_type" value="{{detail.det_type}}" />
+                                                    {% if detail.det_i > 8 %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: -181px; z-index: 1;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
                                                         {% else %}
-                                                        <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: 31px; z-index: 1;" class="d-none">
-                                                            {% if detail.det_value %}
-                                                            <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
-                                                            {% else %}
-                                                            <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
-                                                            {% endif %}
-                                                            <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
-                                                                <i class="fas fa-save"> Text </i>
-                                                            </button>    
-                                                        </div>
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
                                                         {% endif %}
-                                                        <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> Text </i>
+                                                        </button>    
+                                                    </div>
+                                                    {% else %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: 31px; z-index: 1;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
+                                                        {% endif %}
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> Text </i>
+                                                        </button>    
+                                                    </div>
+                                                    {% endif %}
+                                                    <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: small;">{{ detail.det_name }} &nbsp;</label>
+                                                    <button type="button" name="vectors" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{pdf.pages_one_text}}', '{{ pdf.id }}')" style="opacity: 0.5;">
+                                                        <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
+                                                        <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
+                                                        <input type="hidden" id="det_width-{{detail.det_name}}" value="{{detail.det_width}}" />
+                                                        <input type="hidden" id="det_height-{{detail.det_name}}" value="{{detail.det_height}}" />
+                                                        <i class="fas fa-vector-square"></i>
+                                                    </button>
+                                                    <label for="state" class="form-label" style="margin-bottom: 0.15rem;">
+                                                        <select id="page_{{detail.det_id}}-{{detail.det_attribute}}" class="form-select" style="display: inline-block; width: auto; font-size:x-small; padding-right: 1.5rem;" required onchange="selectPage(this.value, '{{pdf.pages_zero_text}}', '{{ pdf.id }}')" disabled>
+                                                            {% for x in pdf.pages_one_list %}
+                                                            <option value="{{x}}">{{ x }}</option>
+                                                            {% endfor %}
+                                                            <option value="{{detail.det_npage}}" selected>{{detail.det_npage}}</option>
+                                                        </select>
+                                                    </label>
+                                                    <button type="button" name="closes" id="close_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary d-none" onclick="closeAttribute(this.id)">
+                                                        <i class="fas fa-window-close"></i>
+                                                    </button>
+                                                    {% if detail.det_i > 2 %}
+                                                    <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; color: red; border: 1px dotted gray;">
+                                                        <i class="fas fa-backspace"></i>    
+                                                    </button>
+                                                    {% else %}
+                                                    <button type="submit" name="removes" disabled id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" style="opacity: 0.25; background-color: white; color: red; border: 1px dotted gray;">
+                                                        <i class="fas fa-backspace"></i>    
+                                                    </button>
+                                                    {% endif %}
+                                                </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <!-- <p>Marco Teórico</p> -->
+                                            {% for detail in pdf.foundlist %}
+                                                
+                                                {% if project.pro_type_m == 1 and detail.det_visible == 1  %}
+                                                <li style="padding:3px 0 0 0;">
+                                                    <input type="hidden" id="det_type" value="{{detail.det_type}}" />
+                                                    {% if detail.det_i > 8 %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: -181px; z-index: 1;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
+                                                        {% endif %}
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> Text </i>
+                                                        </button>    
+                                                    </div>
+                                                    {% else %}
+                                                    <div id="divtext_{{detail.det_name}}" style="position: absolute; height: 180px; width: 233px; background-color: white; border: 0px solid #666; margin-top: 31px; z-index: 1;" class="d-none">
+                                                        {% if detail.det_value %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area">{{ detail.det_value }}</textarea><br>
+                                                        {% else %}
+                                                        <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
+                                                        {% endif %}
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                            <i class="fas fa-save"> Text </i>
+                                                        </button>    
+                                                    </div>
+                                                    {% endif %}
+
+                                                    {% if detail.det_name  %}
+                                                        <label for="state" class="form-label" style="width: 99px; text-align: right; font-size: 0.78rem; margin-bottom: 0; line-height: 1.2;">{{ detail.det_name }}</label>
                                                         <button type="button" name="vectors" id="vector_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="activeAttribute(this.id, '{{pdf.pages_one_text}}', '{{ pdf.id }}')" style="opacity: 0.5;">
                                                             <input type="hidden" id="det_x-{{detail.det_name}}" value="{{detail.det_x}}" />
                                                             <input type="hidden" id="det_y-{{detail.det_name}}" value="{{detail.det_y}}" />
@@ -71,78 +136,84 @@
                                                             <i class="fas fa-backspace"></i>    
                                                         </button>
                                                         {% endif %}
-                                                    </li>
+                                                        
                                                     {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                            <div id="add_attribute" style="width: 100%;">
-                                                <a href="#" onClick="addAttribute()" style="padding: 10px 5px; margin-top: 5px;">Agregar Atributo</a>
-                                            </div>
-                                            <li style="width: 230px; margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
-                                                <div id="div_attribute" style="text-align: center;" class="d-none">
-                                                    <input style="width: 50%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="..." class="form-control">
-                                                    <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
-                                                        <i class="fas fa-save"> T </i>
-                                                    </button>
-                                                    <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
-                                                        <i class="fas fa-window-close"></i>
-                                                    </button>
-                                                </div>
-                                            </li>
-                                        </div>  
+                                                </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                        {% endif %}
+                                        
                                     </div>
-                                    <div class="col-sm-9">
-                                        <div id="canvasContainer" style="width: 100%; height: auto;">
-                                            <div id="buttons-header" style="width: 720px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
-                                                <div id="buttons-close" style="width: 41%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
-                                                    <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
-                                                        <i class="fas fa-save"> &nbsp;Imagen</i>
-                                                    </button>
-                                                </div>
-                                                &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
-                                                <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;" disabled>
-                                                <input type="hidden" id="select_page" value="" />
-                                                <input type="hidden" id="pages_text" value="" />
-                                                <input type="hidden" id="pages_pos" value="" />
-                                                <div id="buttons-actions" style="width: 41%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
-                                                    <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
-                                                    <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'down')" disabled><i class="fas fa-arrow-alt-circle-left"></i></button>
-                                                    <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'up')" disabled><i class="fas fa-arrow-alt-circle-right"></i></button>
-                                                </div>
-                                            </div>
-                                            <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px;">
-                                                <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
-                                            </div>
+                                    <div id="add_attribute" style="width: 100%;">
+                                        <a href="#" onClick="addAttribute()" style="padding: 10px 5px; margin-top: 5px;">Agregar Atributo</a>
+                                    </div>
+                                    <li style="width: 230px; margin: 5px 0 5px; border-bottom:#CCC 1px solid; text-align: center;">
+                                        <div id="div_attribute" style="text-align: center;" class="d-none">
+                                            <input style="width: 50%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="..." class="form-control">
+                                            <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
+                                                <i class="fas fa-save"> T </i>
+                                            </button>
+                                            <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
+                                                <i class="fas fa-window-close"></i>
+                                            </button>
                                         </div>
-                                        <div class="mb-3" style="margin-bottom: 0 !important;">
-                                            <form method="POST" action="save_pdf_mul" enctype="multipart/form-data">
-                                                <input type="hidden" name="down_pdf" id="down_pdf" value="{{ pdf.id }}" />
-                                                <input type="hidden" name="down_pro" id="down_pro" value="{{ project.pro_id }}" />
-                                                <p style="text-align: center; margin: 25px 0;">
-                                                    <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;">
-                                                        &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
-                                                    </button><br>
-                                                    <span>Descargar PDF</span>
-                                                </p>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                        {% else %}
-                            <div class="row" style="padding: 0 1rem;">
-                                {% for pdf in pdfs %}
-                                <div class="col-sm-6 col-md-6">
-                                    <div style="margin: 5px 0 10px;">
-                                        <a style="font-size: 0.8rem; border-bottom:#EEE 1px solid; text-align: justify; display: inline-flex; width: 96%; padding: 1px 0 6px;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
-                                            <i class="fas fa-copy" style="font-size: large; margin-right: 0;"><br>
-                                            <b style="font-size:0.75rem; font-family:'Lato'; color: #498DB7;"> [{{ pdf.pdf_i }}]</b>
-                                            </i>
-                                            <div style="padding: 0 10px 5px;">{{ pdf.pdf_fullname }}</div>
-                                        </a>
-                                    </div>
-                                </div>
-                                {% endfor %}
+                                    </li>
+                                </div>  
                             </div>
+                            <div class="col-sm-9">
+                                <div id="canvasContainer" style="width: 100%; height: auto;">
+                                    <div id="buttons-header" style="width: 720px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
+                                        <div id="buttons-close" style="width: 41%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
+                                            <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
+                                                <i class="fas fa-save"> &nbsp;Imagen</i>
+                                            </button>
+                                        </div>
+                                        &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
+                                        <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;" disabled>
+                                        <input type="hidden" id="select_page" value="" />
+                                        <input type="hidden" id="pages_text" value="" />
+                                        <input type="hidden" id="pages_pos" value="" />
+                                        <div id="buttons-actions" style="width: 41%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
+                                            <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
+                                            <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'down')" disabled><i class="fas fa-arrow-alt-circle-left"></i></button>
+                                            <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'up')" disabled><i class="fas fa-arrow-alt-circle-right"></i></button>
+                                        </div>
+                                    </div>
+                                    <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px;">
+                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
+                                    </div>
+                                </div>
+                                <div class="mb-3" style="margin-bottom: 0 !important;">
+                                    <form method="POST" action="save_pdf_mul" enctype="multipart/form-data">
+                                        <input type="hidden" name="down_pdfid" id="down_pdfid" value="{{ pdf.id }}" />
+                                        <input type="hidden" name="down_pdftype" id="down_pdftype" value="{{ pdf.type }}" />
+                                        <input type="hidden" name="down_proid" id="down_proid" value="{{ project.pro_id }}" />
+                                        <p style="text-align: center; margin: 25px 0;">
+                                            <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;">
+                                                &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
+                                            </button><br>
+                                            <span>Descargar PDF</span>
+                                        </p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="row" style="padding: 0 1rem;">
+                            {% for pdf in pdfs %}
+                            <div class="col-sm-6 col-md-6">
+                                <div style="margin: 5px 0 10px;">
+                                    <a style="font-size: 0.8rem; border-bottom:#EEE 1px solid; text-align: justify; display: inline-flex; width: 96%; padding: 1px 0 6px;" href="{{ url_for('main.project_pdf', pdf_id=pdf.pdf_id) }}">
+                                        <i class="fas fa-copy" style="font-size: large; margin-right: 0;"><br>
+                                        <b style="font-size:0.75rem; font-family:'Lato'; color: #498DB7;"> [{{ pdf.pdf_i }}]</b>
+                                        </i>
+                                        <div style="padding: 0 10px 5px;">{{ pdf.pdf_fullname }}</div>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                         {% endif %}
                     </div>
                 </div>

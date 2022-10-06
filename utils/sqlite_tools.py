@@ -3,14 +3,12 @@ from utils.config import cfg
 import sqlite3
 import secrets
 import json
-import os
 
 global data_base
 data_base = cfg.FILES.GLOBAL_PATH + '/db.sqlite'
 
 def get_pdf_info(cursor, tablename, file_pdf):
-    """Get column names of main table, given its name and a cursor (or connection) to the database.
-    """
+    """Get column names of main table, given its name and a cursor (or connection) to the database."""
     query = f"""
                 SELECT pdf_id, pdf_name, pdf_npages FROM {tablename}
                 WHERE pdf_name = "{file_pdf}" 
@@ -18,22 +16,62 @@ def get_pdf_info(cursor, tablename, file_pdf):
     cursor.execute(query)
     return cursor.fetchone()
 
-def get_pdfById(cursor, tablename, pro_id, pdf_id):
-    """Get column names of main table, given its name and a cursor (or connection) to the database.
-    """
+# pdf_attributes
+def get_keys_attr(type_val, attribute):
+    result = False
+    val_def = str(attribute['key_id']) + "_definición"
+    val_imp = str(attribute['key_id']) + "_importancia"
+    val_mod = str(attribute['key_id']) + "_modelos"
+    val_con = str(attribute['key_id']) + "_conceptos"
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                SELECT att_id
+                FROM  pdf_attributes
+                WHERE att_type = "{type_val}" and (att_name = "{val_def}" or att_name = "{val_imp}" or att_name = "{val_mod}" or att_name = "{val_con}")
+            """
+        cursor.execute(query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to get data from ", error)
+    finally:
+        return result, cursor.fetchall()
+
+def get_proKeyById(cursor, tablename, pro_id):
+    """Get column names of main table, given its name and a cursor (or connection) to the database."""
     query = f"""
-                SELECT a.pdf_name, a.pdf_npages, b.pdf_double, b.pdf_pages
+                SELECT b.key_id, c.key_name
+                FROM  ({tablename} a INNER JOIN pro_key_details b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id
+                WHERE a.pro_id = "{pro_id}"
+            """
+    cursor.execute(query)
+    records = cursor.fetchall()
+    pro_keyInfo = []
+
+    for record in records:
+        pro_keyInfo.append({
+                    'key_id':       record[0],
+                    'key_name':     record[1]
+                    })
+
+    return pro_keyInfo
+
+def get_pdfDetById(cursor, tablename, pro_id, pdf_id):
+    """Get column names of main table, given its name and a cursor (or connection) to the database."""
+    query = f"""
+                SELECT a.pdf_name, a.pdf_npages, b.pdf_type, b.pdf_nation, b.pdf_double, b.pdf_pages
                 FROM  {tablename} a INNER JOIN pro_pdf_details b ON a.pdf_id = b.pdf_id
                 WHERE a.pdf_id = "{pdf_id}" and b.pro_id = "{pro_id}"
             """
-    print("QUERY", query)
+    # print("QUERY", query)
     cursor.execute(query)
     return cursor.fetchone()
 
 # AQUI
 def get_pdfInfoById(pdf_id):
-    """Get column names of main table, given its name and a cursor (or connection) to the database.
-    """
+    """Get column names of main table, given its name and a cursor (or connection) to the database."""
     sqliteConnection = sqlite3.connect(data_base)
     cursor = sqliteConnection.cursor()
     query = f"""
@@ -45,12 +83,11 @@ def get_pdfInfoById(pdf_id):
     return cursor.fetchone()
 
 def get_pdfDetailById(pro_id, pdf_id):
-    """Get column names of main table, given its name and a cursor (or connection) to the database.
-    """
+    """Get column names of main table, given its name and a cursor (or connection) to the database."""
     sqliteConnection = sqlite3.connect(data_base)
     cursor = sqliteConnection.cursor()
     query = f"""
-                SELECT pdf_id, pdf_name, pdf_type, pdf_pages, pdf_visible
+                SELECT pdf_id, pdf_name, pdf_type, pdf_nation, pdf_double, pdf_pages, pdf_attributes, pdf_visible
                 FROM  pro_pdf_details
                 WHERE pdf_id = "{pdf_id}" and pro_id = "{pro_id}"
             """
@@ -58,9 +95,7 @@ def get_pdfDetailById(pro_id, pdf_id):
     return cursor.fetchone()
 
 def get_pdfsByProId(cursor, tablename, pro_id):
-    """Get pdf_id list from tablename -> pro_pdf_details
-    """
-    ids = ()
+    """Get pdf_id list from tablename -> pro_pdf_details"""
     query = f"""
                 SELECT pdf_id
                 FROM  {tablename}
@@ -82,7 +117,6 @@ def get_col_names(cursor, tablename):
     return [x[0] for x in reader.description] 
 
 def get_listThesisByWord(keyword):
-    table_name = 'pdf_keywords'
     pdfs = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
@@ -122,8 +156,6 @@ def get_listThesisByWord(keyword):
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT, X, Y, W, H)
 def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rect=dict()):
-    table_name = 'pdf_details'
-    # table_colnames = None
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
@@ -144,13 +176,10 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return result
 
 # SAVE DATA WHEN DRAW RECTANGLE (TEXT)
 def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
-    table_name = 'pdf_details'
-    # table_colnames = None
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
@@ -171,7 +200,6 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return result
 
 # ----------------------------------- FORM UPLOAD -----------------------------------
@@ -181,7 +209,6 @@ def put_newProject(project=dict()):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print(json.dumps(project))
         # print("Connected to SQLite")
         query = f"""
                     INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
@@ -193,13 +220,13 @@ def put_newProject(project=dict()):
         id = cursor.lastrowid
         sqliteConnection.commit()
         result = True
+        print("SAVE put_newProject")
     except sqlite3.Error as error:
         print("Failed to insert data from sqlite table", error)
     finally:
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return result, id
 
 def put_newPKdetail(id, key, current_date):
@@ -224,7 +251,6 @@ def put_newPKdetail(id, key, current_date):
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return result
 
 def get_lastVariable():
@@ -245,7 +271,6 @@ def get_lastVariable():
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return result
 
 def put_newKeyword(key_name, current_date):
@@ -427,7 +452,6 @@ def get_listKeywords():
 
 def get_listProjects(limit=-1):
     # List of TOP 10
-    # print("data_base... ", data_base)
     table_name = 'project_info'
     projects = []
     try:
@@ -582,42 +606,103 @@ def upd_projectProcess(id, n_articles, n_process):
         if sqliteConnection:
             sqliteConnection.close()
             print("The SQLite connection is closed")
-        
         return result
 
-def get_squareProjects_ByWord(keyword):
+def get_squareProjects_ByWord(findby, keyword, typedoc, startYear, endYear):
     table_name = 'project_info'
     projects = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
-        query = f"""
-                    SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created
-                    FROM  (("{table_name}" a LEFT JOIN pro_key_details b ON a.pro_id = b.pro_id) LEFT JOIN key_info c ON b.key_id = c.key_id) INNER JOIN user u ON a.pro_user = u.id
-                    WHERE a.pro_title LIKE "%{keyword}%" OR c.key_name LIKE "%{keyword}%"
-                    ORDER BY a.pro_id DESC
-                """
-        # print(query)
+        if findby == '1':
+            query = f"""
+                        SELECT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
+                        FROM  ((((({table_name} a INNER JOIN pro_pdf_details b ON a.pro_id = b.pro_id) 
+						LEFT JOIN pdf_info c ON b.pdf_id = c.pdf_id) 
+						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info AND (d.det_attribute = 3 OR d.det_attribute = 16))
+						LEFT JOIN user u ON a.pro_user = u.id) 
+						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
+						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
+						WHERE  b.pdf_name LIKE "%{keyword}%" AND b.pdf_type = "{typedoc}" AND b.pdf_visible = 1
+                    """
+            if startYear and endYear:
+                query += f""" 
+                        AND d.det_value >= "{startYear}" AND d.det_value <= "{endYear}"
+                        """
+            query += f"""
+						ORDER BY a.pro_id DESC
+                    """
+        # if findby == '2':
+        #     query = f"""
+        #                 SELECT DISTINCT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created, b.pro_id
+        #                 FROM  ("{table_name}" a LEFT JOIN pro_pdf_details b ON a.pro_id = b.pro_id) INNER JOIN user u ON a.pro_user = u.id
+        #                 WHERE a.pro_title LIKE "%{keyword}%"
+        #                 ORDER BY a.pro_id DESC
+        #             """
+        print("QUERY.... ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        # print(json.dumps(records))
 
-        colors = ['success', 'danger', 'warning', 'info', 'dark']
-        # years = []
+        project = []
+        pdfs = []
+        nation = ""
+        i = 1
+        colors = ['info', 'danger', 'warning', 'info', 'secondary']
+        # secrets.choice(colors)
+        aux_pro_id = 0
         for record in records:
-            # if record[5].split('/')[-1] in years:
-            projects.append({
-                    'pro_id':         record[0],
-                    'pro_title':      record[1],
-                    'pro_career':     record[2],
-                    'pro_n_articles': record[3], 
-                    'pro_n_process':  record[4],
-                    'pro_user_name':  record[5].split(' ')[0],
-                    'pro_created':    record[6],
-                    'pro_color':      secrets.choice(colors)
+            if record[4] == "N" :
+                nation = "Nacional"
+            if record[4] == "I" :
+                nation = "Internacional"
+            if record[4] == "O" :
+                nation = "O"
+            if (aux_pro_id == record[0]):
+                i = i + 1
+                pdfs.append({
+                    'pro_id':        record[0],
+                    'pdf_id':        record[1],
+                    'pdf_name':      record[2][0:250],
+                    'pdf_type':      record[3],
+                    'pdf_nation':    nation,
+                    'pdf_user':      record[5],
+                    'pdf_created':   record[6],
+                    'pdf_year':      record[9],
+                    'pdf_i':         i
+                })
+            else:
+                aux_pro_id = record[0]
+                project = get_projectPDFById(record[0])
+                i = 1
+                pdfs = []
+                pdfs.append({
+                    'pro_id':        record[0],
+                    'pdf_id':        record[1],
+                    'pdf_name':      record[2][0:250],
+                    'pdf_type':      record[3],
+                    'pdf_nation':    nation,
+                    'pdf_user':      record[5],
+                    'pdf_created':   record[6],
+                    'pdf_year':      record[9],
+                    'pdf_i':         i
+                })
+                projects.append({
+                        'pro_id':       project[0]['pro_id'],
+                        'pro_title':    project[0]['pro_title'],
+                        'pro_career':   project[0]['pro_career'],
+                        'pro_articles': project[0]['pro_articles'], 
+                        'pro_process':  project[0]['pro_process'],
+                        'pro_user':     project[0]['pro_user'],
+                        'pro_created':  project[0]['pro_created'],
+                        'pro_exist':    project[0]['pro_id'],
+                        'pro_color':    colors[3],
+                        'pro_uni':      record[7],
+                        'pro_city':     str(record[8]).upper(),  # DEPARTMENT
+                        'pro_year':     record[9],
+                        'pdfs':         pdfs
                     })
+
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
@@ -665,7 +750,7 @@ def put_newPDFattribute(name, type, current_date):
         cursor = sqliteConnection.cursor()
         query = f"""
                     INSERT INTO "{table_name}" (att_name, att_type, att_fecha) 
-                    VALUES ("{name} ", "{type}", "{current_date}")
+                    VALUES ("{name}", "{type}", "{current_date}")
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -688,7 +773,7 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
         cursor = sqliteConnection.cursor()
         query = f"""
                     INSERT INTO "{table_name}" (det_info, det_attribute, det_value, det_npage, det_visible)
-                    VALUES ("{det_info} ", "{det_attribute}", "{det_value}", "{det_npage}", "{det_visible}")
+                    VALUES ("{det_info}", "{det_attribute}", "{det_value}", "{det_npage}", "{det_visible}")
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -703,7 +788,6 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
         return result
 
 def del_itemPDF(det_id):
-    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pdf_details'
     result = False
     try:
@@ -726,7 +810,6 @@ def del_itemPDF(det_id):
         return result
 
 def del_PDF(pro_id, pdf_id):
-    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -750,7 +833,6 @@ def del_PDF(pro_id, pdf_id):
         return result
 
 def edit_PDF(pro_id, pdf_id, pdf_dettype):
-    # data_base = os.path.abspath(os.getcwd())+'/db.sqlite'
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -794,19 +876,19 @@ def put_newPDF(pdf=dict()):
         if sqliteConnection:
             sqliteConnection.close()
             # print("The SQLite connection is closed")
-        
         return id
 
-def put_newPPdetail(id, pdf, name, type_doc, double, pages, visible, current_date):
+def put_newPPdetail(id, pdf, name, type_doc, nation_doc, double, pages, attributes, visible, current_date):
     table_name = 'pro_pdf_details'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_double, pdf_pages, pdf_visible, pro_pdf_created)
-                    VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{double}", "{pages}", "{visible}", "{current_date}")
+                    INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_nation, pdf_double, pdf_pages, pdf_attributes, pdf_visible, pro_pdf_created)
+                    VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{nation_doc}", "{double}", "{pages}", "{attributes}", "{visible}", "{current_date}")
                 """
+        print("QQQ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -817,7 +899,6 @@ def put_newPPdetail(id, pdf, name, type_doc, double, pages, visible, current_dat
         if sqliteConnection:
             sqliteConnection.close()
             print("The SQLite connection is WRONG")
-        
         return result
 
 def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
@@ -845,7 +926,43 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         
         return result
 
-def get_projectPDFById(id, type_doc):
+def get_projectPDFById(pro_id):
+    # List of TOP 10
+    table_name = 'project_info'
+    pp_details = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    SELECT a.pro_id, a.pro_title, a.pro_career, a.pro_n_articles, a.pro_n_process, u.name, a.pro_created
+                    FROM   "{table_name}" a INNER JOIN user u ON a.pro_user = u.id
+                    WHERE  a.pro_id = "{pro_id}"
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        record = cursor.fetchone()
+
+        # for record in records:
+        pp_details.append({
+            'pro_id':      record[0],
+            'pro_title':   record[1],
+            'pro_career':  record[2],
+            'pro_articles':record[3],
+            'pro_process': record[4],
+            'pro_user':    str(record[5]).split(' ')[0],
+            'pro_created': record[6]            
+        })
+        # print("LEN", len(pp_details))
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return pp_details
+
+def get_projectsById(id, type_doc):
     # List of TOP 10
     table_name = 'pro_pdf_details'
     pp_details = []
@@ -855,13 +972,13 @@ def get_projectPDFById(id, type_doc):
         if type_doc == "T":
             # print("Connected to SQLite")
             query = f"""
-                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, a.pdf_name, a.pdf_npages, a.pdf_size
+                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, a.pdf_name, a.pdf_npages, a.pdf_size
                         FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
                         WHERE  b.pro_id = "{id}" AND b.pdf_visible = 1
                     """
         else:
             query = f"""
-                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, a.pdf_name, a.pdf_npages, a.pdf_size
+                        SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, a.pdf_name, a.pdf_npages, a.pdf_size
                         FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
                         WHERE  b.pro_id = "{id}" AND b.pdf_visible = 1 AND b.pdf_type = "{type_doc}"
                     """
@@ -884,15 +1001,15 @@ def get_projectPDFById(id, type_doc):
                 'pro_id':      record[0],
                 'pdf_id':      record[1],
                 'pdf_fullname': text,
-                'pdf_name':    text[0:199],
+                'pdf_name':    text[0:149],
                 'pdf_type':    record[3],
-                'pdf_file':    record[4],
-                'pdf_npages':  record[5],
-                'pdf_size':    record[6],
+                'pdf_nation':  record[4],
+                'pdf_file':    record[5],
+                'pdf_npages':  record[6],
+                'pdf_size':    record[7],
                 'pdf_i':       i
             })
         
-        # print("LEN", len(pp_details))
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -920,10 +1037,7 @@ def get_pdfDetailByProId(pro_id):
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        # print("RECORDS")
-        # for record in records:
-        #     print(record)
-        # input("..... records .....")
+
         i = 0
         for record in records:
             if pdf_records[i][0] == record[1]:
@@ -963,37 +1077,50 @@ def get_pdfDetailByProId(pro_id):
         if sqliteConnection:
             sqliteConnection.close()
             print("The SQLite connection is closed")
-        
         return pdfs
 
 def get_pdfDetailByIds(pro_id, pdf_id):
     table_name = 'pdf_details'
     pdf = dict()
-    pdf_foundlist = []   #   Atributos
+    pdf_foundlist = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
-        pdf_info = get_pdfById(cursor, 'pdf_info', pro_id, pdf_id)
-        pdf_name, pdf_npages, pdf_double, pdf_pages = pdf_info
+        pdf_info = get_pdfDetById(cursor, 'pdf_info', pro_id, pdf_id)
+        pdf_name, pdf_npages, pdf_type, pdf_nation, pdf_double, pdf_pages = pdf_info
+        pro_keylist = get_proKeyById(cursor, 'project_info', pro_id)
         query = f"""
                     SELECT b.det_id, b.det_attribute, c.att_name, c.att_type, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
-                    FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+                    FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) LEFT JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
                     ORDER BY b.det_id ASC
                 """ 
-        # print('pdfDetail', query)
+        print('pdfDetail', query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
         
         i = 0
+        print('pro_keylist', pro_keylist)
         for record in records:
             i = i + 1
+            keyname = record[2]
+            print("record")
+            for key in pro_keylist:
+                print("1", record[2])
+                print("2", key)
+                if str(record[2]).split('_')[0] == str(key['key_id']) :
+                    keyname = key['key_name'] + " " + str(record[2]).split('_')[1]
+                    break
+            # if str(record[2]).split('_')[0] in pro_keylist :
+            #     keyname = 'key'
+            # else:
+            #     keyname = None
             pdf_foundlist.append({
                     'det_id':       record[0],
                     'det_attribute':record[1],
-                    'det_name':     record[2],
+                    'det_name':     keyname,
                     'det_type':     record[3],
                     'det_value':    record[4],
                     'det_npage':    record[5],
@@ -1004,13 +1131,17 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                     'det_height':   record[10],
                     'det_i':        i
                     })
+        # print('pro_keyInfo', type(pro_keyInfo))
+        print('pdf_foundlist', pdf_foundlist)
         pdf = {
             'id':        pdf_id,
             'name':      pdf_name,
             'npages':    pdf_npages,
+            'type':      pdf_type,
+            'nation':    pdf_nation,
             'double':    pdf_double,
             'pages':     pdf_pages,
-            'foundlist': pdf_foundlist,
+            'foundlist': pdf_foundlist
         }
         
         cursor.close()
@@ -1020,5 +1151,4 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         if sqliteConnection:
             sqliteConnection.close()
             print("The SQLite connection is closed")
-        
         return pdf
