@@ -1,9 +1,8 @@
 from curses.ascii import isdigit
 import os, re
 import datetime
-import numpy as np
 import spacy
-from scipy import stats as s
+# from scipy import stats as s
 from bs4 import BeautifulSoup as soup
 from sqlalchemy import true
 from utils.process_pdf import *
@@ -112,8 +111,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
     else:
         list_pages = range(pdf_npages)
     
-    print("PAGES ", list_pages)
-    print("list_pages", len(list_pages))
     np = 0
     key_att_ids = []
     for page in list_pages: #Repeat each operation for each document.
@@ -124,14 +121,15 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
         text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
         text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
+
         # 2. GET THE LANGUAGE
         # ============================================================================================
         if language_band == False:
             if page == 0:
-                language = lang_getLanguage(text_page)
-                print("Language ...", language)
+                # language = lang_getLanguage(text_page)
+                # print("Language ...", language)
+                language = "es"
                 language_band = True
-
             lib_spacy, patterns, patterns_level, patterns_approach = lang_loadPatterns(language)
             BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_RESUM, PATTERN_INTRO, PATTERN_ABST, PATTERN_METHOD, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns
             PATTERN_LEVE_APPL, PATTERN_LEVE_PRED, PATTERN_LEVE_EXPI, PATTERN_LEVE_RELA, PATTERN_LEVE_DESC, PATTERN_LEVE_EXPO = patterns_level
@@ -213,7 +211,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
 
             if (authors_text == "" and language != "" and title_ctrl == True) or (authors_text!="" and title_font>title_font_last) :
                 title_font_last = title_font
-                
                 patt_band = False
                 patt_i = 0
                 for key,value,line in pagelines_list :
@@ -486,7 +483,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
             if len(key_att_ids) == 0:
                 for value in pdf_attributes :
                     key_result, key_attributes = get_keys_attr(type_val, value)
-                    # print("key_attributes", key_attributes)
                     if key_result:
                         for value in key_attributes :
                             key_att_ids.append(value[0])

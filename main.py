@@ -1,6 +1,7 @@
 # -*- coding: utf_8 -*-
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect
+from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect, Response
+from requests import post
 from sqlalchemy import true
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
@@ -305,7 +306,6 @@ def search_db_post():
 @main.route("/create_db", methods=["POST"])
 def create_db_post():
     num_pdfs = 0
-    list_pdfs = None
     result_total = False
 
     if current_user.is_authenticated:
@@ -378,11 +378,14 @@ def create_db_post():
                             put_newPDFdetail(pdf_info_id, 19, "", 1, 1)
                         result_total = True
 
-            if result_total == True :
-                print("El nuevo proyecto fue creado con éxito")
-                one_project = get_projectById(pro_id)
-                list_keywordsOne = get_listKeywordsById(pro_id)
-                return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=pro_id)
+                if result_total == True :
+                    print("El nuevo proyecto fue creado con éxito")
+                    one_project = get_projectById(pro_id)
+                    list_keywordsOne = get_listKeywordsById(pro_id)
+                    return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=pro_id)
+            
+            # if process == '2':
+            #     return Response(status = 204)
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -475,7 +478,7 @@ def thesis_mul_load():
         if 'files[]' not in request.files:
             return redirect(request.url)
 
-        files = request.files.getlist('files[]')
+        # files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d/%m/%Y")
         pdfs = []
         files = request.files.getlist('files[]')
@@ -495,25 +498,27 @@ def thesis_mul_load():
                 # Put data on pdf_info
                 pdf_size = os.path.getsize(path)
                 pdf_npages = pdf_getNpages(path)
-                
-                pdf = {
-                    'name' :     filename,
-                    'npages' :   pdf_npages,
-                    'size' :     pdf_size,
-                    'created' :  current_date
-                }
-                try:
-                    pdf_info_id = put_newPDF(pdf)
-                except:
-                    print("Error en registro del PDF info")
 
-                if pdf_info_id:
-                    pdf_ids.append(pdf_info_id)
-                    img_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
-                    pdf['pdf_id'] = pdf_info_id
-                    pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
-                    pdfs.append(pdf)
-        # print("PDFs: ", pdfs)
+                if pdf_npages > 0 :
+                    pdf = {
+                        'name' :     filename,
+                        'npages' :   pdf_npages,
+                        'size' :     pdf_size,
+                        'created' :  current_date
+                    }
+                    try:
+                        pdf_info_id = put_newPDF(pdf)
+                    except:
+                        print("Error en registro del PDF info")
+
+                    if pdf_info_id:
+                        pdf_ids.append(pdf_info_id)
+                        result_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                        pdf['pdf_id'] = pdf_info_id
+                        pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
+                        pdfs.append(pdf)
+                else:
+                    continue
 
         if (upload == True):
             one_project = get_projectById(pro_id)
@@ -641,61 +646,59 @@ def action_thesis_mul():
 
                 # 1. SPLIT PDF
                 if action is None:
+                    # print("list PDFs", pdfs)
+                    # print("Items PDFs", pdfs.items())
+                    # print("I ", i)
                     if band_parcial == True:
                         pdf_info_id = list(pdfs.items())[i][0]
                     else:
                         pdf_info_id = pdf_ids[i]
                     # 1. Remove and split PDF
-                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id)   # Call pdf splitter function
+                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs)   # Call pdf splitter function
                 
-                type_name = "type_" + str(pdf_info_id)
-                type_val = request.form.get(type_name)
-                nation_name = "nation_" + str(pdf_info_id)
-                nation_val = request.form.get(nation_name)
-                
-                if result_split == 0:
-                    result_invalid += 1
-                    result_invalid_process.append(filename + " ...NO se procesó")
-                if result_split == 2:
-                    result_invalid += 1
-                    result_invalid_process.append(filename + " ...supera el Nro páginas")
-                if result_split == 1:
-                    pdf_attributes = []
-                    # Put data on pdf_info
-                    current_date = date.today().strftime("%d/%m/%Y")
-                    if type_val == 'M':
-                        sqliteConnection = sqlite3.connect(data_base)
-                        cursor = sqliteConnection.cursor()
-                        pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
-                        nation_val = "O"
-                        # print("M_attributes", pdf_attributes)
+                if result_split == -1 and pdf_npages == 0:
+                    continue
+                else:
+                    type_name = "type_" + str(pdf_info_id)
+                    type_val = request.form.get(type_name)
+                    nation_name = "nation_" + str(pdf_info_id)
+                    nation_val = request.form.get(nation_name)
                     
-                    # print("pdf_info_id", pdf_info_id)
-                    # print("pdfs[pdf_info_id]", pdfs[pdf_info_id])
+                    if result_split == 0:
+                        result_invalid += 1
+                        result_invalid_process.append(filename + " ...NO se procesó")
+                    if result_split == 2:
+                        result_invalid += 1
+                        result_invalid_process.append(filename + " ...supera el Nro páginas")
+                    if result_split == 1:
+                        pdf_attributes = []
+                        # Put data on pdf_info
+                        current_date = date.today().strftime("%d/%m/%Y")
+                        if type_val == 'M':
+                            sqliteConnection = sqlite3.connect(data_base)
+                            cursor = sqliteConnection.cursor()
+                            pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
+                            nation_val = "O"
+                                            
+                        # 2. Process PDF
+                        language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
+                        LANGUAGE_PAGE = language
+                        result_valid = 1
                     
-                    # 2. Process PDF
-                    language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
-                    LANGUAGE_PAGE = language
-                    result_valid = 1
-                
-                if result_valid > 0 :
-                    result_save = True
-                    # if type_val == 'M':
-                    #     sqliteConnection = sqlite3.connect(data_base)
-                    #     cursor = sqliteConnection.cursor()
-                    #     pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
-                    
-                    try:
-                        _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, nation_val, 0, pdfs[pdf_info_id], pdf_attributes, 1, current_date)
-                    except:
-                        print("Error en registrar en PRO PDF detail")
+                    if result_valid > 0 :
+                        result_save = True
+                        
+                        try:
+                            _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, nation_val, 0, pdfs[pdf_info_id], pdf_attributes, 1, current_date)
+                        except:
+                            print("Error en registrar en PRO PDF detail")
 
-                if result_invalid > 0 and result_valid == 0 :
-                    result_save = False
-                    result_file_text = "No fue posible procesar"
-                if len(result_invalid_process) > 0 :
-                    result_invalid_text = (',  \n'.join(result_invalid_process))
-                i = i + 1
+                    if result_invalid > 0 and result_valid == 0 :
+                        result_save = False
+                        result_file_text = "No fue posible procesar"
+                    if len(result_invalid_process) > 0 :
+                        result_invalid_text = (',  \n'.join(result_invalid_process))
+                    i = i + 1
             
             # Save results on database, Get data from project_info
             project = get_projectById(pro_id)
@@ -838,7 +841,6 @@ def pdf_post(pdf_id):
             current_date = date.today().strftime("%d/%m/%Y")
             att_value =  request.values.get("new_att")
             att_type =  request.values.get("det_type")
-
             try:
                 response_att, id = put_newPDFattribute(att_value, att_type, current_date)
                 if response_att is True:

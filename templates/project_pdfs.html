@@ -180,11 +180,11 @@
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'up')" disabled><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
                                     </div>
-                                    <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px;">
-                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; opacity: 0.75; margin: 0 auto;" width="700px" height="1000px"></canvas>
+                                    <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 10px 0 10px; margin-left: 100px;">
+                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; left: 100px; opacity: 0.75; margin: 0 auto;" width="500px" height="800px"></canvas>
                                     </div>
                                 </div>
-                                <div class="mb-3" style="margin-bottom: 0 !important;">
+                                <div class="mb-3" style="margin-bottom: 0 !important; margin-left: 25px;">
                                     <form method="POST" action="save_pdf_mul" enctype="multipart/form-data">
                                         <input type="hidden" name="down_pdfid" id="down_pdfid" value="{{ pdf.id }}" />
                                         <input type="hidden" name="down_pdftype" id="down_pdftype" value="{{ pdf.type }}" />

@@ -1,7 +1,7 @@
 # -*- coding: utf_8 -*-
 from utils.config import cfg
 import sqlite3
-import secrets
+# import secrets
 import json
 
 global data_base
@@ -888,7 +888,7 @@ def put_newPPdetail(id, pdf, name, type_doc, nation_doc, double, pages, attribut
                     INSERT INTO "{table_name}" (pro_id, pdf_id, pdf_name, pdf_type, pdf_nation, pdf_double, pdf_pages, pdf_attributes, pdf_visible, pro_pdf_created)
                     VALUES ("{id} ", "{pdf}", "{name}", "{type_doc}", "{nation_doc}", "{double}", "{pages}", "{attributes}", "{visible}", "{current_date}")
                 """
-        print("QQQ", query)
+        # print("QQQ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -1102,14 +1102,14 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         records = cursor.fetchall()
         
         i = 0
-        print('pro_keylist', pro_keylist)
+        # print('pro_keylist', pro_keylist)
         for record in records:
             i = i + 1
             keyname = record[2]
-            print("record")
+            # print("record")
             for key in pro_keylist:
-                print("1", record[2])
-                print("2", key)
+                # print("1", record[2])
+                # print("2", key)
                 if str(record[2]).split('_')[0] == str(key['key_id']) :
                     keyname = key['key_name'] + " " + str(record[2]).split('_')[1]
                     break
@@ -1132,7 +1132,7 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                     'det_i':        i
                     })
         # print('pro_keyInfo', type(pro_keyInfo))
-        print('pdf_foundlist', pdf_foundlist)
+        # print('pdf_foundlist', pdf_foundlist)
         pdf = {
             'id':        pdf_id,
             'name':      pdf_name,

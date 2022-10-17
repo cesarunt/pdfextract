@@ -184,7 +184,7 @@
                                             {% for mypdf in project.pdfs %}
                                             <li style="margin: 0 0 0 17px;">
                                                 <div style="font-size: 1rem; padding: 0rem 0.2rem 0.5rem 0.2rem; width: 100%; color: #555;">
-                                                    <input class="form-check-input" type="checkbox" name="pdfs" value="{{ project.pro_id }}_{{ mypdf.pdf_id }}_{{ mypdf.pdf_type }}_{{ mypdf.pdf_year }}" style="padding-left: 10px; margin-right: 5px;">
+                                                    <input class="form-check-input" type="checkbox" name="pdfs" onclick="activeGuardar()" value="{{ project.pro_id }}_{{ mypdf.pdf_id }}_{{ mypdf.pdf_type }}_{{ mypdf.pdf_year }}" style="padding-left: 10px; margin-right: 5px;">
                                                     <span style="width: 100%; font-size: smaller;">
                                                         <label style="text-align: justify; margin: 0;">
                                                             <b style="font-size: 0.8rem; font-family:'Lato';">{{ mypdf.pdf_i }}.</b>
@@ -222,10 +222,11 @@
                                     {% endif %}
                                 {% endfor %}
                                 </div>
-                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: left; padding: 0 15px; margin-bottom: 15px;">
-                                    <button type="submit" id="btn_save_canvas" style="padding: 7px 25px;" class="btn btn-success mb-2">
+                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: left; padding: 0 15px; margin-bottom: 15px; font-size: large;">
+                                    <button type="submit" id="btn_save_canvas" style="padding: 8px 25px;" class="btn btn-success mb-2" onclick="validateSave(this)" disabled>
                                         <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Guardar</b>
                                     </button>
+                                    <label class="form-check-label" id="text_save" for="inlineCheckbox2" style="color:#AE2323; font-size: small;">Debe seleccionar al menos un (01) item</label>
                                 </div>
                             </form>
                             {% else %}

@@ -635,7 +635,6 @@ function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
     var data = new FormData();
     // Create a XMLHTTPRequest instance
     var request = new XMLHttpRequest();
-
     // Set the response type
     request.responseType = "json";
 
