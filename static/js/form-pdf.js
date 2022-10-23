@@ -297,7 +297,7 @@ function movePage(_this, pages_text, pdf_id, direct) {
 
 // SELECT PAGE FUNCTION
 function goPage(val, pdf_id) {
-  path_page = 'files/multiple/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
+  path_page = 'files/split_img/'+pdf_id.toString()+'page_' + (val-1).toString() + '.jpg'
   $("canvas").css("background-image", "url("+path_page+")");
   _page = val
 }

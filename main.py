@@ -6,7 +6,7 @@ from sqlalchemy import true
 from utils.config import cfg
 from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
-from scripts.split import pdf_remove, pdf_splitter, img_remove, img_splitter, pdf_getNpages
+from scripts.split import pdf_remove, pdf_splitter, img_remove, split_thumb, split_img, pdf_getNpages
 from scripts.process import pdf_process
 from datetime import datetime
 from datetime import date
@@ -28,17 +28,16 @@ app = create_app() # we initialize our flask app using the __init__.py function
 app.jinja_env.auto_reload = True
 app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH 
 app.config['UPLOAD_EXTENSIONS']  = cfg.FILES.UPLOAD_EXTENSIONS
-app.config['SINGLE_UPLOAD']      = cfg.FILES.SINGLE_UPLOAD
-app.config['SINGLE_SPLIT']       = cfg.FILES.SINGLE_SPLIT
-app.config['SINGLE_OUTPUT']      = cfg.FILES.SINGLE_OUTPUT
-app.config['SINGLE_FORWEB']      = cfg.FILES.SINGLE_FORWEB
-app.config['MULTIPLE_UPLOAD']    = cfg.FILES.MULTIPLE_UPLOAD
-app.config['MULTIPLE_SPLIT_PDF'] = cfg.FILES.MULTIPLE_SPLIT_PDF
-app.config['MULTIPLE_SPLIT_IMG'] = cfg.FILES.MULTIPLE_SPLIT_IMG
-app.config['MULTIPLE_OUTPUT']    = cfg.FILES.MULTIPLE_OUTPUT
-app.config['MULTIPLE_FORWEB']    = cfg.FILES.MULTIPLE_FORWEB
-app.config['MULTIPLE_SPLIT_WEB'] = cfg.FILES.MULTIPLE_SPLIT_WEB
-app.config['MULTIPLE_UPLOAD_WEB'] = cfg.FILES.MULTIPLE_UPLOAD_WEB
+app.config['UPLOAD']            = cfg.FILES.UPLOAD
+app.config['SPLIT_PDF']         = cfg.FILES.SPLIT_PDF
+app.config['SPLIT_IMG']         = cfg.FILES.SPLIT_IMG
+app.config['SPLIT_IMG_WEB']     = cfg.FILES.SPLIT_IMG_WEB
+app.config['SPLIT_THUMB']       = cfg.FILES.SPLIT_THUMB
+app.config['SPLIT_THUMB_WEB']   = cfg.FILES.SPLIT_THUMB_WEB
+
+app.config['OUTPUT']    = cfg.FILES.OUTPUT
+app.config['FORWEB']    = cfg.FILES.FORWEB
+app.config['UPLOAD_WEB'] = cfg.FILES.UPLOAD_WEB
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Allowed extension you can set your own
@@ -389,75 +388,13 @@ def create_db_post():
     else:
         return render_template('db_form.html', keyword = "")
 
-# ----------------------------------- PDF EXTRACT ONE -----------------------------------
-@main.route('/paper_one', methods=['POST'])
-def paper_one_load():
-    global file_pdf
-    active_show = "active show"
-    if request.method == "POST":
-        # Code for One pdf
-        if "filesize" in request.cookies:
-            if not allowed_file_filesize(request.cookies["filesize"], app.config["MAX_CONTENT_LENGTH"]):
-                return redirect(request.url)
-            file = request.files["file"]
-            filesize = request.cookies.get("filesize")
+@app.route('/files/split_thumb/<filename>')
+def thesis_split_thumb(filename):
+    return send_from_directory(app.config['SPLIT_THUMB'], filename)
 
-            if file.filename == "":
-                return redirect(request.url)
-            if int(filesize) > 0 :
-                res = make_response(jsonify({"message": f"El PDF fue cargado con éxito."}), 200)
-                upload = True
-            if allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
-                filename = secure_filename(file.filename)
-                # file.save(os.path.join(app.config["UPLOAD_PATH_UP"], filename))
-                file.save(os.path.join(app.config["SINGLE_UPLOAD"], filename))
-                file_pdf = filename
-                if (upload == True):
-                    return res
-            else:
-                print("That file extension is not allowed")
-                return redirect(request.url)
-
-# --------------------------------------------------------
-@main.route('/thesis_one', methods=['POST'])
-def thesis_one_load():
-    global file_pdf
-    active_show = "active show"
-
-    if request.method == "POST":
-        # Code for One pdf
-        if "filesize" in request.cookies:
-            if not allowed_file_filesize(request.cookies["filesize"], app.config["MAX_CONTENT_LENGTH"]):
-                return redirect(request.url)
-            file = request.files["file"]
-            filesize = request.cookies.get("filesize")
-
-            if file.filename == "":
-                return redirect(request.url)
-            if int(filesize) > 0 :
-                res = make_response(jsonify({"message": f"El PDF fue cargado con éxito."}), 200)
-                upload = True
-            if allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config["SINGLE_UPLOAD"], filename))
-                file_pdf = filename
-                if (upload == True):
-                    return res
-            else:
-                print("That file extension is not allowed")
-                return redirect(request.url)
-
-@app.route('/files/single/upload/<filename>')
-def thesis_upload(filename):
-    return send_from_directory(app.config['SINGLE_UPLOAD'], filename)
-
-@app.route('/files/single/split/<filename>')
-def thesis_split(filename):
-    return send_from_directory(app.config['SINGLE_SPLIT'], filename)
-
-@app.route('/files/multiple/split_img/<filename>')
+@app.route('/files/split_img/<filename>')
 def thesis_split_img(filename):
-    return send_from_directory(app.config['MULTIPLE_SPLIT_IMG'], filename)
+    return send_from_directory(app.config['SPLIT_IMG'], filename)
 
 # 
 # FUNCTION TO UPLOAD PDF 
@@ -484,11 +421,11 @@ def thesis_mul_load():
         files = request.files.getlist('files[]')
         
         # 1. Remove and split IMG
-        # img_remove(fname, app.config['MULTIPLE_SPLIT_IMG'])
+        # img_remove(fname, app.config['SPLIT_IMG'])
         for file in files:
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
-                path = os.path.join(app.config['MULTIPLE_UPLOAD'], filename)
+                path = os.path.join(app.config['UPLOAD'], filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 file_pdfs.append(path.split("/")[-1])
@@ -513,12 +450,18 @@ def thesis_mul_load():
 
                     if pdf_info_id:
                         pdf_ids.append(pdf_info_id)
-                        result_split, img_npages = img_splitter(path, app.config['MULTIPLE_SPLIT_IMG'], pdf_info_id)   # Call img splitter function
+                        result_thumb = split_thumb(path, app.config['SPLIT_THUMB'], pdf_info_id)   # Call img splitter function
                         pdf['pdf_id'] = pdf_info_id
-                        pdf['pdf_path'] = app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_info_id) + 'page_'
+                        pdf['pdf_path'] = app.config['SPLIT_THUMB_WEB'] + '/' + str(pdf_info_id) + 'page_'
+                        pdf['file_path'] = path
                         pdfs.append(pdf)
                 else:
                     continue
+        
+        for pdf in pdfs:
+            result_img = split_img(pdf['file_path'], app.config['SPLIT_IMG'], pdf['pdf_id'])   # Call img splitter function
+            if result_img == 1:
+                pdf['pdf_path_img'] = app.config['SPLIT_IMG_WEB'] + '/' + str(pdf['pdf_id']) + 'page_'
 
         if (upload == True):
             one_project = get_projectById(pro_id)
@@ -577,8 +520,8 @@ def action_thesis_mul():
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
-                # fname = os.listdir(app.config['MULTIPLE_SPLIT_PDF'])
-                path = os.path.join(app.config['MULTIPLE_UPLOAD'],filename)
+                # fname = os.listdir(app.config['SPLIT_PDF'])
+                path = os.path.join(app.config['UPLOAD'],filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 action = request.values.get("action")
@@ -654,7 +597,7 @@ def action_thesis_mul():
                     else:
                         pdf_info_id = pdf_ids[i]
                     # 1. Remove and split PDF
-                    result_split, pdf_npages = pdf_splitter(path, app.config['MULTIPLE_SPLIT_PDF'], pdf_info_id, pdfs)   # Call pdf splitter function
+                    result_split, pdf_npages = pdf_splitter(path, app.config['SPLIT_PDF'], pdf_info_id, pdfs)   # Call pdf splitter function
                 
                 if result_split == -1 and pdf_npages == 0:
                     continue
@@ -681,7 +624,7 @@ def action_thesis_mul():
                             nation_val = "O"
                                             
                         # 2. Process PDF
-                        language, title_text = pdf_process(app.config['MULTIPLE_SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
+                        language, title_text = pdf_process(app.config['SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
                         LANGUAGE_PAGE = language
                         result_valid = 1
                     
@@ -770,8 +713,8 @@ def project_pdf(pdf_id):
             
         pdf_path = {
                 'name':        pdf['name'],
-                'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
-                'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(view_id) + 'page_0.jpg',
+                'path_pdf':    app.config['UPLOAD_WEB'] + '/' + pdf['name'],
+                'path_page':   app.config['SPLIT_IMG_WEB'] + '/' + str(view_id) + 'page_0.jpg',
                 'num_pages':   int(pdf['npages']),
                 }
         pdf['pdf_path'] = pdf_path
@@ -803,7 +746,7 @@ def pdf_post(pdf_id):
                     dictPage = dictVal
                     page = int(dictVal['page'])
                 i += 1
-                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
@@ -961,8 +904,8 @@ def pdf_post(pdf_id):
 
             pdf_path = {
                     'name':        pdf['name'],
-                    'path_pdf':    app.config['MULTIPLE_UPLOAD_WEB'] + '/' + pdf['name'],
-                    'path_page':   app.config['MULTIPLE_SPLIT_WEB'] + '/' + str(view_id) + 'page_0.jpg',
+                    'path_pdf':    app.config['UPLOAD_WEB'] + '/' + pdf['name'],
+                    'path_page':   app.config['SPLIT_IMG_WEB'] + '/' + str(view_id) + 'page_0.jpg',
                     'num_pages':   int(pdf['npages']),
                     }
             pdf['pdf_path'] = pdf_path
@@ -978,9 +921,9 @@ def export_paper_mul():
     return send_file(export_att, as_attachment=True)
 
 
-@app.route('/files/multiple/upload/<filename>')
+@app.route('/files/upload/<filename>')
 def thesis_upload_img(filename):
-    return send_from_directory(app.config['MULTIPLE_UPLOAD'], filename)
+    return send_from_directory(app.config['UPLOAD'], filename)
 
 
 @main.route("/action_thesis_search", methods=["POST"])
@@ -1026,7 +969,7 @@ def paper_mul_load():
             file_pdfs.append(file.filename)
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['MULTIPLE_UPLOAD'], filename))
+                file.save(os.path.join(app.config['UPLOAD'], filename))
                 upload = True
         
         if (upload == True):
@@ -1079,9 +1022,9 @@ def save_pdf_mul():
             if pdf_type == 'M':
                 document = build_pdfA(text_schemes)
             
-            file_save = app.config['MULTIPLE_OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            file_save = app.config['OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
-            result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            result_pdf = app.config['FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
     
     return send_file(result_pdf, as_attachment=True)
 
@@ -1098,9 +1041,9 @@ def save_pro_mul():
         if (len(text_schemes) > 0):
             now = datetime.now()
             document = build_project("Esquema", text_schemes)
-            file_save = app.config['MULTIPLE_OUTPUT']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            file_save = app.config['OUTPUT']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
-            result_pdf = app.config['MULTIPLE_FORWEB']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+            result_pdf = app.config['FORWEB']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
     return send_file(result_pdf, as_attachment=True)
 
 

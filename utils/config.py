@@ -113,20 +113,17 @@ __C.FILES.MAX_NUMPAGES = 40
 __C.FILES.MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 __C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
 
-__C.FILES.SINGLE_UPLOAD      = GLOBAL_PATH + '/files/single/upload'
-__C.FILES.SINGLE_SPLIT       = GLOBAL_PATH + '/files/single/split'
-__C.FILES.SINGLE_OUTPUT      = GLOBAL_PATH + '/files/single/output'
-__C.FILES.SINGLE_FORWEB      = 'files/single/output'
+__C.FILES.UPLOAD            = GLOBAL_PATH + '/files/upload'
+__C.FILES.SPLIT_PDF         = GLOBAL_PATH + '/files/split_pdf'
+__C.FILES.SPLIT_IMG         = GLOBAL_PATH + '/files/split_img'
+__C.FILES.SPLIT_IMG_WEB     = 'files/split_img'
+__C.FILES.SPLIT_THUMB       = GLOBAL_PATH + '/files/split_thumb'
+__C.FILES.SPLIT_THUMB_WEB   = 'files/split_thumb'
 
-__C.FILES.MULTIPLE_UPLOAD    = GLOBAL_PATH + '/files/multiple/upload'
-__C.FILES.MULTIPLE_SPLIT_PDF = GLOBAL_PATH + '/files/multiple/split_pdf'
-__C.FILES.MULTIPLE_SPLIT_IMG = GLOBAL_PATH + '/files/multiple/split_img'
-__C.FILES.MULTIPLE_OUTPUT    = GLOBAL_PATH + '/files/multiple/output'
-__C.FILES.MULTIPLE_FORWEB    = 'files/multiple/output'
-
-# __C.FILES.SINGLE_SPLIT_WEB = 'files/single/split'
-__C.FILES.MULTIPLE_SPLIT_WEB = 'files/multiple/split_img'
-__C.FILES.MULTIPLE_UPLOAD_WEB = 'files/multiple/upload'
+__C.FILES.OUTPUT    = GLOBAL_PATH + '/files/output'
+__C.FILES.FORWEB    = 'files/output'
+# __C.FILES.SPLIT_WEB = 'files/split_thumb'
+__C.FILES.UPLOAD_WEB = 'files/upload'
 
 # List
 __C.LIST = edict()
