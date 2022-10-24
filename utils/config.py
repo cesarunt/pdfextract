@@ -122,7 +122,6 @@ __C.FILES.SPLIT_THUMB_WEB   = 'files/split_thumb'
 
 __C.FILES.OUTPUT    = GLOBAL_PATH + '/files/output'
 __C.FILES.FORWEB    = 'files/output'
-# __C.FILES.SPLIT_WEB = 'files/split_thumb'
 __C.FILES.UPLOAD_WEB = 'files/upload'
 
 # List

@@ -746,7 +746,7 @@ def pdf_post(pdf_id):
                     dictPage = dictVal
                     page = int(dictVal['page'])
                 i += 1
-                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_IMG_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
