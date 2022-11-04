@@ -639,7 +639,7 @@ def get_squareProjects_ByWord(findby, keyword, typedoc, startYear, endYear):
         #                 WHERE a.pro_title LIKE "%{keyword}%"
         #                 ORDER BY a.pro_id DESC
         #             """
-        print("QUERY.... ", query)
+        # print("QUERY.... ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -832,14 +832,14 @@ def del_PDF(pro_id, pdf_id):
         
         return result
 
-def edit_PDF(pro_id, pdf_id, pdf_dettype):
+def edit_PDF(pro_id, pdf_id, pdf_dettype, pdf_nation):
     table_name = 'pro_pdf_details'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    UPDATE "{table_name}" SET pdf_type='{pdf_dettype}'
+                    UPDATE "{table_name}" SET pdf_type='{pdf_dettype}', pdf_nation="{pdf_nation}"
                     WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
                 """
         # print(query)

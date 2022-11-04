@@ -13,17 +13,11 @@ def pdf_getNpages(path):
         pdf_npages = 0
     return pdf_npages
 
-def pdf_remove(file, files_split):
-    length = len(file)
-    for i in range(length): 
-        os.remove(files_split+"/{}".format(file[i])) #Remove existed pdf documents in folder.
-
 def pdf_splitter(path, files_split, pdf_info_id, pdfs):
     # 0: No results
     # 1: Files created
     result = 0
     pdf = PdfFileReader(path)
-    # pdf_npages = pdf.getNumPages()
     try:
         pdf_npages = pdf.getNumPages()
         if len(pdfs)>0:
@@ -37,7 +31,6 @@ def pdf_splitter(path, files_split, pdf_info_id, pdfs):
         """
         if pdf_npages != None and pdf_npages > 0 :
             # Save pages as images in the pdf
-            # for page in range(pdf.getNumPages()):
             for page in list_pages:
                 pdf_writer = PdfFileWriter()
                 pdf_writer.addPage(pdf.getPage(page))
@@ -52,11 +45,6 @@ def pdf_splitter(path, files_split, pdf_info_id, pdfs):
         result = -1
     
     return result, pdf_npages
-
-def img_remove(file, files_split):
-    length = len(file)
-    for i in range(length): 
-        os.remove(files_split+"/{}".format(file[i])) #Remove existed pdf documents in folder.
 
 def split_thumb(path, files_split, pdf_info_id):
     result = 0

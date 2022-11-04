@@ -42,7 +42,7 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
     # Title
     title_font = 7
     title_font_last = 10
-    title_font_max = 33
+    title_font_max = 30
     title_text = ""
     title_ctrl = False
     title_band = False
@@ -144,8 +144,9 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
             patt = re.compile("font-size:(\d+)")
             text_parser = [(tag.text.strip(), int(patt.search(tag["style"]).group(1))) for tag in page_soup.select("[style*=font-size]")]
 
-            # title_font_max  = max(text_parser, key=lambda x:x[1] )[1] 
-            title_font_max = title_font
+            title_font_max  = max(text_parser, key=lambda x:x[1] )[1] 
+            # title_font_max = title_font
+            # print("FONT_MAX", title_font_max)
             patt_band = False
             patt_num = 0
             band_autor = False
@@ -200,7 +201,7 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                 line += 1
                 pagefonts_list.append(last_value)
 
-            if title_font_max > title_font and title_font_max <= 40:
+            if title_font_max > title_font and title_font_max <= 55:
                 title_font = title_font_max
                 title_text_list = []
                 title_text_list = [key for key, value in text_parser if value == title_font]

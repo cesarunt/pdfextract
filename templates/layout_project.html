@@ -84,7 +84,7 @@
                                     <a style="padding: 0; display:inline" href="" title="Eliminar" onclick="delPDFOne('{{pdf_len}}')">
                                         <span style="margin: 0; opacity: 50%;" class="fa-fw select-all fas"></span>
                                     </a>
-                                    <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_nation}}', '{{mypdf.pdf_id}}')">
                                         <span class="fa-fw select-all fas"></span>
                                     </a>
                                     <a style="padding: 0; margin: 0; width: 20px;" href="" title="Duplicar" onclick="doublePDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
@@ -96,7 +96,7 @@
                                     <a style="padding: 0; margin: 0; width: 20px;" href="" title="Eliminar" onclick="delPDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_id}}')">
                                         <span style="margin: 0;" class="fa-fw select-all fas"></span>
                                     </a>
-                                    <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
+                                    <a style="padding: 0; margin: 0; width: 20px;" href="" title="Cambiar" onclick="editPDFAll('{{ request.url }}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_nation}}', '{{mypdf.pdf_id}}')">
                                         <span class="fa-fw select-all fas"></span>
                                     </a>
                                     <a style="padding: 0; margin: 0; width: 20px;" href="" title="Duplicar" onclick="doublePDFAll('{{ request.url }}', '{{mypdf.pdf_name}}', '{{mypdf.pdf_type}}', '{{mypdf.pdf_id}}')">
@@ -105,7 +105,7 @@
                                 </div>
                                 {% endif %}
                             </span>
-                            {% if mypdf.pdf_nation == 'O' %}
+                            {% if mypdf.pdf_nation == 'OI' or  mypdf.pdf_nation == 'ON' %}
                             <div class="col-md-3 text-center" style="width: 90%; margin: -5px 0 5px 15px; font-size: x-small; display: flex;">
                                 <label class="form-check-label" for="radio1" style="width: 100%;"><b>Atributos</b></label>
                             </div>

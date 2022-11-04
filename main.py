@@ -1,13 +1,14 @@
 # -*- coding: utf_8 -*-
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, make_response, jsonify, send_file, send_from_directory, redirect, Response
+from flask import Blueprint, render_template, request, redirect, jsonify, send_file, send_from_directory, redirect
 from requests import post
 from sqlalchemy import true
 from utils.config import cfg
-from utils.handle_files import allowed_file, allowed_file_filesize, get_viewProcess_CPU
+from utils.handle_files import allowed_file, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
-from scripts.split import pdf_remove, pdf_splitter, img_remove, split_thumb, split_img, pdf_getNpages
+from scripts.split import pdf_splitter, split_thumb, split_img, pdf_getNpages
 from scripts.process import pdf_process
+from scripts.search import pdf_search
 from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
@@ -26,7 +27,7 @@ main = Blueprint('main', __name__)
 # app = Flask(__name__)
 app = create_app() # we initialize our flask app using the __init__.py function
 app.jinja_env.auto_reload = True
-app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH 
+app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH
 app.config['UPLOAD_EXTENSIONS']  = cfg.FILES.UPLOAD_EXTENSIONS
 app.config['UPLOAD']            = cfg.FILES.UPLOAD
 app.config['SPLIT_PDF']         = cfg.FILES.SPLIT_PDF
@@ -34,10 +35,9 @@ app.config['SPLIT_IMG']         = cfg.FILES.SPLIT_IMG
 app.config['SPLIT_IMG_WEB']     = cfg.FILES.SPLIT_IMG_WEB
 app.config['SPLIT_THUMB']       = cfg.FILES.SPLIT_THUMB
 app.config['SPLIT_THUMB_WEB']   = cfg.FILES.SPLIT_THUMB_WEB
-
-app.config['OUTPUT']    = cfg.FILES.OUTPUT
-app.config['FORWEB']    = cfg.FILES.FORWEB
-app.config['UPLOAD_WEB'] = cfg.FILES.UPLOAD_WEB
+app.config['OUTPUT']            = cfg.FILES.OUTPUT
+app.config['FORWEB']            = cfg.FILES.FORWEB
+app.config['UPLOAD_WEB']        = cfg.FILES.UPLOAD_WEB
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Allowed extension you can set your own
@@ -199,7 +199,6 @@ def save_upload():
 
         if current_user.is_authenticated:
             user_id = current_user.id
-
         project = {
             'title' :       request.form['title'],
             'university' :  request.form['university'],
@@ -287,7 +286,6 @@ def search_db_post():
             findby = request.values.get("findBy")
             keyword = request.values.get("keyword")
             typedoc = request.values.get("typedoc")
-
             startDate = request.values.get("startDate")
             if startDate:
                 startYear = str(startDate).split("/")[2]
@@ -296,7 +294,8 @@ def search_db_post():
                 endYear = str(endDate).split("/")[2]
             
             if len(keyword) > 1:
-                list_projects = get_squareProjects_ByWord(findby, keyword, typedoc, startYear, endYear)
+                keyword_out = pdf_search(keyword)
+                list_projects = get_squareProjects_ByWord(findby, keyword_out, typedoc, startYear, endYear)
                 num_projects = len(list_projects)
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword, typedoc = typedoc)
     else:
@@ -304,7 +303,6 @@ def search_db_post():
 
 @main.route("/create_db", methods=["POST"])
 def create_db_post():
-    num_pdfs = 0
     result_total = False
 
     if current_user.is_authenticated:
@@ -383,8 +381,6 @@ def create_db_post():
                     list_keywordsOne = get_listKeywordsById(pro_id)
                     return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=pro_id)
             
-            # if process == '2':
-            #     return Response(status = 204)
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -621,7 +617,7 @@ def action_thesis_mul():
                             sqliteConnection = sqlite3.connect(data_base)
                             cursor = sqliteConnection.cursor()
                             pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
-                            nation_val = "O"
+                            nation_val = "ON"
                                             
                         # 2. Process PDF
                         language, title_text = pdf_process(app.config['SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
@@ -833,8 +829,13 @@ def pdf_post(pdf_id):
         if action == "edit_pdf":
             pdf_detid = request.values.get("pdf_detid")
             pdf_dettype = request.values.get("pdf_dettype")
+            pdf_detnation = request.values.get("pdf_detnation")
+            if pdf_dettype == 'M':
+                pdf_nation = 'O' + pdf_detnation[-1]
+            if pdf_dettype == 'A':
+                pdf_nation = pdf_detnation[-1]
             try:
-                response_pdf = edit_PDF(pro_id, pdf_detid, pdf_dettype)
+                response_pdf = edit_PDF(pro_id, pdf_detid, pdf_dettype, pdf_nation)
                 if response_pdf is True:
                     msg_pdf = "PDF editado con éxito"
             except:
@@ -857,7 +858,7 @@ def pdf_post(pdf_id):
                     'created' :  current_date
                 }
             pdf_info_id = put_newPDF(pdf)
-            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[0], pdf_detail[3], 1, current_date)
+            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
             
             if result == True:
                 if pdf_dettype == "A":
@@ -1014,7 +1015,6 @@ def save_pdf_mul():
         pdf_type = request.form.get('down_pdftype')
         
         text_schemes = get_pdfDetailByIds(pro_id, pdf_id)
-        # print("text_schemes", len(text_schemes))
         if (len(text_schemes) > 0):
             now = datetime.now()
             if pdf_type == 'A':

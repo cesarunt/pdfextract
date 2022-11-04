@@ -307,14 +307,15 @@ function goPage(val, pdf_id) {
 
 // OPEN AND CLOSE PAGE FUNCTION
 function openPage(_this, pdf_path, _pdf_id, _i) {
-  path_page = pdf_path + (_i).toString() + '.jpg'
-  $("canvas").css("background-image", "url("+path_page+")");
+  // path_page = pdf_path + (_i).toString() + '.jpg'
+  // $("canvas").css("background-image", "url("+path_page+")");
 
   val = parseInt(_i)
   head_page = "head_page_" + (_pdf_id).toString() + "_" + (_i).toString()
-  document.getElementById(head_page).value = (val).toString();
+  // document.getElementById(head_page).value = (val).toString();
   foot_page = "foot_page_" + (_pdf_id).toString() + "_" + (_i).toString()
-  document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
+  // document.getElementById(foot_page).innerHTML = `&nbsp;Pag. ${(val+1).toString()}&nbsp;`;
+  goPages(parseInt(val), pdf_path)
   
   page = "page_" + _pdf_id + "_" + _i
   full_page = "full_page_" + _pdf_id + "_" + _i
@@ -574,7 +575,7 @@ function delPDFAll(url, pdf_name, pdf_detid) {
   }
 }
 
-function editPDFAll(url, pdf_type, pdf_detid) {
+function editPDFAll(url, pdf_type, pdf_nation, pdf_detid) {
 
   if (pdf_type=="A"){
     pdf_from = "Antecedentes"
@@ -601,6 +602,7 @@ function editPDFAll(url, pdf_type, pdf_detid) {
     data.append("action", action);
     data.append("pdf_detid", pdf_detid);
     data.append("pdf_dettype", pdf_dettype);
+    data.append("pdf_detnation", pdf_nation);
 
     // request load handler (transfer complete)
     request.addEventListener("load", function (e) {
