@@ -16,7 +16,7 @@ from utils.process_doc import *
 from __init__ import create_app, db
 
 import cv2
-import pytesseract
+import pytesseract, unidecode
 from docx import Document
 from fold_to_ascii import fold
 from flask_login import current_user
@@ -294,8 +294,8 @@ def search_db_post():
                 endYear = str(endDate).split("/")[2]
             
             if len(keyword) > 1:
-                keyword_out = pdf_search(keyword)
-                list_projects = get_squareProjects_ByWord(findby, keyword_out, typedoc, startYear, endYear)
+                keyword_list = pdf_search(str(keyword))
+                list_projects = get_squareProjects_ByWord(findby, keyword_list, typedoc, startYear, endYear)
                 num_projects = len(list_projects)
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword, typedoc = typedoc)
     else:
@@ -349,8 +349,8 @@ def create_db_post():
                     
                     if pro_result:
                         pdf_info_id = put_newPDF(pdf)
-                        result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
-                                #  put_newPPdetail(id, pdf, name, type_doc, nation_doc, double, pages, attributes, visible, current_date)
+                        result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_detail[4], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
+
                     if result == True:
                         if pdf_type == "A":
                             put_newPDFdetail(pdf_info_id, 1, "", 1, 1)
@@ -563,7 +563,10 @@ def action_thesis_mul():
                     
                     if text is None or text == "":
                         text = "..."
-                    pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
+                    result_detail = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
+                    if result_detail is True:
+                        pdf_name = unidecode.unidecode(det_value)
+                        _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name)
                     result_split = 1
                 
                 # if action == "save_attribute":
@@ -622,13 +625,13 @@ def action_thesis_mul():
                         # 2. Process PDF
                         language, title_text = pdf_process(app.config['SPLIT_PDF'], pdf_attributes, pdf_info_id, pdfs, pdf_npages, type_val)  # Call pdf process function
                         LANGUAGE_PAGE = language
+                        title_search = unidecode.unidecode(title_text)
                         result_valid = 1
                     
                     if result_valid > 0 :
                         result_save = True
-                        
                         try:
-                            _ = put_newPPdetail(pro_id, pdf_info_id, title_text, type_val, nation_val, 0, pdfs[pdf_info_id], pdf_attributes, 1, current_date)
+                            _ = put_newPPdetail(pro_id, pdf_info_id, title_text, title_search, type_val, nation_val, 0, pdfs[pdf_info_id], pdf_attributes, 1, current_date)
                         except:
                             print("Error en registrar en PRO PDF detail")
 
@@ -756,7 +759,7 @@ def pdf_post(pdf_id):
                     text_page = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
                 except Exception as e:
                         print(e)
-                        print("Error generate text")
+                        print("Error generate text...")
                 text = text + text_page + " "
             
             if text is None or text == "":
@@ -773,7 +776,10 @@ def pdf_post(pdf_id):
             det_value =     request.values.get("det_value")
             page =          int(request.values.get("page"))
             
-            pdf = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
+            result_detail = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
+            if result_detail is True:
+                pdf_name = unidecode.unidecode(det_value)
+                _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name)
             result_split = 1
         
         if action == "save_attribute":
@@ -858,7 +864,7 @@ def pdf_post(pdf_id):
                     'created' :  current_date
                 }
             pdf_info_id = put_newPDF(pdf)
-            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
+            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_detail[4], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
             
             if result == True:
                 if pdf_dettype == "A":

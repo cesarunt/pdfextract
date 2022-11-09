@@ -35,10 +35,10 @@
                                     <label style="margin: 0 0.5rem; text-align: center; width: 95%;">Desde - Hasta</label>
                                     <div class="container" style="text-align: center; margin: 0 !important; padding: 0 !important;">
                                         <div class="form-check form-check-inline" style="margin-right: 0.25rem;">
-                                            <input id="startDate" name="startDate" placeholder="dd/mm/aaaa" width="152" />
+                                            <input id="startDate" name="startDate" placeholder="mm/dd/aaaa" width="152" />
                                         </div>
                                         <div class="form-check form-check-inline" style="margin-right: 0;">
-                                            <input id="endDate" name="endDate" placeholder="dd/mm/aaaa" width="152" />
+                                            <input id="endDate" name="endDate" placeholder="mm/dd/aaaa" width="152" />
                                         </div>
                                     </div>
                                 </div>
@@ -225,10 +225,15 @@
                                     {% endif %}
                                 {% endfor %}
                                 </div>
-                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: left; padding: 0 15px; margin-bottom: 15px; font-size: large;">
-                                    <button type="submit" id="btn_save_canvas" style="padding: 8px 25px;" class="btn btn-success mb-2" onclick="validateSave(this)" disabled>
-                                        <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Guardar</b>
+                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: center; padding: 0 15px; margin-bottom: 5px; font-size: large;">
+                                    <button type="submit" id="btn_down_canvas" style="padding: 8px 25px;" class="btn btn-dark mb-2" onclick="validateSave(this)" disabled>
+                                        <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Descargar PDFS</b> 
                                     </button>
+                                    <button type="submit" id="btn_save_canvas" style="padding: 8px 25px;" class="btn btn-success mb-2" onclick="validateSave(this)" disabled>
+                                        <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Crear Proyecto</b>
+                                    </button>
+                                </div>
+                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: center; padding: 0 15px; margin: 10px 5px 20px; font-size: large;">
                                     <label class="form-check-label" id="text_save" for="inlineCheckbox2" style="color:#AE2323; font-size: small;">Debe seleccionar al menos un (01) item</label>
                                 </div>
                             </form>

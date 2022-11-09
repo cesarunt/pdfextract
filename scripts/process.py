@@ -201,7 +201,7 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                 line += 1
                 pagefonts_list.append(last_value)
 
-            if title_font_max > title_font and title_font_max <= 55:
+            if title_font_max > title_font and title_font_max <= 75:
                 title_font = title_font_max
                 title_text_list = []
                 title_text_list = [key for key, value in text_parser if value == title_font]

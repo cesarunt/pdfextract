@@ -648,8 +648,8 @@ function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
     // request load handler (transfer complete)
     request.addEventListener("load", function (e) {
       if (request.status == 200) {
-        showAlertPage('PDF duplicado correctamente', 'success')
         location.reload();
+        showAlertPage('PDF duplicado correctamente', 'success')
       }
       else {
         showAlertPage('PDF no fue duplicado', 'warning')
