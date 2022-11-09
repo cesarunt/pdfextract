@@ -1,5 +1,8 @@
 import re
+import unidecode
 from itertools import groupby
+
+SEARCH_WORDS_ES = ['innovacion', 'INNOVACION']
 
 # Split the string
 word_list_init = []
@@ -10,24 +13,29 @@ def pdf_search(keyword = ""):
     # print(word_list_init)
     word_list_last = []
     # Verify if exists consonants 'rr', 'll'
-    i = 0
     for word in word_list_init:
         if len(word) > 2:
             valid = []
-            count_l = len(re.findall("ll", word))
-            if ( count_l > 0 ):
-                valid.append('l')
-            count_r = len(re.findall("rr", word))
-            if ( count_r > 0 ):
-                valid.append('r')
-            # Apply remove 
-            word_validate = ''.join(c for c, unused in groupby(word))
-            word_es_final = ""
-            word_list_last.append({
-                            'pos':  i,
+            word = unidecode.unidecode(word)
+            if word in SEARCH_WORDS_ES:
+                word_list_last.append({
                             'valid': valid,
-                            'string': word_validate
+                            'string': word
                         })
+            else:
+                count_l = len(re.findall("ll", word))
+                if ( count_l > 0 ):
+                    valid.append('l')
+                count_r = len(re.findall("rr", word))
+                if ( count_r > 0 ):
+                    valid.append('r')
+                # Apply remove 
+                word_validate = ''.join(c for c, unused in groupby(word))
+                word_es_final = ""
+                word_list_last.append({
+                                'valid': valid,
+                                'string': word_validate
+                            })
 
     word_list_final = []
     for word in word_list_last:
