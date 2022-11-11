@@ -6,6 +6,7 @@ var progressPDF_status = document.getElementById("progressPDF_status");
 var uploadPDF_btn = document.getElementById("uploadPDF_btn");
 var loadingPDF_btn = document.getElementById("loadingPDF_btn");
 var cancelPDF_btn = document.getElementById("cancelPDF_btn");
+var thumbnails_tab = document.getElementById("pills-tabContent");
 
 var processPDF_btn = document.getElementById("processPDF_btn");
 var processPDF_wrapper = document.getElementById("processPDF_wrapper");
@@ -72,6 +73,8 @@ function clicPDFProcessMul() {
   cancelPDF_btn.classList.add("d-none");
   // Hide the Process button
   processPDF_btn.classList.add("d-none");
+  // Hide filters and thumbnails
+  thumbnails_tab.classList.add("d-none");
   // Show the load icon Process
   processPDF_wrapper.classList.remove("d-none");
 }
