@@ -15,7 +15,7 @@ __C.PROCESS.USE_GPU = False
 
 # Percentage to change if posible to process service
 __C.PROCESS.LIMIT_CPU = 90
-__C.PROCESS.LIFE_TIME = 60
+__C.PROCESS.LIFE_TIME = 60 * 8
 
 # FILES
 __C.FILES = edict()

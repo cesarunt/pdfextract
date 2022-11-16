@@ -185,7 +185,7 @@ def save_upload():
     id = 0
     keywords = ""
     if request.method == 'POST':
-        current_date = date.today().strftime("%d/%m/%Y")
+        current_date = date.today().strftime("%d-%m-%Y")
         try:
             if request.form['type_a']:
                 type_a = 1
@@ -229,7 +229,6 @@ def save_upload():
                         response_pkdetail = put_newPKdetail(id, key, current_date)
         else:
             id = request.form['save_id']
-            print("PREV project...", project)
             response_project = upd_projectById(id, project)
             if response_project is True:
                 if keywords != None:
@@ -247,7 +246,7 @@ def add_variable():
     action = request.values.get("action")
 
     if request.method == 'POST' and action == 'add':
-        current_date = date.today().strftime("%d/%m/%Y")
+        current_date = date.today().strftime("%d-%m-%Y")
         value = request.values.get("value")
         try:
             response_key, response_id = put_newKeyword(value, current_date)
@@ -278,24 +277,18 @@ def search_db():
 def search_db_post():
     num_projects = 0
     list_projects = None
-    startYear = None
-    endYear = None
 
     if current_user.is_authenticated:
         if request.method == "POST":
-            findby = request.values.get("findBy")
+            bydoc = request.values.get("bydoc")
             keyword = request.values.get("keyword")
             typedoc = request.values.get("typedoc")
+            bydate = request.values.get("bydate")
             startDate = request.values.get("startDate")
-            if startDate:
-                startYear = str(startDate).split("/")[2]
             endDate = request.values.get("endDate")
-            if endDate:
-                endYear = str(endDate).split("/")[2]
-            
             if len(keyword) > 1:
                 keyword_list = pdf_search(str(keyword))
-                list_projects = get_squareProjects_ByWord(findby, keyword_list, typedoc, startYear, endYear)
+                list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, endDate)
                 num_projects = len(list_projects)
         return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword, typedoc = typedoc)
     else:
@@ -313,7 +306,7 @@ def create_db_post():
 
             if process == '1' and len(_pdfs) > 0:
                 complete_date = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
-                current_date = date.today().strftime("%d/%m/%Y")
+                current_date = date.today().strftime("%d-%m-%Y")
                 project = {
                         'title' :       "Nuevo proyecto, generado el " + complete_date,
                         'university' :  1,
@@ -412,7 +405,7 @@ def thesis_mul_load():
             return redirect(request.url)
 
         # files = request.files.getlist('files[]')
-        current_date = date.today().strftime("%d/%m/%Y")
+        current_date = date.today().strftime("%d-%m-%Y")
         pdfs = []
         files = request.files.getlist('files[]')
         
@@ -577,7 +570,7 @@ def action_thesis_mul():
                     det_id = int(request.values.get("det_id"))
                     
                     try:
-                        response_pdf = del_itemPDF(det_id)
+                        response_pdf = del_attributeById(det_id)
                         if response_pdf is True:
                             msg_pdf = "PDF detail eliminado con éxito"
                     except:
@@ -588,9 +581,6 @@ def action_thesis_mul():
 
                 # 1. SPLIT PDF
                 if action is None:
-                    # print("list PDFs", pdfs)
-                    # print("Items PDFs", pdfs.items())
-                    # print("I ", i)
                     if band_parcial == True:
                         pdf_info_id = list(pdfs.items())[i][0]
                     else:
@@ -615,7 +605,7 @@ def action_thesis_mul():
                     if result_split == 1:
                         pdf_attributes = []
                         # Put data on pdf_info
-                        current_date = date.today().strftime("%d/%m/%Y")
+                        current_date = date.today().strftime("%d-%m-%Y")
                         if type_val == 'M':
                             sqliteConnection = sqlite3.connect(data_base)
                             cursor = sqliteConnection.cursor()
@@ -735,7 +725,7 @@ def pdf_post(pdf_id):
         if action == "save_canvas":
             det_id = int(request.values.get("det_id"))
             det_attribute = int(request.values.get("det_attribute"))
-            current_date = date.today().strftime("%d/%m/%Y")
+            current_date = date.today().strftime("%d-%m-%Y")
             dictCanvas = json.loads(request.values.get("dictCanvas"))
             i = 0
             text = ""
@@ -750,7 +740,7 @@ def pdf_post(pdf_id):
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
                 
-                print("ROI_language", LANGUAGE_PAGE)
+                # print("ROI_language", LANGUAGE_PAGE)
                 if LANGUAGE_PAGE=="es":
                     language = "spa"
                 else:
@@ -783,7 +773,7 @@ def pdf_post(pdf_id):
             result_split = 1
         
         if action == "save_attribute":
-            current_date = date.today().strftime("%d/%m/%Y")
+            current_date = date.today().strftime("%d-%m-%Y")
             att_value =  request.values.get("new_att")
             att_type =  request.values.get("det_type")
             try:
@@ -811,7 +801,7 @@ def pdf_post(pdf_id):
             det_id = int(request.values.get("det_id"))
             
             try:
-                response_pdf = del_itemPDF(det_id)
+                response_pdf = del_attributeById(det_id)
                 if response_pdf is True:
                     msg_pdf = "PDF detail eliminado con éxito"
             except:
@@ -833,17 +823,59 @@ def pdf_post(pdf_id):
                 result_split = 1
         
         if action == "edit_pdf":
+            responde_del = False
+            response_edit = False 
+            list_attributes_del = []
             pdf_detid = request.values.get("pdf_detid")
             pdf_dettype = request.values.get("pdf_dettype")
             pdf_detnation = request.values.get("pdf_detnation")
             if pdf_dettype == 'M':
                 pdf_nation = 'O' + pdf_detnation[-1]
+                list_attributes_del = [*range(1, 14)]
             if pdf_dettype == 'A':
                 pdf_nation = pdf_detnation[-1]
+                list_attributes_del = [*range(14,20)]
+            list_attributes_del = ','.join(str(item) for item in list_attributes_del)
+            list_attributes_get = None
             try:
-                response_pdf = edit_PDF(pro_id, pdf_detid, pdf_dettype, pdf_nation)
-                if response_pdf is True:
-                    msg_pdf = "PDF editado con éxito"
+                # Insert values in "pdf_details", consider Title, Author, Year
+                if pdf_dettype == "A":
+                    # Get values for Title, Author, Year
+                    list_attributes_get = (14, 15, 16)
+                    pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
+                    # Delete det_visible in "pdf_details"
+                    responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
+                    put_newPDFdetail(pdf_detid, 1, pdf_details[0][1], pdf_details[0][2], 1)
+                    put_newPDFdetail(pdf_detid, 2, pdf_details[1][1], pdf_details[1][2], 1)
+                    put_newPDFdetail(pdf_detid, 3, pdf_details[2][1], pdf_details[2][2], 1)
+                    put_newPDFdetail(pdf_detid, 4, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 5, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 6, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 7, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 8, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 9, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 10, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 11, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 12, "http://", 1, 1)
+                    put_newPDFdetail(pdf_detid, 13, "_", 1, 1)
+                if pdf_dettype == "M":
+                    # Get values for Title, Author, Year
+                    list_attributes_get = (1, 2, 3)
+                    pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
+                    # Delete det_visible in "pdf_details"
+                    responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
+                    put_newPDFdetail(pdf_detid, 14, pdf_details[0][1], pdf_details[0][2], 1)
+                    put_newPDFdetail(pdf_detid, 15, pdf_details[1][1], pdf_details[1][2], 1)
+                    put_newPDFdetail(pdf_detid, 16, pdf_details[2][1], pdf_details[2][2], 1)
+                    put_newPDFdetail(pdf_detid, 17, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 18, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 19, "", 1, 1)
+                
+                # Update pdf_type (and pdf_nation) in "pro_pdf_details"
+                response_edit = edit_PDF(pro_id, pdf_detid, pdf_dettype, pdf_nation)
+
+                if response_edit and responde_del:
+                    msg_pdf = "PDF actualizado con éxito"
             except:
                 msg_pdf = "Error en edición de PDF"
             
@@ -851,7 +883,7 @@ def pdf_post(pdf_id):
                 result_split = 1
 
         if action == "double_pdf":
-            current_date = date.today().strftime("%d/%m/%Y")
+            current_date = date.today().strftime("%d-%m-%Y")
             pdf_detid   = request.values.get("pdf_detid")
             pdf_dettype = request.values.get("pdf_dettype")
             

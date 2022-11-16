@@ -1,6 +1,7 @@
 # -*- coding: utf_8 -*-
 from utils.config import cfg
 import unidecode
+import datetime
 import sqlite3
 # import json
 
@@ -630,13 +631,13 @@ def upd_projectProcess(id, n_articles, n_process):
             print("The SQLite connection is closed")
         return result
 
-def get_squareProjects_ByWord(findby, keyword_list, typedoc, startYear, endYear):
+def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, endDate):
     table_name = 'project_info'
     projects = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        if findby == '1':
+        if bydoc == '1':
             keyword_search = unidecode.unidecode(keyword_list[0])
             query = f"""
                         SELECT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
@@ -652,14 +653,32 @@ def get_squareProjects_ByWord(findby, keyword_list, typedoc, startYear, endYear)
                 for i in range(1, len(keyword_list)): 
                     query += f""" OR b.pdf_name_search LIKE "%{keyword_list[i]}%" """
             
-            if startYear and endYear:
-                query += f""" 
-                        AND d.det_value >= "{startYear}" AND d.det_value <= "{endYear}"
+            if bydate == '1':
+                if startDate:
+                    startYear = str(startDate).split("/")[2]
+                    query += f""" 
+                        AND d.det_value >= "{startYear}"
+                        """
+                if endDate:
+                    endYear = str(endDate).split("/")[2]
+                    query += f""" 
+                        AND d.det_value <= "{endYear}"
+                        """
+
+            if bydate == '2':
+                if startDate and endDate:
+                    date_init = startDate[3:5] + "-" + startDate[:2] + "-" + startDate[6:]
+                    date_end = endDate[3:5] + "-" + endDate[:2] + "-" + endDate[6:]
+                    print("date_init", date_init)
+                    print("date_end", date_end)
+                    query += f""" 
+                        AND b.pro_pdf_created BETWEEN "{date_init}" AND "{date_end}"
                         """
             query += f"""
 						ORDER BY a.pro_id DESC
                     """
-        # print("QUERY.... ", query)
+        
+        print("QUERY.... ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -807,15 +826,37 @@ def put_newPDFdetail(det_info, det_attribute, det_value, det_npage, det_visible)
         
         return result
 
-def del_itemPDF(det_id):
+def del_attributeById(det_id):
     table_name = 'pdf_details'
     result = False
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    UPDATE "{table_name}" SET det_visible=0
+                    UPDATE "{table_name}" SET det_visible = 0
                     WHERE det_id = {det_id}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to delete data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+        
+        return result
+
+def del_attributeByProId(pro_id, list_attributes):
+    table_name = 'pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    DELETE FROM "{table_name}"
+                    WHERE det_info = {pro_id} and det_attribute IN ({list_attributes})
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -839,7 +880,6 @@ def del_PDF(pro_id, pdf_id):
                     UPDATE "{table_name}" SET pdf_visible=0
                     WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -852,6 +892,30 @@ def del_PDF(pro_id, pdf_id):
         
         return result
 
+def get_pdfDetailForDelete(pdf_detid, list_attributes):
+    table_name = 'pdf_details'
+    records = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    SELECT b.det_attribute, b.det_value, b.det_npage
+                    FROM   "{table_name}" b
+                    WHERE  b.det_info = {pdf_detid} and b.det_attribute IN {list_attributes} and b.det_visible = 1
+                    ORDER BY b.det_id ASC
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()        
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return records
+
 def edit_PDF(pro_id, pdf_id, pdf_dettype, pdf_nation):
     table_name = 'pro_pdf_details'
     result = False
@@ -862,7 +926,6 @@ def edit_PDF(pro_id, pdf_id, pdf_dettype, pdf_nation):
                     UPDATE "{table_name}" SET pdf_type='{pdf_dettype}', pdf_nation="{pdf_nation}"
                     WHERE pro_id = {pro_id} and pdf_id = {pdf_id}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -885,7 +948,6 @@ def put_newPDF(pdf=dict()):
                     INSERT INTO "{table_name}" (pdf_name, pdf_npages, pdf_size, pdf_created) 
                     VALUES ("{pdf['name']}", "{pdf['npages']}", "{pdf['size']}", "{pdf['created']}")
                 """
-        # print("newPDF", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -971,7 +1033,6 @@ def get_projectPDFById(pro_id):
             'pro_user':    str(record[5]).split(' ')[0],
             'pro_created': record[6]            
         })
-        # print("LEN", len(pp_details))
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -1051,8 +1112,7 @@ def get_pdfDetailByProId(pro_id):
                     FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  b.det_info IN {pdf_ids} and b.det_visible = 1
                     ORDER BY b.det_id ASC
-                """ 
-        # print('pdf_details', query)
+                """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()

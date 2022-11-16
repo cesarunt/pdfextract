@@ -16,29 +16,41 @@
                         <h5 class="card-title-form">Buscador de Proyectos</h5>
                         <form class="needs-validation" action="{{ url_for('main.search_db_post') }}" method="POST" accept-charset="utf-8">
                             <div class="row" style="margin: 1rem 0.5rem;">
-                                <div class="col-md-2 mb-3" style="margin-bottom: 0.5rem !important;">
-                                    <label style="margin: 0;">Tipo búsqueda</label>
-                                    <select name="findBy" class="form-select" required>
-                                        <option value="1" selected>Total de PDFs</option>
-                                        <option value="2" disabled>Total de Proyectos</option>
-                                    </select>
-                                    <div class="valid-feedback">OK!</div>
+                                <div class="col-md-6 mb-3" style="margin: 0; margin-bottom: 0.5rem !important; padding: 0; border: 1px dotted #EEE;">
+                                    <div class="col-md-3 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table; width: 100%;">
+                                        <label style="margin: 0;">Tipo doc</label>
+                                        <select name="bydoc" class="form-select" required>
+                                            <option value="1" selected>PDFs</option>
+                                            <option value="2" disabled>Proyectos</option>
+                                        </select>
+                                        <div class="valid-feedback">OK!</div>
+                                    </div>
+                                    <div class="col-md-8 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table;">
+                                        <label style="margin: 0 0 0 0.25rem;">Palabra clave</label>
+                                        <input type="text" id="keyword" name="keyword" class="form-control" value="{{ keyword }}" required>
+                                        <input id="keywords" name="keywords" type="hidden" value="">
+                                        <div class="valid-feedback">OK!</div>
+                                        <div class="invalid-feedback">Ingrese el texto</div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3" style="margin-bottom: 0.5rem !important;">
-                                    <label style="margin: 0 0 0 0.25rem;">Palabra clave</label>
-                                    <input type="text" id="keyword" name="keyword" class="form-control" value="{{ keyword }}" required>
-                                    <input id="keywords" name="keywords" type="hidden" value="">
-                                    <div class="valid-feedback">OK!</div>
-                                    <div class="invalid-feedback">Ingrese el texto</div>
-                                </div>
-                                <div class="col-md-4 mb-3" style="margin-bottom: 0.5rem !important;">
-                                    <label style="margin: 0 0.5rem; text-align: center; width: 95%;">Desde - Hasta</label>
-                                    <div class="container" style="text-align: center; margin: 0 !important; padding: 0 !important;">
-                                        <div class="form-check form-check-inline" style="margin-right: 0.25rem;">
-                                            <input id="startDate" name="startDate" placeholder="mm/dd/aaaa" width="152" />
-                                        </div>
-                                        <div class="form-check form-check-inline" style="margin-right: 0;">
-                                            <input id="endDate" name="endDate" placeholder="mm/dd/aaaa" width="152" />
+                                <div class="col-md-6 mb-3" style="margin: 0; margin-bottom: 0.5rem !important; padding: 0; border: 1px dotted #EEE;">
+                                    <div class="col-md-3 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table; width: 100%;">
+                                        <label style="margin: 0;">Fecha</label>
+                                        <select name="bydate" class="form-select" required>
+                                            <option value="1" selected>Origen</option>
+                                            <option value="2">Creación</option>
+                                        </select>
+                                        <div class="valid-feedback">OK!</div>
+                                    </div>
+                                    <div class="col-md-8 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table; width: 100%;">
+                                        <label style="margin: 0 0.5rem; text-align: center; width: 95%;">Desde - Hasta</label>
+                                        <div class="container" style="text-align: center; margin: 0 !important; padding: 0 !important;">
+                                            <div class="form-check form-check-inline" style="margin-right: 0.25rem;">
+                                                <input id="startDate" name="startDate" placeholder="mm/dd/aaaa" width="152" />
+                                            </div>
+                                            <div class="form-check form-check-inline" style="margin-right: 0;">
+                                                <input id="endDate" name="endDate" placeholder="mm/dd/aaaa" width="152" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -192,7 +204,7 @@
                                                         <label style="text-align: justify; margin: 0;">
                                                             <b style="font-size: 0.8rem; font-family:'Lato';">{{ mypdf.pdf_i }}.</b>
                                                             {{ mypdf.pdf_name }} - {{mypdf.pdf_nation}}<br>
-                                                            {% if mypdf.pdf_nation == "O" %}
+                                                            {% if mypdf.pdf_nation == "ON" or mypdf.pdf_nation == "OI" %}
                                                             ({{ mypdf.pdf_year }}, <button type="button" class="mb-2" style="background: none; border: none; color: steelblue; margin: 0;" onclick="showAttributes('{{project.pro_id}}', '{{mypdf.pdf_i}}')"> <b>Ver Atributos</b> </button> )
                                                             {% else %}
                                                             ({{ mypdf.pdf_year }}, {{ mypdf.pdf_nation }})

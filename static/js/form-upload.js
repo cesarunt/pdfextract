@@ -248,14 +248,26 @@ var province = 0
 // Action to change and load provinces list from department
 if (departments) {
   departments.onchange = function(){
+    
     department = departments.value;
     fetch('/province/' + department).then(function(response){
       response.json().then(function(data){
-        let optionHTML = "";
+        let optionHTML_Pro = "";
         for (let province of data.provinces){
-          optionHTML += '<option value="'+ province.prv_id +'">' + province.prv_name + '</option>';
+          optionHTML_Pro += '<option value="'+ province.prv_id +'">' + province.prv_name + '</option>';
         }
-        provinces.innerHTML = optionHTML;
+        provinces.innerHTML = optionHTML_Pro;
+      });
+    });
+
+    province = department + "01"
+    fetch('/district/' + province + '/province/' + department).then(function(response){
+      response.json().then(function(data){
+        let optionHTML_Dis = "";
+        for (let district of data.districts){
+          optionHTML_Dis += '<option value="'+ district.dis_id +'">' + district.dis_name + '</option>';
+        }
+        districts.innerHTML = optionHTML_Dis;
       });
     });
   }
@@ -264,14 +276,15 @@ if (departments) {
 // Action to change and load districts list from province
 if (provinces) {
   provinces.onchange = function(){
+    
     province = provinces.value;
     fetch('/district/' + province + '/province/' + department).then(function(response){
       response.json().then(function(data){
-        let optionHTML = "";
+        let optionHTML_Dis = "";
         for (let district of data.districts){
-          optionHTML += '<option value="'+ district.dis_id +'">' + district.dis_name + '</option>';
+          optionHTML_Dis += '<option value="'+ district.dis_id +'">' + district.dis_name + '</option>';
         }
-        districts.innerHTML = optionHTML;
+        districts.innerHTML = optionHTML_Dis;
       });
     });
   }

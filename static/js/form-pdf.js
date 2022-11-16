@@ -591,7 +591,7 @@ function editPDFAll(url, pdf_type, pdf_nation, pdf_detid) {
     pdf_dettype = "A"
   }
 
-  if (confirm('Desea cambiar el PDF? \nDe ' + pdf_from + " a " + pdf_to)) {
+  if (confirm('Al cambiar se borran los atributos propios de ' + pdf_from + '\nDesea cambiar el PDF, de ' + pdf_from + " a " + pdf_to + ' ?')) {
     // Save it!
     // Create a new FormData instance
     var data = new FormData();
