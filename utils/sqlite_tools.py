@@ -856,7 +856,7 @@ def del_attributeByProId(pro_id, list_attributes):
         cursor = sqliteConnection.cursor()
         query = f"""
                     DELETE FROM "{table_name}"
-                    WHERE det_info = {pro_id} and det_attribute IN ({list_attributes})
+                    WHERE det_info = {pro_id} and det_attribute > 0
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
