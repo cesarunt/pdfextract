@@ -59,7 +59,7 @@ def split_thumb(path, files_split, pdf_info_id):
 
 def split_img(path, files_split, pdf_info_id):
     result = 0
-    images = convert_from_path(path, dpi=300, size=(500,800))
+    images = convert_from_path(path, dpi=300, size=(580,900))
     img_npages = len(images)
     # Save pages as thumbnail
     for i in range(img_npages):
