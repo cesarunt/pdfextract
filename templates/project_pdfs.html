@@ -20,7 +20,7 @@
                                     <div id="div_attribute" style="text-align: center;" class="d-none">
                                         <li style="width: 230px; margin: 5px 0 5px; padding-bottom: 5px; border-bottom:#CCC 1px solid; text-align: center;">
                                             <input style="width: 50%; display: inline-block;" name="new_attribute" id="new_attribute" type="text" placeholder="..." class="form-control">
-                                            <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}')">
+                                            <button type="submit" style="margin: 5px 0" id="btn_save_att" class="btn btn-sm btn-success" onclick="saveAttribute('{{ request.url }}', '{{ project.pro_id }}')">
                                                 <i class="fas fa-save"> T </i>
                                             </button>
                                             <button type="button" id="btn_cancel_att" class="btn btn-sm btn-secondary" onclick="cancelAttribute(this.id)">
@@ -58,7 +58,7 @@
                                                             <i class="fas fa-window-close"></i>
                                                         </button>
                                                         {% if detail.det_i > 2 %}
-                                                        <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; padding: 0; color: red; border: 1px dotted gray;">
+                                                        <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{ project.pro_id }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; padding: 0; color: red; border: 1px dotted gray;">
                                                             <i class="fas fa-backspace"></i>    
                                                         </button>
                                                         {% else %}
@@ -74,7 +74,7 @@
                                                         {% else %}
                                                         <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
                                                         {% endif %}
-                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{ project.pro_id }}', '{{detail.det_name}}')">
                                                             <i class="fas fa-save"> Text </i>
                                                         </button>    
                                                     </div>
@@ -108,7 +108,7 @@
                                                             <i class="fas fa-window-close"></i>
                                                         </button>
                                                         {% if detail.det_i > 2 %}
-                                                        <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; padding: 0; color: red; border: 1px dotted gray;">
+                                                        <button type="submit" name="removes" id="remove_{{detail.det_id}}-{{detail.det_attribute}}-{{detail.det_name}}" class="btn btn-sm btn-secondary" onclick="delAttribute('{{ request.url }}', '{{ project.pro_id }}', '{{detail.det_name}}', this.id)" style="opacity: 0.75; background-color: white; padding: 0; color: red; border: 1px dotted gray;">
                                                             <i class="fas fa-backspace"></i>    
                                                         </button>
                                                         {% else %}
@@ -124,7 +124,7 @@
                                                         {% else %}
                                                         <textarea id="text_{{detail.det_name}}" style="height: 140px;" class="text_area"></textarea><br>
                                                         {% endif %}
-                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{detail.det_name}}')">
+                                                        <button type="submit" id="btn_save_text" style="margin-bottom: 0.6rem;" class="btn btn-sm btn-success" onclick="saveText('{{ request.url }}', '{{ project.pro_id }}', '{{detail.det_name}}')">
                                                             <i class="fas fa-save"> Text </i>
                                                         </button>    
                                                     </div>
@@ -141,7 +141,7 @@
                                 <div id="canvasContainer" style="width: 100%; height: auto;">
                                     <div id="buttons-header" style="width: 675px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
                                         <div id="buttons-close" style="width: 40%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
-                                            <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}')" disabled>
+                                            <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}', '{{ project.pro_id }}')" disabled>
                                                 <i class="fas fa-save"> &nbsp;Imagen</i>
                                             </button>
                                         </div>

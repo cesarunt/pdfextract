@@ -268,7 +268,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                         # 3er recorrido authors_list, para obtener la lista final de __authors_name
                         for key, value in authors_list :
                             if len(key)>1 :
-                                # print("\nKey: " + key + " - Value: " + str(value))
                                 for auth_block in BLOCK_AUTHOR :
                                     auth_patt = re.search(rf"{auth_block}", key, re.IGNORECASE)
                                     if auth_patt != None : patt_band=True; break

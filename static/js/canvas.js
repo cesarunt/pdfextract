@@ -311,7 +311,7 @@ function cancelAttribute(edit_id) {
 }
 
 // REMOVE ATTRIBUTE
-function delAttribute(url, att_name, edit_id) {
+function delAttribute(url, pro_id, att_name, edit_id) {
 
   if (confirm('Desea eliminar el atributo ' + att_name)) {
     // Save it!
@@ -331,6 +331,7 @@ function delAttribute(url, att_name, edit_id) {
 
     var action = "remove_attribute";
     data.append("action", action);
+    data.append("pro_id", pro_id);
     data.append("det_id", _det_id);
 
     // request load handler (transfer complete)
@@ -370,7 +371,7 @@ function delAttribute(url, att_name, edit_id) {
 }
 
 // --------------------------------------------------------------------------------------------------------
-function saveCanvas(url) {
+function saveCanvas(url, pro_id) {
   console.log("saveCanvas")
 
   // Reject if the file input is empty & throw alert
@@ -389,6 +390,7 @@ function saveCanvas(url) {
 
   var action = "save_canvas";
   data.append("action", action);
+  data.append("pro_id", pro_id);
   data.append("det_id", _det_id);
   data.append("det_attribute", _det_attribute);
   // data.append("x", _x);
@@ -429,7 +431,7 @@ function saveCanvas(url) {
 }
 
 // --------------------------------------------------------------------------------------------------------
-function saveText(url, det_name) {
+function saveText(url, pro_id, det_name) {
   console.log("saveText")
   let text = "text_" + det_name
   var text_area = document.getElementById(text)
@@ -453,6 +455,7 @@ function saveText(url, det_name) {
 
   var action = "save_text";
   data.append("action", action);
+  data.append("pro_id", pro_id);
   data.append("det_id", _det_id);
   data.append("det_attribute", _det_attribute);
   data.append("det_value", text_area.value);
@@ -489,7 +492,7 @@ function saveText(url, det_name) {
 }
 
 // --------------------------------------------------------------------------------------------------------
-function saveAttribute(url) {
+function saveAttribute(url, pro_id) {
   console.log("saveAttribute")
   // let text = "text_" + det_name
   var new_att = document.getElementById('new_attribute')
@@ -514,6 +517,7 @@ function saveAttribute(url) {
 
   var action = "save_attribute";
   data.append("action", action);
+  data.append("pro_id", pro_id);
   data.append("new_att", new_att.value);
   data.append("det_type", det_type.value);
 

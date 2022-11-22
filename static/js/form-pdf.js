@@ -530,7 +530,7 @@ function delPDFOne(pdf_len) {
   }
 }
 
-function delPDFAll(url, pdf_name, pdf_detid) {
+function delPDFAll(url, pro_id, pdf_name, pdf_detid) {
 
   if (confirm('Desea eliminar el PDF? \n' + pdf_name)) {
     // Save it!
@@ -545,6 +545,7 @@ function delPDFAll(url, pdf_name, pdf_detid) {
 
     var action = "remove_pdf";
     data.append("action", action);
+    data.append("pro_id", pro_id);
     data.append("pdf_detid", pdf_detid);
 
     // request load handler (transfer complete)
@@ -578,7 +579,7 @@ function delPDFAll(url, pdf_name, pdf_detid) {
   }
 }
 
-function editPDFAll(url, pdf_type, pdf_nation, pdf_detid) {
+function editPDFAll(url, pro_id, pdf_type, pdf_nation, pdf_detid) {
 
   if (pdf_type=="A"){
     pdf_from = "Antecedentes"
@@ -603,21 +604,28 @@ function editPDFAll(url, pdf_type, pdf_nation, pdf_detid) {
 
     var action = "edit_pdf";
     data.append("action", action);
+    data.append("pro_id", pro_id);
     data.append("pdf_detid", pdf_detid);
     data.append("pdf_dettype", pdf_dettype);
     data.append("pdf_detnation", pdf_nation);
 
     // request load handler (transfer complete)
     request.addEventListener("load", function (e) {
+      for (const node of nodes)
+        if (node.innerText.toLowerCase().includes(this.value.toLowerCase()))
+            node.classList.remove('hidden');
+        else
+            node.classList.add('hidden');
+
       if (request.status == 200) {
-        showAlertPage('PDF actualizado correctamente', 'success')
+        showAlertPage('PDF actualizado correctamente', 'success');
         location.reload();
       }
       else {
-        showAlertPage('PDF no fue actualizado', 'warning')
+        showAlertPage('PDF no fue actualizado', 'warning');
       }
       if (request.status == 300) {
-        showAlertPage(`${request.response.message}`, 'warning')
+        showAlertPage(`${request.response.message}`, 'warning');
       }
     });
 
@@ -632,7 +640,7 @@ function editPDFAll(url, pdf_type, pdf_nation, pdf_detid) {
   }
 }
 
-function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
+function doublePDFAll(url, pro_id, pdf_name, pdf_type, pdf_detid) {
 
   if (confirm('Desea duplicar el PDF? \n' + pdf_name)) {
     // Save it!
@@ -645,6 +653,7 @@ function doublePDFAll(url, pdf_name, pdf_type, pdf_detid) {
 
     var action = "double_pdf";
     data.append("action", action);
+    data.append("pro_id", pro_id);
     data.append("pdf_detid", pdf_detid);
     data.append("pdf_dettype", pdf_type);
 
