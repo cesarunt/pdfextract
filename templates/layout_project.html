@@ -32,6 +32,7 @@
             <ul class="list-unstyled components text-secondary">
                 <li>
                     <input type="hidden" name="type_url" id="type_url" value="{{ request.url }}" />
+                    <input type="hidden" name="type_pro" id="type_pro" value="{{ project.pro_id }}" />
                     <select name="type_doc" id="type_doc" class="form-select" style="width: 90%; margin: 0 1rem;">
                         {% if pdf_type == 'T' %}
                         <option value="T" selected>TODOS</option>

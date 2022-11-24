@@ -482,6 +482,7 @@ if (document.querySelector('.form-select')){
 
   selectElement.addEventListener('change', (event) => {
     var type_url = document.getElementById("type_url");
+    var type_pro = document.getElementById("type_pro");
     var type_doc = document.getElementById("type_doc");
 
     // Create a new FormData instance
@@ -494,6 +495,7 @@ if (document.querySelector('.form-select')){
 
     var action = "list_by_doc";
     data.append("action", action);
+    data.append("pro_id", type_pro.value);
     data.append("type_doc", type_doc.value);
 
     // request load handler (transfer complete)
