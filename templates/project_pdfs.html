@@ -165,11 +165,14 @@
                                         <input type="hidden" name="down_pdfid" id="down_pdfid" value="{{ pdf.id }}" />
                                         <input type="hidden" name="down_pdftype" id="down_pdftype" value="{{ pdf.type }}" />
                                         <input type="hidden" name="down_proid" id="down_proid" value="{{ project.pro_id }}" />
-                                        <p style="text-align: center; margin: 25px 0;">
-                                            <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;">
+                                        <p style="text-align: center; margin: 20px 0 10px;">
+                                            <span>Descargar PDF</span><br>
+                                            <button class="btn btn-success" id="save_pdf" type="submit" style="font-size: medium;" disabled>
                                                 &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
-                                            </button><br>
-                                            <span>Descargar PDF</span>
+                                            </button>
+                                        </p>
+                                        <p id="msg_download" style="text-align: center; font-size:0.75rem; color:brown;">
+                                            
                                         </p>
                                     </form>
                                 </div>

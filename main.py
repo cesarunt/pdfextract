@@ -1071,6 +1071,7 @@ def save_thesis_mul():
 def save_pdf_mul():
     global text_scheme
     text_scheme = []
+    pdfs = dict()
 
     if request.method == "POST":
         pro_id = request.form.get('down_proid')
@@ -1078,7 +1079,11 @@ def save_pdf_mul():
         pdf_type = request.form.get('down_pdftype')
         
         text_schemes = get_pdfDetailByIds(pro_id, pdf_id)
-        if (len(text_schemes) > 0):
+        # print("text_schemes", text_schemes)
+        for detail in text_schemes['foundlist']:
+            pdfs[detail['det_name']] = detail['det_value']
+        
+        if (pdfs['título']!='' and pdfs['autor']!='' and pdfs['año']!=''):
             now = datetime.datetime.now()
             if pdf_type == 'A':
                 document = build_pdfA(text_schemes)
@@ -1088,8 +1093,10 @@ def save_pdf_mul():
             file_save = app.config['OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-    
-    return send_file(result_pdf, as_attachment=True)
+
+            if result_pdf:
+                return send_file(result_pdf, as_attachment=True)
+
 
 @main.route("/save_pro_mul", methods=["POST"])
 def save_pro_mul():

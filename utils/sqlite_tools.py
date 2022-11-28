@@ -1190,10 +1190,6 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                 if str(record[2]).split('_')[0] == str(key['key_id']) :
                     keyname = key['key_name'] + " " + str(record[2]).split('_')[1]
                     break
-            # if str(record[2]).split('_')[0] in pro_keylist :
-            #     keyname = 'key'
-            # else:
-            #     keyname = None
             pdf_foundlist.append({
                     'det_id':       record[0],
                     'det_attribute':record[1],
@@ -1208,8 +1204,6 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                     'det_height':   record[10],
                     'det_i':        i
                     })
-        # print('pro_keyInfo', type(pro_keyInfo))
-        # print('pdf_foundlist', pdf_foundlist)
         pdf = {
             'id':        pdf_id,
             'name':      pdf_name,

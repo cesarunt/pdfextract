@@ -130,8 +130,8 @@ var Rectangle = (function () {
 
 var canvas = new fabric.Canvas('canvas');
 var arrow = new Rectangle(canvas);
-
 var ctx = canvas.getContext("2d");
+
 
 $("canvas").dblclick(function() {
   console.log("cleaning...");
@@ -546,4 +546,28 @@ function saveAttribute(url, pro_id) {
   // Open and send the request
   request.open("POST", url);
   request.send(data);
+}
+
+var text_title = document.getElementById("text_título");
+var text_autor = document.getElementById("text_autor");
+var text_anio = document.getElementById("text_año");
+
+if (text_title.innerHTML == '' || text_autor.innerHTML == '' || text_anio.innerHTML == '') {
+  document.getElementById("save_pdf").disabled = true
+  var msg_down = "Debe registrar "
+
+  if (text_title.innerHTML == '') {
+    msg_down = msg_down + ", Título"
+  }
+  if (text_autor.innerHTML == '') {
+    msg_down = msg_down + ", Autor"
+  }
+  if (text_anio.innerHTML == '') {
+    msg_down = msg_down + ", Año"
+  }
+  
+  msg_down = document.getElementById("msg_download").innerHTML = msg_down
+}
+else{
+  document.getElementById("save_pdf").disabled = false
 }

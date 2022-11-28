@@ -92,6 +92,7 @@ def build_pdfA(text_schemes):
         html = ILLEGAL_XML_CHARS_RE.sub("", text)
         line = p.add_run(str(html))
         if key == "K": line.italic = True; p.add_run("\n")
+        elif key == "N": p.add_run("\n")
 
     p.add_run("\n")
     line = p.add_run("Referencias")
@@ -213,9 +214,11 @@ def build_pdfMT(text_schemes):
         if detail['det_name'] == 'página':
             size_doc = detail['det_npage']
 
-    if (pdfs['título'] and pdfs['autor'] and 'año' in pdfs):
+    if (pdfs['título']):
         det_title     = pdfs['título'].replace('\n', ' ').replace('\r', '')
+    if (pdfs['autor']):
         det_author    = pdfs['autor'].replace('\n', ' ').replace('\r', '')
+    if (pdfs['año']):
         det_year      = pdfs['año'].replace('\n', ' ').replace('\r', '')
     if ('revista' in pdfs):
         det_magazine = pdfs['revista'].replace('\n', ' ').replace('\r', '')
