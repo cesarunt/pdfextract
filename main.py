@@ -305,7 +305,7 @@ def create_db_post():
             user_id = current_user.id
 
             if process == '1' and len(_pdfs) > 0:
-                complete_date = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+                complete_date = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
                 current_date = date.today().strftime("%d-%m-%Y")
                 project = {
                         'title' :       "Nuevo proyecto, generado el " + complete_date,
@@ -1079,11 +1079,11 @@ def save_pdf_mul():
         
         text_schemes = get_pdfDetailByIds(pro_id, pdf_id)
         if (len(text_schemes) > 0):
-            now = datetime.now()
+            now = datetime.datetime.now()
             if pdf_type == 'A':
                 document = build_pdfA(text_schemes)
             if pdf_type == 'M':
-                document = build_pdfA(text_schemes)
+                document = build_pdfMT(text_schemes)
             
             file_save = app.config['OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
@@ -1102,7 +1102,7 @@ def save_pro_mul():
         # print("text_schemes")
         # print(len(text_schemes))
         if (len(text_schemes) > 0):
-            now = datetime.now()
+            now = datetime.datetime.now()
             document = build_project("Esquema", text_schemes)
             file_save = app.config['OUTPUT']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)

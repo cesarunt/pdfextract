@@ -133,15 +133,15 @@
                         </li>
                         {% endfor %}
                         <div class="mb-3" style="margin-bottom: 0 !important;">
-                            <form method="POST" action="save_pro_mul" enctype="multipart/form-data">
+                            <!-- <form method="POST" action="save_pro_mul" enctype="multipart/form-data"> -->
                                 <input type="hidden" name="down_pro" id="down_pro" value="{{ project.pro_id }}" />
                                 <p style="text-align: center; margin: 15px 0; color: #222;">
                                     <button class="btn btn-success" id="save_pro" type="submit" style="font-size: medium;">
                                         &nbsp;&nbsp;<i class="fas fa-file-download"></i>&nbsp;&nbsp;
                                     </button><br>
-                                    <span>Descargar Proyecto</span>
+                                    <span>Descargar Proyecto.</span>
                                 </p>
-                            </form>
+                            <!-- </form> -->
                         </div>
                     {% endif %}
                 {% endif %}
