@@ -92,8 +92,9 @@ def build_pdfA(text_schemes):
         html = ILLEGAL_XML_CHARS_RE.sub("", text)
         line = p.add_run(str(html))
         if key == "K": line.italic = True; p.add_run("\n")
-        elif key == "N": p.add_run("\n")
+        # elif key == "N": p.add_run("\n")
 
+    p.add_run("\n")
     p.add_run("\n")
     line = p.add_run("Referencias")
     line.bold = True
@@ -211,7 +212,7 @@ def build_pdfMT(text_schemes):
     pdfs = dict()
     for detail in text_schemes['foundlist']:
         pdfs[detail['det_name']] = detail['det_value']
-        if detail['det_name'] == 'página':
+        if detail['det_name'] == 'enlace':
             size_doc = detail['det_npage']
 
     if (pdfs['título']):
@@ -224,6 +225,8 @@ def build_pdfMT(text_schemes):
         det_magazine = pdfs['revista'].replace('\n', ' ').replace('\r', '')
     if ('volumen' in pdfs):
         det_volumen  = pdfs['volumen'].replace('\n', ' ').replace('\r', '')
+    if ('enlace' in pdfs):
+        det_page     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
     if ('página' in pdfs):
         det_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
 

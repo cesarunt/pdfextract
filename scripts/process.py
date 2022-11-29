@@ -476,9 +476,9 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
             if volume and volume_band == False:
                 addText_view(volume, 18, page+1)
                 volume_band = True
-            if pagem and pagem_band == False:
-                addText_view(pagem, 19, page+1)
-                pagem_band = True
+            # if pagem and pagem_band == False:
+            #     addText_view(pagem, 19, page+1)
+            #     pagem_band = True
                         
             if len(key_att_ids) == 0:
                 for value in pdf_attributes :
@@ -486,7 +486,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                     if key_result:
                         for value in key_attributes :
                             key_att_ids.append(value[0])
-
                 if len(key_att_ids) > 0:
                     for key in key_att_ids:
                         addText_view("", key, page+1)
@@ -502,8 +501,10 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                     addText_view(paper, 17, 1)
                 if volume_band == False:
                     addText_view(volume, 18, 1)
-                if pagem_band == False:
-                    addText_view(pagem, 19, 1)
+                # if pagem_band == False:
+                #     addText_view(pagem, 19, 1)
+                addText_view("http://", 19, pdf_npages)
+                addText_view("_", 20, 1)
         np += 1
 
     return language, title_text
