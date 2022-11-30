@@ -123,7 +123,7 @@ def build_pdfA(text_schemes):
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
             text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
             if len(det_link)>0:
-                text_scheme.append(tuple(["N", '\n' + str(det_link) ]))
+                text_scheme.append(tuple(["N", '.\n ' + str(det_link) ]))
         else:
             # REVISTAS
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
@@ -135,7 +135,7 @@ def build_pdfA(text_schemes):
             if (len(det_page)>0):
                 text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
             if len(det_link)>0:
-                text_scheme.append(tuple(["N", '. Obtenido de ' + str(det_link) ]))
+                text_scheme.append(tuple(["N", '.\n ' + str(det_link) ]))
             # text_scheme.append(tuple(["N", '" doi:DOI: "']))
 
     p = document.add_paragraph()
@@ -247,7 +247,7 @@ def build_pdfMT(text_schemes):
             text_scheme.append(tuple(["K", str(det_title) ]))
             # text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
             if len(det_link)>0:
-                text_scheme.append(tuple(["N", '\n' + str(det_link) ]))
+                text_scheme.append(tuple(["N", '.\n ' + str(det_link) ]))
         else:
             # ARTICLES
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
@@ -259,7 +259,7 @@ def build_pdfMT(text_schemes):
             if (len(det_page)>0):
                 text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
             if len(det_link)>0:
-                text_scheme.append(tuple(["L", '\n' + str(det_link) ]))
+                text_scheme.append(tuple(["L", '.\n ' + str(det_link) ]))
 
     p = document.add_paragraph()
 
