@@ -456,29 +456,31 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                     addText_view(result_text, 10, page-1)
                 if conclusion_band == False:
                     addText_view(conclusion_text, 11, page)
-                    
-                addText_view("http://", 12, pdf_npages)
-                addText_view("_", 13, 1)
+                # magazine
+                addText_view("", 12, 1)
+                # volumen
+                addText_view("", 13, 1)
+                # link
+                addText_view("http://", 14, pdf_npages)
+                # page
+                addText_view("..", 15, 1)
         
         if type_val == "M":
             if title_text and title_band == False:
-                addText_view(title_text, 14, page+1)
+                addText_view(title_text, 16, page+1)
                 title_band = True
             if authors_text and authors_band == False:
-                addText_view(authors_text, 15, page+1)
+                addText_view(authors_text, 17, page+1)
                 authors_band = True
             if year and year_band == False:
-                addText_view(year, 16, page+1)
+                addText_view(year, 18, page+1)
                 year_band = True
             if paper and paper_band == False:
-                addText_view(paper, 17, page+1)
+                addText_view(paper, 19, page+1)
                 paper_band = True
             if volume and volume_band == False:
-                addText_view(volume, 18, page+1)
+                addText_view(volume, 20, page+1)
                 volume_band = True
-            # if pagem and pagem_band == False:
-            #     addText_view(pagem, 19, page+1)
-            #     pagem_band = True
                         
             if len(key_att_ids) == 0:
                 for value in pdf_attributes :
@@ -492,19 +494,20 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
 
             if title_ctrl == True and title_text!="" and np == length-1 :
                 if title_band == False:
-                    addText_view(title_text, 14, 1)
+                    addText_view(title_text, 16, 1)
                 if authors_band == False:
-                    addText_view(authors_text, 15, 1)
+                    addText_view(authors_text, 17, 1)
                 if year_band == False:
-                    addText_view(year, 16, 1)
-                if paper_band == False:
-                    addText_view(paper, 17, 1)
-                if volume_band == False:
-                    addText_view(volume, 18, 1)
-                # if pagem_band == False:
-                #     addText_view(pagem, 19, 1)
-                addText_view("http://", 19, pdf_npages)
-                addText_view("_", 20, 1)
+                    addText_view(year, 18, 1)
+                # magazine
+                addText_view("", 19, 1)
+                # volumen
+                addText_view("", 20, 1)
+                # link
+                addText_view("http://", 21, pdf_npages)
+                # page
+                addText_view("..", 22, 1)
+                
         np += 1
 
     return language, title_text

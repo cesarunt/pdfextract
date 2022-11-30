@@ -767,7 +767,7 @@ def pdf_post(pdf_id):
             page =          int(request.values.get("page"))
             
             result_detail = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
-            if result_detail is True and (det_attribute==1 or det_attribute==14):
+            if result_detail is True and (det_attribute==1 or det_attribute==16):
                 pdf_name = unidecode.unidecode(det_value)
                 _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name)
             result_split = 1

@@ -92,7 +92,6 @@ def build_pdfA(text_schemes):
         html = ILLEGAL_XML_CHARS_RE.sub("", text)
         line = p.add_run(str(html))
         if key == "K": line.italic = True; p.add_run("\n")
-        # elif key == "N": p.add_run("\n")
 
     p.add_run("\n")
     p.add_run("\n")
@@ -110,23 +109,34 @@ def build_pdfA(text_schemes):
         det_title     = pdfs['título'].replace('\n', ' ').replace('\r', '')
         det_author    = pdfs['autor'].replace('\n', ' ').replace('\r', '')
         det_year      = pdfs['año'].replace('\n', ' ').replace('\r', '')
+    if ('revista' in pdfs):
+        det_magazine = pdfs['revista'].replace('\n', ' ').replace('\r', '')
+    if ('volumen' in pdfs):
+        det_volumen  = pdfs['volumen'].replace('\n', ' ').replace('\r', '')
     if ('enlace' in pdfs):
-        down_link     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
+        det_link     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
     if ('página' in pdfs):
-        down_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
+        det_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
 
         if (size_doc>40):
             # TESIS
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
             text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-            text_scheme.append(tuple(["N", ". \n"]))
-            text_scheme.append(tuple(["N", '"' + str(down_link) + '"']))
+            if len(det_link)>0:
+                text_scheme.append(tuple(["N", '\n' + str(det_link) ]))
         else:
             # REVISTAS
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
             text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
-            text_scheme.append(tuple(["N", '" doi:DOI: "']))
-            text_scheme.append(tuple(["N", '"' + str(down_page) + '."']))
+            if (len(det_magazine)>0):
+                text_scheme.append(tuple(["K", ', ' + str(det_magazine) ]))
+            if (len(det_volumen)>0):
+                text_scheme.append(tuple(["K", ', ' + str(det_volumen) ]))
+            if (len(det_page)>0):
+                text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
+            if len(det_link)>0:
+                text_scheme.append(tuple(["N", '. Obtenido de ' + str(det_link) ]))
+            # text_scheme.append(tuple(["N", '" doi:DOI: "']))
 
     p = document.add_paragraph()
 
@@ -154,9 +164,10 @@ def build_pdfA(text_schemes):
         html = ILLEGAL_XML_CHARS_RE.sub("", text)
         line = p.add_run(str(html))
         if key == "K": line.italic = True
-        if key == "L": line.color = "#CB7825"
+        # if key == "L": line.color = "#CB7825"; p.add_run("\n")
             
     return document
+
 
 def build_pdfMT(text_schemes):
     document = Document()
@@ -226,22 +237,29 @@ def build_pdfMT(text_schemes):
     if ('volumen' in pdfs):
         det_volumen  = pdfs['volumen'].replace('\n', ' ').replace('\r', '')
     if ('enlace' in pdfs):
-        det_page     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
+        det_link     = pdfs['enlace'].replace('\n', ' ').replace('\r', '')
     if ('página' in pdfs):
         det_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
 
         if (size_doc>40):
-            # TESIS
+            # TESIS / LIBRO
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
             text_scheme.append(tuple(["K", str(det_title) ]))
-            text_scheme.append(tuple(["N", '\n' + str(det_page) ]))
+            # text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
+            if len(det_link)>0:
+                text_scheme.append(tuple(["N", '\n' + str(det_link) ]))
         else:
             # ARTICLES
             text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
             text_scheme.append(tuple(["K", str(det_title) ]))
-            text_scheme.append(tuple(["K", ', ' + str(det_magazine) ]))
-            text_scheme.append(tuple(["K", ', ' + str(det_volumen) ]))
-            text_scheme.append(tuple(["N", '\n' + str(det_page) ]))
+            if (len(det_magazine)>0):
+                text_scheme.append(tuple(["K", ', ' + str(det_magazine) ]))
+            if (len(det_volumen)>0):
+                text_scheme.append(tuple(["K", ', ' + str(det_volumen) ]))
+            if (len(det_page)>0):
+                text_scheme.append(tuple(["N", ', ' + str(det_page) ]))
+            if len(det_link)>0:
+                text_scheme.append(tuple(["L", '\n' + str(det_link) ]))
 
     p = document.add_paragraph()
 
@@ -269,7 +287,7 @@ def build_pdfMT(text_schemes):
         html = ILLEGAL_XML_CHARS_RE.sub("", text)
         line = p.add_run(str(html))
         if key == "K": line.italic = True
-        if key == "L": line.color = "#CB7825"
+        if key == "L": line.color = "#CB7825"; p.add_run("\n")
             
     return document
 
@@ -407,7 +425,7 @@ def build_project(title, text_schemes):
             down_page     = pdfs['página'].replace('\n', ' ').replace('\r', '')
 
             if (size_doc>40):
-                # TESIS
+                # TESIS / LIBRO
                 text_scheme.append(tuple(["N", str(det_author) + " ("+str(det_year)+"). " ]))
                 text_scheme.append(tuple(["K", '"' + str(det_title) + '"']))
                 text_scheme.append(tuple(["N", ". \n"]))
