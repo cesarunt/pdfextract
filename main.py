@@ -844,7 +844,7 @@ def pdf_post(pdf_id):
                 # Insert values in "pdf_details", consider Title, Author, Year
                 if pdf_dettype == "A":
                     # Get values for Title, Author, Year
-                    list_attributes_get = (14, 15, 16)
+                    list_attributes_get = (16, 17, 18)
                     pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
                     # Delete det_visible in "pdf_details"
                     responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
@@ -860,8 +860,10 @@ def pdf_post(pdf_id):
                         put_newPDFdetail(pdf_detid, 9, "", 1, 1)
                         put_newPDFdetail(pdf_detid, 10, "", 1, 1)
                         put_newPDFdetail(pdf_detid, 11, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 12, "http://", 1, 1)
-                        put_newPDFdetail(pdf_detid, 13, "_", 1, 1)
+                        put_newPDFdetail(pdf_detid, 12, "", 1, 1)
+                        put_newPDFdetail(pdf_detid, 13, "", 1, 1)
+                        put_newPDFdetail(pdf_detid, 14, "http://", 1, 1)
+                        put_newPDFdetail(pdf_detid, 15, "..", 1, 1)
                 if pdf_dettype == "M":
                     key_att_ids = []
                     # Get values for Title, Author, Year
@@ -876,12 +878,13 @@ def pdf_post(pdf_id):
                         # nation_val = "ON"
                         if len(pdf_attributes) > 0:
                             # Insert values basics
-                            put_newPDFdetail(pdf_detid, 14, pdf_details[0][1], pdf_details[0][2], 1)
-                            put_newPDFdetail(pdf_detid, 15, pdf_details[1][1], pdf_details[1][2], 1)
-                            put_newPDFdetail(pdf_detid, 16, pdf_details[2][1], pdf_details[2][2], 1)
-                            put_newPDFdetail(pdf_detid, 17, "", 1, 1)
-                            put_newPDFdetail(pdf_detid, 18, "", 1, 1)
+                            put_newPDFdetail(pdf_detid, 16, pdf_details[0][1], pdf_details[0][2], 1)
+                            put_newPDFdetail(pdf_detid, 17, pdf_details[1][1], pdf_details[1][2], 1)
+                            put_newPDFdetail(pdf_detid, 18, pdf_details[2][1], pdf_details[2][2], 1)
                             put_newPDFdetail(pdf_detid, 19, "", 1, 1)
+                            put_newPDFdetail(pdf_detid, 20, "", 1, 1)
+                            put_newPDFdetail(pdf_detid, 21, "http://", 1, 1)
+                            put_newPDFdetail(pdf_detid, 22, "", 1, 1)
                             # Insert values additionals
                             for value in pdf_attributes :
                                 key_result, key_attributes = get_keys_attr(pdf_dettype, value)
