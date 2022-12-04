@@ -158,7 +158,7 @@ def readTextSchemesMT(text_schemes, document, i):
 def build_pdfA(text_schemes):
     document = Document()
 
-    text_scheme, document = readTextSchemesA(text_schemes['foundlist'], document)
+    text_scheme, document = readTextSchemesA(text_schemes['foundlist'], document, 1)
     p = document.add_paragraph()
 
     for key, value in text_scheme:
@@ -201,7 +201,7 @@ def build_pdfA(text_schemes):
 def build_pdfMT(text_schemes):
     document = Document()
     
-    text_scheme, document = readTextSchemesMT(text_schemes['foundlist'], document)
+    text_scheme, document = readTextSchemesMT(text_schemes['foundlist'], document, 1)
     p = document.add_paragraph()
 
     for key, value in text_scheme:
