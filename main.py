@@ -403,7 +403,6 @@ def thesis_mul_load():
         if 'files[]' not in request.files:
             return redirect(request.url)
 
-        # files = request.files.getlist('files[]')
         current_date = date.today().strftime("%d-%m-%Y")
         pdfs = []
         files = request.files.getlist('files[]')
@@ -530,7 +529,7 @@ def action_thesis_mul():
                     thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                     ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
 
-                    print("ROI_language", LANGUAGE_PAGE)
+                    # print("ROI_language", LANGUAGE_PAGE)
                     if LANGUAGE_PAGE=="es":
                         language = "spa"
                     else:
@@ -753,11 +752,12 @@ def pdf_post(pdf_id):
                 text = text + text_page + " "
             
             if text is None or text == "":
-                text = "..."
+                text = ".."
             result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, dictPage)
 
             if det_attribute == 1 and result1:
-                result2 = upd_PPdetail(det_id, pro_id, pdf_id, text, current_date)
+                _ = upd_PPdetail(det_id, pro_id, pdf_id, text, current_date)
+            
             result_split = 1
         
         if action == "save_text":
@@ -776,21 +776,12 @@ def pdf_post(pdf_id):
             current_date = date.today().strftime("%d-%m-%Y")
             att_value =  request.values.get("new_att")
             att_type =  request.values.get("det_type")
-            try:
-                response_att, id = put_newPDFattribute(att_value, att_type, current_date)
-                if response_att is True:
-                    msg_att = "Atributo registrado con éxito"
-            except:
-                msg_att = "Error en registro del atributo"
-            
-            try:
+            response_att, id = put_newPDFattribute(att_value, att_type, current_date)
+            if response_att is True:
+                # msg_att = "Atributo registrado con éxito"
                 response_pdf = put_newPDFdetail(pdf_id, id, "", 1, 1)
                 if response_pdf is True:
                     msg_pdf = "PDF detail registrado con éxito"
-            except:
-                msg_pdf = "Error en registro de PDFdetail ..."
-            
-            finally:
                 result_split = 1
         
         if action == "list_by_doc":
@@ -799,27 +790,16 @@ def pdf_post(pdf_id):
 
         if action == "remove_attribute":
             det_id = int(request.values.get("det_id"))
-            
-            try:
-                response_pdf = del_attributeById(det_id)
-                if response_pdf is True:
-                    msg_pdf = "PDF detail eliminado con éxito"
-            except:
-                msg_pdf = "Error en eliminación de PDFdetail"
-            
-            finally:
+            response_pdf = del_attributeById(det_id)
+            if response_pdf is True:
+                # msg_pdf = "PDF detail eliminado con éxito"
                 result_split = 1
 
-        if action == "Duplicar":
+        if action == "remove_pdf":
             pdf_detid = request.values.get("pdf_detid")
-            try:
-                response_pdf = del_PDF(pro_id, pdf_detid)
-                if response_pdf is True:
-                    msg_pdf = "PDF eliminado con éxito"
-            except:
-                msg_pdf = "Error en eliminación de PDF"
-            
-            finally:
+            response_pdf = del_PDF(pro_id, pdf_detid)
+            if response_pdf is True:
+                # msg_pdf = "PDF eliminado con éxito"
                 result_split = 1
         
         if action == "edit_pdf":
@@ -840,72 +820,66 @@ def pdf_post(pdf_id):
                 list_attributes_del = [*range(14,20)]
             list_attributes_del = ','.join(str(item) for item in list_attributes_del)
             list_attributes_get = None
-            try:
-                # Insert values in "pdf_details", consider Title, Author, Year
-                if pdf_dettype == "A":
-                    # Get values for Title, Author, Year
-                    list_attributes_get = (16, 17, 18)
-                    pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
-                    # Delete det_visible in "pdf_details"
-                    responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
-                    if len(pdf_details)>0 and responde_del :
-                        put_newPDFdetail(pdf_detid, 1, pdf_details[0][1], pdf_details[0][2], 1)
-                        put_newPDFdetail(pdf_detid, 2, pdf_details[1][1], pdf_details[1][2], 1)
-                        put_newPDFdetail(pdf_detid, 3, pdf_details[2][1], pdf_details[2][2], 1)
-                        put_newPDFdetail(pdf_detid, 4, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 5, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 6, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 7, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 8, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 9, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 10, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 11, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 12, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 13, "", 1, 1)
-                        put_newPDFdetail(pdf_detid, 14, "http://", 1, 1)
-                        put_newPDFdetail(pdf_detid, 15, "..", 1, 1)
-                if pdf_dettype == "M":
-                    key_att_ids = []
-                    # Get values for Title, Author, Year
-                    list_attributes_get = (1, 2, 3)
-                    pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
-                    # Delete det_visible in "pdf_details"
-                    responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
-                    if len(pdf_details)>0 and responde_del :
-                        sqliteConnection = sqlite3.connect(data_base)
-                        cursor = sqliteConnection.cursor()
-                        pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
-                        # nation_val = "ON"
-                        if len(pdf_attributes) > 0:
-                            # Insert values basics
-                            put_newPDFdetail(pdf_detid, 16, pdf_details[0][1], pdf_details[0][2], 1)
-                            put_newPDFdetail(pdf_detid, 17, pdf_details[1][1], pdf_details[1][2], 1)
-                            put_newPDFdetail(pdf_detid, 18, pdf_details[2][1], pdf_details[2][2], 1)
-                            put_newPDFdetail(pdf_detid, 19, "", 1, 1)
-                            put_newPDFdetail(pdf_detid, 20, "", 1, 1)
-                            put_newPDFdetail(pdf_detid, 21, "http://", 1, 1)
-                            put_newPDFdetail(pdf_detid, 22, "", 1, 1)
-                            # Insert values additionals
-                            for value in pdf_attributes :
-                                key_result, key_attributes = get_keys_attr(pdf_dettype, value)
-                                if key_result:
-                                    for value in key_attributes :
-                                        key_att_ids.append(value[0])
 
-                            if len(key_att_ids) > 0:
-                                for key in key_att_ids:
-                                    # addText_view("", key, page+1)  +==== addText_view(value, att_id, page)
-                                    put_newPDFdetail(pdf_detid, key, "", 1, 1)
+            # Insert values in "pdf_details", consider Title, Author, Year
+            if pdf_dettype == "A":
+                # Get values for Title, Author, Year
+                list_attributes_get = (16, 17, 18)
+                pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
+                # Delete det_visible in "pdf_details"
+                responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
+                if len(pdf_details)>0 and responde_del :
+                    put_newPDFdetail(pdf_detid, 1, pdf_details[0][1], pdf_details[0][2], 1)
+                    put_newPDFdetail(pdf_detid, 2, pdf_details[1][1], pdf_details[1][2], 1)
+                    put_newPDFdetail(pdf_detid, 3, pdf_details[2][1], pdf_details[2][2], 1)
+                    put_newPDFdetail(pdf_detid, 4, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 5, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 6, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 7, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 8, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 9, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 10, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 11, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 12, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 13, "", 1, 1)
+                    put_newPDFdetail(pdf_detid, 14, "http://", 1, 1)
+                    put_newPDFdetail(pdf_detid, 15, "..", 1, 1)
+            if pdf_dettype == "M":
+                key_att_ids = []
+                # Get values for Title, Author, Year
+                list_attributes_get = (1, 2, 3)
+                pdf_details = get_pdfDetailForDelete(pdf_detid, list_attributes_get)
+                # Delete det_visible in "pdf_details"
+                responde_del = del_attributeByProId(pdf_detid, list_attributes_del)
+                if len(pdf_details)>0 and responde_del :
+                    sqliteConnection = sqlite3.connect(data_base)
+                    cursor = sqliteConnection.cursor()
+                    pdf_attributes = get_proKeyById(cursor, 'project_info', pro_id)
+                    # nation_val = "ON"
+                    if len(pdf_attributes) > 0:
+                        # Insert values basics
+                        put_newPDFdetail(pdf_detid, 16, pdf_details[0][1], pdf_details[0][2], 1)
+                        put_newPDFdetail(pdf_detid, 17, pdf_details[1][1], pdf_details[1][2], 1)
+                        put_newPDFdetail(pdf_detid, 18, pdf_details[2][1], pdf_details[2][2], 1)
+                        put_newPDFdetail(pdf_detid, 19, "", 1, 1)
+                        put_newPDFdetail(pdf_detid, 20, "", 1, 1)
+                        put_newPDFdetail(pdf_detid, 21, "http://", 1, 1)
+                        put_newPDFdetail(pdf_detid, 22, "", 1, 1)
+                        # Insert values additionals
+                        for value in pdf_attributes :
+                            key_result, key_attributes = get_keys_attr(pdf_dettype, value)
+                            if key_result:
+                                for value in key_attributes :
+                                    key_att_ids.append(value[0])
 
-                # Update pdf_type (and pdf_nation) in "pro_pdf_details"
-                response_edit = edit_PDF(pro_id, pdf_detid, pdf_dettype, pdf_nation)
-
-                if response_edit and responde_del:
-                    msg_pdf = "PDF actualizado con éxito"
-            except:
-                msg_pdf = "Error en edición de PDF"
-            
-            finally:
+                        if len(key_att_ids) > 0:
+                            for key in key_att_ids:
+                                # addText_view("", key, page+1)  +==== addText_view(value, att_id, page)
+                                put_newPDFdetail(pdf_detid, key, "", 1, 1)
+            # Update pdf_type (and pdf_nation) in "pro_pdf_details"
+            response_edit = edit_PDF(pro_id, pdf_detid, pdf_dettype, pdf_nation)
+            if response_edit and responde_del:
+                # msg_pdf = "PDF actualizado con éxito"
                 pdf_id = pdf_detid
                 result_split = 1
 
@@ -951,12 +925,11 @@ def pdf_post(pdf_id):
 
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
+            # try:
             pdf = get_pdfDetailByIds(pro_id, pdf_id)
-
-            try:
-                pdfs = get_projectsById(pro_id, type_doc) # type_doc
-            except:
-                print("No se puede obtener los PDFs")
+            pdfs = get_projectsById(pro_id, type_doc)
+            # except:
+            #     print("No se puede obtener los PDFs")
             """Verificar pdf_details, encontrados y no encontrados"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]
@@ -1022,7 +995,6 @@ def paper_mul_load():
     global file_pdfs
     upload = False
     file_pdfs = []
-    result_split = []
 
     if request.method == "POST":
         pro_id = request.form.get('pro_id')
@@ -1069,7 +1041,7 @@ def save_thesis_mul():
         
     return send_file(down_image, as_attachment=True)
 
-# SAVE PDF AND PROJECT
+# Download PDF
 @main.route("/save_pdf_mul", methods=["POST"])
 def save_pdf_mul():
     global text_scheme
@@ -1082,7 +1054,6 @@ def save_pdf_mul():
         pdf_type = request.form.get('down_pdftype')
         
         text_schemes = get_pdfDetailByIds(pro_id, pdf_id)
-        # print("text_schemes", text_schemes)
         for detail in text_schemes['foundlist']:
             pdfs[detail['det_name']] = detail['det_value']
         
@@ -1092,7 +1063,6 @@ def save_pdf_mul():
                 document = build_pdfA(text_schemes)
             if pdf_type == 'M':
                 document = build_pdfMT(text_schemes)
-            
             file_save = app.config['OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
@@ -1100,20 +1070,20 @@ def save_pdf_mul():
             if result_pdf:
                 return send_file(result_pdf, as_attachment=True)
 
-
+# Download PROJECT
 @main.route("/save_pro_mul", methods=["POST"])
 def save_pro_mul():
     global text_schemes
     text_schemes = []
+    result_pdf = ""
 
     if request.method == "POST":
         pro_id = request.form.get('down_pro')
+        pro_type = request.form.get('down_pro_type')
         text_schemes = get_pdfDetailByProId(pro_id)
-        # print("text_schemes")
-        # print(len(text_schemes))
         if (len(text_schemes) > 0):
             now = datetime.datetime.now()
-            document = build_project("Esquema", text_schemes)
+            document = build_project(text_schemes, pro_type)
             file_save = app.config['OUTPUT']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['FORWEB']+'/exportPROJECT_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'

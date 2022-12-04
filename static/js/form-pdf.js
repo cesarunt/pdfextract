@@ -535,8 +535,6 @@ function delPDFOne(pdf_len) {
 function delPDFAll(url, pro_id, pdf_name, pdf_detid) {
 
   if (confirm('Desea eliminar el PDF? \n' + pdf_name)) {
-    // Save it!
-    
     // Create a new FormData instance
     var data = new FormData();
     // Create a XMLHTTPRequest instance
@@ -554,7 +552,6 @@ function delPDFAll(url, pro_id, pdf_name, pdf_detid) {
     request.addEventListener("load", function (e) {
       if (request.status == 200) {
         /// Disabled updated button (blue color), and opacity 1
-        // update_att.disabled = true      
         // alert(`Eliminación Exitosa`, "success");
         showAlertPage('PDF eliminado con éxito', 'success')
         location.reload();

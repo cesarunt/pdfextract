@@ -98,7 +98,7 @@ def get_pdfDetailById(pro_id, pdf_id):
 def get_pdfsByProId(cursor, tablename, pro_id):
     """Get pdf_id list from tablename -> pro_pdf_details"""
     query = f"""
-                SELECT pdf_id
+                SELECT pdf_id, pdf_type
                 FROM  {tablename}
                 WHERE pro_id = "{pro_id}" and pdf_visible = 1
             """
@@ -106,8 +106,7 @@ def get_pdfsByProId(cursor, tablename, pro_id):
     records = cursor.fetchall()
     pdf_ids = tuple()
     for record in records:
-        pdf_ids = pdf_ids + (record[0], 0)
-
+        pdf_ids = pdf_ids + (record[0],)
     return records, pdf_ids
 
 def get_col_names(cursor, tablename):
@@ -1099,65 +1098,7 @@ def get_projectsById(id, type_doc):
             print("The SQLite connection is closed")
         return pp_details
 
-def get_pdfDetailByProId(pro_id):
-    table_name = 'pdf_details'
-    pdf_details = []
-    pdfs = dict()
-    try:
-        sqliteConnection = sqlite3.connect(data_base)
-        cursor = sqliteConnection.cursor()
-        pdf_records, pdf_ids = get_pdfsByProId(cursor, 'pro_pdf_details', pro_id)
-        query = f"""
-                    SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
-                    FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
-                    WHERE  b.det_info IN {pdf_ids} and b.det_visible = 1
-                    ORDER BY b.det_id ASC
-                """
-        sqlite_select_query = query
-        cursor.execute(sqlite_select_query)
-        records = cursor.fetchall()
-
-        i = 0
-        for record in records:
-            if pdf_records[i][0] == record[1]:
-                pdf_details.append({
-                        'det_id':       record[0],
-                        'det_info':     record[1],
-                        'det_attribute':record[2],
-                        'det_name':     record[3], 
-                        'det_value':    record[4],
-                        'det_npage':    record[5]
-                        })
-            else:
-                pdfs[i] = {
-                    'id':    pdf_records[i][0],
-                    'details':  pdf_details,
-                }
-                pdf_details = []
-                pdf_details.append({
-                    'det_id':       record[0],
-                    'det_info':     record[1],
-                    'det_attribute':record[2],
-                    'det_name':     record[3], 
-                    'det_value':    record[4],
-                    'det_npage':    record[5]
-                })
-                i = i + 1
-
-        pdfs[i] = {
-            'id':    pdf_records[i][0],
-            'details':  pdf_details,
-        }
-        
-        cursor.close()
-    except sqlite3.Error as error:
-        print("Failed to read data from sqlite table", error)
-    finally:
-        if sqliteConnection:
-            sqliteConnection.close()
-            print("The SQLite connection is closed")
-        return pdfs
-
+# Download PDF -> get data by PdfID
 def get_pdfDetailByIds(pro_id, pdf_id):
     table_name = 'pdf_details'
     pdf = dict()
@@ -1181,7 +1122,6 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         records = cursor.fetchall()
         
         i = 0
-        # print('pro_keylist', pro_keylist)
         for record in records:
             i = i + 1
             keyname = record[2]
@@ -1223,3 +1163,57 @@ def get_pdfDetailByIds(pro_id, pdf_id):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return pdf
+
+# Download PROJECT -> get data by ProID
+def get_pdfDetailByProId(pro_id):
+    table_name = 'pdf_details'
+    pdf_details = []
+    pdfs = dict()
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        pdf_records, pdf_ids = get_pdfsByProId(cursor, 'pro_pdf_details', pro_id)
+        i = 0
+        for id in list(pdf_ids):
+            pro_keylist = get_proKeyById(cursor, 'project_info', pro_id)
+            query = f"""
+                        SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
+                        FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+                        WHERE  b.det_info = {id} and b.det_visible = 1
+                        ORDER BY b.det_id ASC
+                    """
+            sqlite_select_query = query
+            cursor.execute(sqlite_select_query)
+            records = cursor.fetchall()
+            pdf_details = []
+
+            for record in records:
+                keyname = record[3]
+                # print("record")
+                for key in pro_keylist:
+                    if str(record[3]).split('_')[0] == str(key['key_id']) :
+                        keyname = key['key_name'] + " " + str(record[3]).split('_')[1]
+                        break
+                pdf_details.append({
+                        'det_id':       record[0],
+                        'det_info':     record[1],
+                        'det_attribute':record[2],
+                        'det_name':     keyname, 
+                        'det_value':    record[4],
+                        'det_npage':    record[5]
+                        })
+            pdfs[i] = {
+                'id':    pdf_records[i][0],
+                'type':  pdf_records[i][1],
+                'details':  pdf_details,
+            }
+            i = i + 1
+
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return pdfs
