@@ -203,14 +203,14 @@
                                                     <span style="width: 100%; font-size: smaller;">
                                                         <label style="text-align: justify; margin: 0;">
                                                             <b style="font-size: 0.8rem; font-family:'Lato';">{{ mypdf.pdf_i }}.</b>
-                                                            {{ mypdf.pdf_name }} - {{mypdf.pdf_nation}}<br>
-                                                            {% if mypdf.pdf_nation == "ON" or mypdf.pdf_nation == "OI" %}
+                                                            {{ mypdf.pdf_name }}<br>
+                                                            {% if mypdf.pdf_type == "M" %}
                                                             ({{ mypdf.pdf_year }}, <button type="button" class="mb-2" style="background: none; border: none; color: steelblue; margin: 0;" onclick="showAttributes('{{project.pro_id}}', '{{mypdf.pdf_i}}')"> <b>Ver Atributos</b> </button> )
                                                             {% else %}
-                                                            ({{ mypdf.pdf_year }}, {{ mypdf.pdf_nation }})
+                                                            ({{ mypdf.pdf_year }}, {{ mypdf.pdf_nationtext }})
                                                             {% endif %}
                                                         </label>
-                                                        <div class="d-none" id="att_{{project.pro_id}}_{{mypdf.pdf_i}}" style="font-family: Arial; text-align: center; margin: 5px 30px 5px 40px; width: auto; display: flex;">
+                                                        <div class="d-none" id="att_{{project.pro_id}}_{{mypdf.pdf_i}}" style="font-family: Arial; text-align: center; width: auto; display: flex;">
                                                             <select name="" multiple="" class="form-select" style="font-size: small; width: 96%;">
                                                                 <option value="">Definición</option>
                                                                 <option value="">Importancia</option>
@@ -238,14 +238,14 @@
                                 {% endfor %}
                                 </div>
                                 <div class="col-md-12 col-lg-12" style="width: auto; text-align: center; padding: 0 15px; margin-bottom: 5px; font-size: large;">
-                                    <button type="submit" id="btn_down_canvas" style="padding: 8px 25px;" class="btn btn-dark mb-2" onclick="validateSave(this)" disabled>
-                                        <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Descargar PDFS</b> 
+                                    <button type="submit" name="btn_action" id="btn_down_canvas" style="padding: 8px 25px;" class="btn btn-dark mb-2" value="D" disabled>
+                                        <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Descargar PDFs</b> 
                                     </button>
-                                    <button type="submit" id="btn_save_canvas" style="padding: 8px 25px;" class="btn btn-success mb-2" onclick="validateSave(this)" disabled>
+                                    <button type="submit" name="btn_action" id="btn_save_canvas" style="padding: 8px 25px;" class="btn btn-success mb-2" value="C" disabled>
                                         <i class="fas fa-save"></i>&nbsp;&nbsp;<b>Crear Proyecto</b>
                                     </button>
                                 </div>
-                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: center; padding: 0 15px; margin: 10px 5px 20px; font-size: large;">
+                                <div class="col-md-12 col-lg-12" style="width: auto; text-align: center; padding: 0 15px; margin: 1px 5px 15px; font-size: large;">
                                     <label class="form-check-label" id="text_save" for="inlineCheckbox2" style="color:#AE2323; font-size: small;">Debe seleccionar al menos un (01) item</label>
                                 </div>
                             </form>

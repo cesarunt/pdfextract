@@ -82,7 +82,7 @@ def readTextSchemesA(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
         if (str(pdfs['título'])!='' and title_band==False):
-            document.add_heading(str(int(i)+1)+". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize() + "\n")
+            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize())
             title_band = True
         
     # FOR SCHEME
@@ -145,7 +145,7 @@ def readTextSchemesMT(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
         if (pdfs['título']!='' and title_band==False):
-            document.add_heading(str(int(i)+1)+". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize() + "\n")
+            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize())
             title_band = True
         if len(str(detail['det_name']).split()) > 1 and detail['det_value']!='':
             # Subtitle for Atrrtibute -> AA
@@ -155,10 +155,13 @@ def readTextSchemesMT(text_schemes, document, i):
 
     return text_scheme, document
 
-def build_pdfA(text_schemes):
-    document = Document()
+def build_pdfA(text_schemes, document = None, i = 1):
+    if document == None:
+        document = Document()
+    else:
+        i = i + 1
 
-    text_scheme, document = readTextSchemesA(text_schemes['foundlist'], document, 0)
+    text_scheme, document = readTextSchemesA(text_schemes['foundlist'], document, int(i - 1))
     p = document.add_paragraph()
 
     for key, value in text_scheme:
@@ -196,12 +199,15 @@ def build_pdfA(text_schemes):
         if key == "K": line.italic = True
         # if key == "L": line.color = "#CB7825"; p.add_run("\n")
             
-    return document
+    return document, i
 
-def build_pdfMT(text_schemes):
-    document = Document()
+def build_pdfMT(text_schemes, document = None, i = 1):
+    if document == None:
+        document = Document()
+    else:
+        i = i + 1
     
-    text_scheme, document = readTextSchemesMT(text_schemes['foundlist'], document, 0)
+    text_scheme, document = readTextSchemesMT(text_schemes['foundlist'], document, int(i - 1))
     p = document.add_paragraph()
 
     for key, value in text_scheme:
@@ -240,7 +246,7 @@ def build_pdfMT(text_schemes):
         if key == "K": line.italic = True
         if key == "L": line.color = "#CB7825"; p.add_run("\n")
             
-    return document
+    return document, i
 
 def build_project(text_schemes, pro_type):
     document = Document() 
@@ -249,7 +255,6 @@ def build_project(text_schemes, pro_type):
     i = 0
     for key, details in text_schemes.items():
         text_scheme = []
-        # document.add_heading(str(int(key)+1)+".")
         # Get Data from "Antecedente"
         if details['type'] == "A" and pro_type in ("T", "A"):
             text_scheme, document = readTextSchemesA(details['details'], document, i)

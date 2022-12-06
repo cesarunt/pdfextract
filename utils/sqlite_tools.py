@@ -639,10 +639,10 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
         if bydoc == '1':
             keyword_search = unidecode.unidecode(keyword_list[0])
             query = f"""
-                        SELECT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
+                        SELECT DISTINCT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
                         FROM  ((((({table_name} a INNER JOIN pro_pdf_details b ON a.pro_id = b.pro_id) 
 						LEFT JOIN pdf_info c ON b.pdf_id = c.pdf_id) 
-						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info AND (d.det_attribute = 3 OR d.det_attribute = 16))
+						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info AND (d.det_attribute = 3 OR d.det_attribute = 18))
 						LEFT JOIN user u ON a.pro_user = u.id) 
 						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
 						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
@@ -677,7 +677,7 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
 						ORDER BY a.pro_id DESC
                     """
         
-        print("QUERY.... ", query)
+        # print("QQQ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -689,13 +689,15 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
         colors = ['info', 'danger', 'warning', 'info', 'secondary']
         # secrets.choice(colors)
         aux_pro_id = 0
+        # print(" ")
+        # print("records", records)
         for record in records:
             if record[4] == "N" :
                 nation = "Nacional"
             if record[4] == "I" :
                 nation = "Internacional"
-            if record[4] == "O" :
-                nation = "O"
+            if record[4] == "ON" :
+                nation = "None"
             if (aux_pro_id == record[0]):
                 i = i + 1
                 pdfs.append({
@@ -703,7 +705,8 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
                     'pdf_id':        record[1],
                     'pdf_name':      record[2][0:250],
                     'pdf_type':      record[3],
-                    'pdf_nation':    nation,
+                    'pdf_nation':    record[4],
+                    'pdf_nationtext':nation,
                     'pdf_user':      record[5],
                     'pdf_created':   record[6],
                     'pdf_year':      record[9],
@@ -719,7 +722,8 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
                     'pdf_id':        record[1],
                     'pdf_name':      record[2][0:250],
                     'pdf_type':      record[3],
-                    'pdf_nation':    nation,
+                    'pdf_nation':    record[4],
+                    'pdf_nationtext':nation,
                     'pdf_user':      record[5],
                     'pdf_created':   record[6],
                     'pdf_year':      record[9],

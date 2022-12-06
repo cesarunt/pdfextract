@@ -300,79 +300,118 @@ def create_db_post():
 
     if current_user.is_authenticated:
         if request.method == "POST":
-            process = request.form.get('process')
-            _pdfs = request.form.getlist('pdfs')
-            user_id = current_user.id
-
-            if process == '1' and len(_pdfs) > 0:
-                complete_date = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
-                current_date = date.today().strftime("%d-%m-%Y")
-                project = {
-                        'title' :       "Nuevo proyecto, generado el " + complete_date,
-                        'university' :  1,
-                        'department' :  10,
-                        'province' :    1001,
-                        'district' :    100101,
-                        'career' :      "",
-                        'comment' :     "",
-                        'type_a' :      1,
-                        'type_m' :      1,
-                        'n_articles':   0,
-                        'n_process':    1,
-                        'user' :        user_id,
-                        'created' :     current_date
-                    }
-                pro_result, pro_id = put_newProject(project)
-                
-                for _pdf in _pdfs:
-                    item = _pdf.split("_")
-                    pro_pdf_id  = item[0]
-                    pdf_id     = item[1]
-                    pdf_type  = item[2]
-                    pdf_year = item[3]
-                    
-                    pdf_info = get_pdfInfoById(pdf_id)
-                    pdf_detail = get_pdfDetailById(pro_pdf_id, pdf_id)
-                    pdf = {
-                            'name' :     pdf_info[0],
-                            'npages' :   pdf_info[1],
-                            'size' :     pdf_info[2],
-                            'created' :  current_date
+            action = request.form.get('btn_action')
+            if action == 'C':
+                process = request.form.get('process')
+                _pdfs = request.form.getlist('pdfs')
+                user_id = current_user.id
+                if process == '1' and len(_pdfs) > 0:
+                    complete_date = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+                    current_date = date.today().strftime("%d-%m-%Y")
+                    project = {
+                            'title' :       "Nuevo proyecto, generado el " + complete_date,
+                            'university' :  1,
+                            'department' :  10,
+                            'province' :    1001,
+                            'district' :    100101,
+                            'career' :      "",
+                            'comment' :     "",
+                            'type_a' :      1,
+                            'type_m' :      1,
+                            'n_articles':   0,
+                            'n_process':    1,
+                            'user' :        user_id,
+                            'created' :     current_date
                         }
+                    pro_result, pro_id = put_newProject(project)
                     
-                    if pro_result:
-                        pdf_info_id = put_newPDF(pdf)
-                        result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_detail[4], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
-                    if result == True:
-                        if pdf_type == "A":
-                            put_newPDFdetail(pdf_info_id, 1, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 2, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 3, pdf_year, 1, 1)
-                            put_newPDFdetail(pdf_info_id, 4, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 5, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 6, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 7, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 8, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 9, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 10, "", int(pdf['npages'])-1, 1)
-                            put_newPDFdetail(pdf_info_id, 11, "", int(pdf['npages'])-1, 1)
-                            put_newPDFdetail(pdf_info_id, 12, "http://", int(pdf['npages']), 1)
-                            put_newPDFdetail(pdf_info_id, 13, "_", 1, 1)
-                        if pdf_type == "M":
-                            put_newPDFdetail(pdf_info_id, 14, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 15, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 16, pdf_year, 1, 1)
-                            put_newPDFdetail(pdf_info_id, 17, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 18, "", 1, 1)
-                            put_newPDFdetail(pdf_info_id, 19, "", 1, 1)
-                        result_total = True
+                    for _pdf in _pdfs:
+                        item = _pdf.split("_")
+                        pro_pdf_id  = item[0]
+                        pdf_id     = item[1]
+                        pdf_type  = item[2]
+                        pdf_year = item[3]
+                        
+                        pdf_info = get_pdfInfoById(pdf_id)
+                        pdf_detail = get_pdfDetailById(pro_pdf_id, pdf_id)
+                        pdf = {
+                                'name' :     pdf_info[0],
+                                'npages' :   pdf_info[1],
+                                'size' :     pdf_info[2],
+                                'created' :  current_date
+                            }
+                        
+                        if pro_result:
+                            pdf_info_id = put_newPDF(pdf)
+                            result = put_newPPdetail(pro_id, pdf_info_id, pdf_detail[1], pdf_detail[2], pdf_detail[3], pdf_detail[4], pdf_id, pdf_detail[5], pdf_detail[6], 1, current_date)
+                        if result == True:
+                            if pdf_type == "A":
+                                put_newPDFdetail(pdf_info_id, 1, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 2, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 3, pdf_year, 1, 1)
+                                put_newPDFdetail(pdf_info_id, 4, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 5, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 6, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 7, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 8, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 9, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 10, "", int(pdf['npages'])-1, 1)
+                                put_newPDFdetail(pdf_info_id, 11, "", int(pdf['npages'])-1, 1)
+                                put_newPDFdetail(pdf_info_id, 12, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 13, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 14, "http://", int(pdf['npages']), 1)
+                                put_newPDFdetail(pdf_info_id, 15, "_", 1, 1)
+                            if pdf_type == "M":
+                                put_newPDFdetail(pdf_info_id, 16, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 17, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 18, pdf_year, 1, 1)
+                                put_newPDFdetail(pdf_info_id, 19, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 20, "", 1, 1)
+                                put_newPDFdetail(pdf_info_id, 21, "http://", int(pdf['npages']), 1)
+                                put_newPDFdetail(pdf_info_id, 22, "", 1, 1)
+                            result_total = True
 
-                if result_total == True :
-                    print("El nuevo proyecto fue creado con éxito")
-                    one_project = get_projectById(pro_id)
-                    list_keywordsOne = get_listKeywordsById(pro_id)
-                    return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=pro_id)
-            
+                    if result_total == True :
+                        print("El nuevo proyecto fue creado con éxito")
+                        one_project = get_projectById(pro_id)
+                        list_keywordsOne = get_listKeywordsById(pro_id)
+                        return render_template('upload_home.html', name=current_user.name.split()[0], project=one_project[0], keywordsOne=list_keywordsOne, pro_id=pro_id)
+
+            if action == 'D':
+                document = Document()
+                pdfs = dict()
+                _pdfs = request.form.getlist('pdfs')
+                user_id = current_user.id
+                
+                if len(_pdfs) > 0:
+                    now = datetime.datetime.now()
+                    i = 0
+                    for _pdf in _pdfs:
+                        item = _pdf.split("_")
+                        pro_pdf_id  = item[0]
+                        pdf_id     = item[1]
+                        pdf_type  = item[2]
+                        pdf_year = item[3]
+
+                        text_schemes = get_pdfDetailByIds(pro_pdf_id, pdf_id)
+                        for detail in text_schemes['foundlist']:
+                            pdfs[detail['det_name']] = detail['det_value']
+                        
+                        if (pdfs['título']=='') : pdfs['título']=='<<Título>>'
+                        if (pdfs['autor']=='') : pdfs['autor']=='<<Autor>>'
+                        if (pdfs['año']=='') : pdfs['año']=='<<Año>>'
+                        if pdf_type == 'A':
+                            document, i = build_pdfA(text_schemes, document, i)
+                        if pdf_type == 'M':
+                            document, i = build_pdfMT(text_schemes, document, i)
+                    
+                    file_save = app.config['OUTPUT']+'/exportPDFs_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+                    document.save(file_save)
+                    result_pdf = app.config['FORWEB']+'/exportPDFs_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
+
+                    if result_pdf:
+                        return send_file(result_pdf, as_attachment=True)  
+
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -1060,9 +1099,9 @@ def save_pdf_mul():
         if (pdfs['título']!='' and pdfs['autor']!='' and pdfs['año']!=''):
             now = datetime.datetime.now()
             if pdf_type == 'A':
-                document = build_pdfA(text_schemes)
+                document, _ = build_pdfA(text_schemes)
             if pdf_type == 'M':
-                document = build_pdfMT(text_schemes)
+                document, _ = build_pdfMT(text_schemes)
             file_save = app.config['OUTPUT']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
             document.save(file_save)
             result_pdf = app.config['FORWEB']+'/exportPDF_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'

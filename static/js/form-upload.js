@@ -113,21 +113,6 @@ function activeFrame(_this) {
   document.getElementById("filter_frame").classList.remove("d-none");
 }
 
-// function validateSave(_this) {
-//   var checkboxes = document.getElementsByName('pdfs');
-//   var check_val = false
-
-//   for (var checkbox of checkboxes) {
-//     check = checkbox.checked;
-//     if (check==true){
-//       check_val = true
-//     }
-//   }
-//   if (check_val==false){
-//     document.getElementById("text_save").classList.remove("d-none");
-//     document.getElementById("text_save").innerHTML = "Debe seleccionar algún item";
-//   }
-// }
 
 function activeGuardar() {
   var checkboxes = document.getElementsByName('pdfs');
@@ -140,12 +125,12 @@ function activeGuardar() {
     }
   }
   if (check_val==false){ // Disactivate button and msg
-    // document.getElementById("btn_down_canvas").disabled = true
+    document.getElementById("btn_down_canvas").disabled = true
     document.getElementById("btn_save_canvas").disabled = true
     document.getElementById("text_save").classList.remove("d-none");
   }
   else{
-    // document.getElementById("btn_down_canvas").disabled = false
+    document.getElementById("btn_down_canvas").disabled = false
     document.getElementById("btn_save_canvas").disabled = false
     document.getElementById("text_save").classList.add("d-none");
   }

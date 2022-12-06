@@ -126,9 +126,9 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
         # ============================================================================================
         if language_band == False:
             if page == 0:
-                # language = lang_getLanguage(text_page)
+                language = lang_getLanguage(text_page)
                 # print("Language ...", language)
-                language = "es"
+                # language = "es"
                 language_band = True
             lib_spacy, patterns, patterns_level, patterns_approach = lang_loadPatterns(language)
             BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_RESUM, PATTERN_INTRO, PATTERN_ABST, PATTERN_METHOD, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns

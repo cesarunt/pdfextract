@@ -12,7 +12,7 @@ def pdf_search(keyword = ""):
     # print("Texto Inicial")
     # print(word_list_init)
     word_list_last = []
-    # Verify if exists consonants 'rr', 'll'
+    # Verify if exists consonants 'rr', 'll', 'cc', 'nn', 'dd', 'pp', 'tt'
     for word in word_list_init:
         if len(word) > 2:
             valid = []
@@ -29,6 +29,21 @@ def pdf_search(keyword = ""):
                 count_r = len(re.findall("rr", word))
                 if ( count_r > 0 ):
                     valid.append('r')
+                count_r = len(re.findall("cc", word))
+                if ( count_r > 0 ):
+                    valid.append('c')
+                count_r = len(re.findall("nn", word))
+                if ( count_r > 0 ):
+                    valid.append('n')
+                count_r = len(re.findall("dd", word))
+                if ( count_r > 0 ):
+                    valid.append('d')
+                count_r = len(re.findall("pp", word))
+                if ( count_r > 0 ):
+                    valid.append('p')
+                count_r = len(re.findall("tt", word))
+                if ( count_r > 0 ):
+                    valid.append('t')
                 # Apply remove 
                 word_validate = ''.join(c for c, unused in groupby(word))
                 word_es_final = ""
@@ -48,5 +63,4 @@ def pdf_search(keyword = ""):
         word_list_final.append(word_es_final)
     # print("Texto Final")
     # print(word_list_final)
-
     return word_list_final
