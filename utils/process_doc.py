@@ -82,7 +82,7 @@ def readTextSchemesA(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
         if (str(pdfs['título'])!='' and title_band==False):
-            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize())
+            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title_band = True
         
     # FOR SCHEME
@@ -145,7 +145,7 @@ def readTextSchemesMT(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
         if (str(pdfs['título'])!='' and title_band==False):
-            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título'].replace('\n', ' ').replace('\r', '')).capitalize())
+            document.add_heading(str(int(i+1)) + ". " + str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title_band = True
         if len(str(detail['det_name']).split()) > 1 and detail['det_value']!='':
             # Subtitle for Atrrtibute -> AA
