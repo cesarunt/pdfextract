@@ -86,6 +86,7 @@ def readTextSchemesA(text_schemes, document, i):
             title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title = " ".join(title_text)
             title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
+            title = castLetter(title)
             title = ILLEGAL_XML_CHARS_RE.sub("", title)
             document.add_heading(title)
             title_band = True
@@ -154,6 +155,7 @@ def readTextSchemesMT(text_schemes, document, i):
             title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title = " ".join(title_text)
             title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
+            title = castLetter(title)
             title = ILLEGAL_XML_CHARS_RE.sub("", title)
             document.add_heading(title)
             title_band = True
