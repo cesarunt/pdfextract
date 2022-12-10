@@ -1,9 +1,8 @@
 # -*- coding: utf_8 -*-
 from utils.config import cfg
 import unidecode
-import datetime
+# import datetime
 import sqlite3
-# import json
 
 global data_base
 data_base = cfg.FILES.GLOBAL_PATH + '/db.sqlite'
@@ -66,7 +65,6 @@ def get_pdfDetById(cursor, tablename, pro_id, pdf_id):
                 FROM  {tablename} a INNER JOIN pro_pdf_details b ON a.pdf_id = b.pdf_id
                 WHERE a.pdf_id = "{pdf_id}" and b.pro_id = "{pro_id}"
             """
-    # print("QUERY", query)
     cursor.execute(query)
     return cursor.fetchone()
 
@@ -127,7 +125,6 @@ def get_listThesisByWord(keyword):
                     FROM  ((pdf_info a INNER JOIN pdf_details b ON a.pdf_id = b.det_info) INNER JOIN pdf_key_details c ON a.pdf_id = c.pdf_id) INNER JOIN key_info d ON c.key_id = d.key_id
                     WHERE d.key_name LIKE "%{keyword}%" AND b.det_attribute = 2
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -165,7 +162,6 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -189,7 +185,6 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -233,10 +228,9 @@ def put_newProject(project=dict()):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_title, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
-                    VALUES ("{project['title']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['district']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
+                    INSERT INTO "{table_name}" (pro_title, pro_title_search, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
+                    VALUES ("{project['title']} ", "{project['title_search']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['district']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -262,7 +256,6 @@ def put_newPKdetail(id, key, current_date):
                     SELECT "{id}", "{key}", "{current_date}"
                     WHERE NOT EXISTS(SELECT 1 FROM "{table_name}" WHERE pro_id = "{id}" AND key_id = "{key}");
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -306,7 +299,6 @@ def put_newKeyword(key_name, current_date):
                     INSERT INTO "{table_name}" (key_name, key_active, key_created)
                     VALUES ("{key_name}", "1", "{current_date}")                
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         id = cursor.lastrowid
@@ -365,7 +357,6 @@ def get_listDepartments():
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        # print(records)
 
         for record in records:
             departments.append({
@@ -396,7 +387,6 @@ def get_listProvinces(department):
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
-        # print(records)
 
         for record in records:
             provinces.append({
@@ -455,7 +445,6 @@ def get_listKeywords():
                     FROM "{table_name}"
                     WHERE  key_active = 1
                 """
-        # print("listKeywords", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -486,7 +475,6 @@ def get_listProjects(limit=-1):
                     ORDER BY a.pro_id DESC
                     LIMIT "{limit}"
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -520,7 +508,6 @@ def get_projectById(id):
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
@@ -563,7 +550,6 @@ def get_listKeywordsById(id):
                     FROM   (project_info a INNER JOIN "{table_name}" b ON a.pro_id = b.pro_id) INNER JOIN key_info c ON b.key_id = c.key_id
                     WHERE  b.pro_id = "{id}"
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -590,10 +576,9 @@ def upd_projectById(id, project):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pro_title='{project['title']}', pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
+                    UPDATE "{table_name}" SET pro_title='{project['title']}', pro_title_search='{project['title_search']}', pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
                     WHERE pro_id = {id}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -617,7 +602,6 @@ def upd_projectProcess(id, n_articles, n_process):
                     UPDATE "{table_name}" SET pro_n_articles='{n_articles}', pro_n_process={n_process}
                     WHERE pro_id = {id}
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -636,13 +620,13 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
+        keyword_search = unidecode.unidecode(keyword_list[0])
         if bydoc == '1':
-            keyword_search = unidecode.unidecode(keyword_list[0])
             query = f"""
                         SELECT DISTINCT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
                         FROM  ((((({table_name} a INNER JOIN pro_pdf_details b ON a.pro_id = b.pro_id) 
 						LEFT JOIN pdf_info c ON b.pdf_id = c.pdf_id) 
-						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info AND (d.det_attribute = 3 OR d.det_attribute = 18))
+						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info)
 						LEFT JOIN user u ON a.pro_user = u.id) 
 						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
 						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
@@ -651,31 +635,50 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
             if len(keyword_list) > 1:
                 for i in range(1, len(keyword_list)): 
                     query += f""" OR b.pdf_name_search LIKE "%{keyword_list[i]}%" """
-            
-            if bydate == '1':
-                if startDate:
-                    startYear = str(startDate).split("/")[2]
-                    query += f""" 
-                        AND d.det_value >= "{startYear}"
-                        """
-                if endDate:
-                    endYear = str(endDate).split("/")[2]
-                    query += f""" 
-                        AND d.det_value <= "{endYear}"
-                        """
 
-            if bydate == '2':
-                if startDate and endDate:
-                    date_init = startDate[3:5] + "-" + startDate[:2] + "-" + startDate[6:]
-                    date_end = endDate[3:5] + "-" + endDate[:2] + "-" + endDate[6:]
-                    print("date_init", date_init)
-                    print("date_end", date_end)
-                    query += f""" 
-                        AND b.pro_pdf_created BETWEEN "{date_init}" AND "{date_end}"
-                        """
-            query += f"""
-						ORDER BY a.pro_id DESC
+        if bydoc == '2':
+            query = f"""
+                        SELECT DISTINCT a.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, u.name, a.pro_created, s.uni_name, p.name, d.det_value
+                        FROM  ((((({table_name} a INNER JOIN pro_pdf_details b ON a.pro_id = b.pro_id) 
+						LEFT JOIN pdf_info c ON b.pdf_id = c.pdf_id) 
+						LEFT JOIN pdf_details d ON c.pdf_id = d.det_info)
+						LEFT JOIN user u ON a.pro_user = u.id) 
+						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
+						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
+						WHERE b.pdf_type = "{typedoc}" AND a.pro_title_search LIKE "%{keyword_search}%"
                     """
+            if len(keyword_list) > 1:
+                for i in range(1, len(keyword_list)): 
+                    query += f""" OR a.pro_title_search LIKE "%{keyword_list[i]}%" """
+
+        if bydate == '1':
+            query += f""" 
+                    AND (d.det_attribute = 3 OR d.det_attribute = 18)
+                    """
+            if startDate:
+                startYear = str(startDate).split("/")[2]
+                query += f""" 
+                    AND d.det_value >= "{startYear}"
+                    """
+            if endDate:
+                endYear = str(endDate).split("/")[2]
+                query += f""" 
+                    AND d.det_value <= "{endYear}"
+                    """
+
+        if bydate == '2':
+            query += f""" 
+                    AND (d.det_attribute = 3 OR d.det_attribute = 18)
+                    """
+            if startDate and endDate:
+                date_init = startDate[3:5] + "-" + startDate[:2] + "-" + startDate[6:]
+                date_end = endDate[3:5] + "-" + endDate[:2] + "-" + endDate[6:]
+                query += f""" 
+                    AND b.pro_pdf_created BETWEEN "{date_init}" AND "{date_end}"
+                    """
+        query += f"""
+                    ORDER BY a.pro_id DESC
+                """
         
         # print("QQQ", query)
         sqlite_select_query = query
@@ -689,8 +692,6 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
         colors = ['info', 'danger', 'warning', 'info', 'secondary']
         # secrets.choice(colors)
         aux_pro_id = 0
-        # print(" ")
-        # print("records", records)
         for record in records:
             if record[4] == "N" :
                 nation = "Nacional"
@@ -767,7 +768,6 @@ def get_userById(id):
                     FROM "{table_name}"
                     WHERE  id = "{id}"
                 """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
@@ -996,7 +996,6 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
                     UPDATE "{table_name}" SET pdf_name='{name}', pro_pdf_created="{current_date}"
                     WHERE pro_id = {pro_id} AND pdf_id = {pdf_id} and pdf_visible = 1
                 """
-        
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -1065,7 +1064,6 @@ def get_projectsById(id, type_doc):
                         FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
                         WHERE  b.pro_id = "{id}" AND b.pdf_visible = 1 AND b.pdf_type = "{type_doc}"
                     """
-        # print(query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -1092,7 +1090,6 @@ def get_projectsById(id, type_doc):
                 'pdf_size':    record[7],
                 'pdf_i':       i
             })
-        
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -1119,8 +1116,7 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) LEFT JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
                     ORDER BY b.det_id ASC
-                """ 
-        # print('pdfDetail', query)
+                """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -1129,7 +1125,6 @@ def get_pdfDetailByIds(pro_id, pdf_id):
         for record in records:
             i = i + 1
             keyname = record[2]
-            # print("record")
             for key in pro_keylist:
                 if str(record[2]).split('_')[0] == str(key['key_id']) :
                     keyname = key['key_name'] + " " + str(record[2]).split('_')[1]
@@ -1158,7 +1153,6 @@ def get_pdfDetailByIds(pro_id, pdf_id):
             'pages':     pdf_pages,
             'foundlist': pdf_foundlist
         }
-        
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -1193,7 +1187,6 @@ def get_pdfDetailByProId(pro_id):
 
             for record in records:
                 keyname = record[3]
-                # print("record")
                 for key in pro_keylist:
                     if str(record[3]).split('_')[0] == str(key['key_id']) :
                         keyname = key['key_name'] + " " + str(record[3]).split('_')[1]
@@ -1212,7 +1205,6 @@ def get_pdfDetailByProId(pro_id):
                 'details':  pdf_details,
             }
             i = i + 1
-
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to read data from sqlite table", error)
@@ -1221,3 +1213,45 @@ def get_pdfDetailByProId(pro_id):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return pdfs
+
+# Load ATTRIBUTES -> get data by ProID and PdfID
+def get_attributesDetails(pro_id, pdf_id):
+    table_name = 'pdf_details'
+    pdf_details = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        pro_keylist = get_proKeyById(cursor, 'project_info', pro_id)
+        query = f"""
+                    SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
+                    FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
+                    WHERE  b.det_info = {pdf_id} and b.det_attribute > 22 and b.det_visible = 1
+                    ORDER BY b.det_id ASC
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+        pdf_details = []
+        for record in records:
+            keyname = record[3]
+            for key in pro_keylist:
+                if str(record[3]).split('_')[0] == str(key['key_id']) :
+                    keyname = key['key_name'] + " " + str(record[3]).split('_')[1]
+                    break
+            if record[4]:
+                pdf_details.append({
+                        'det_id':       record[0],
+                        'det_info':     record[1],
+                        'det_attribute':record[2],
+                        'det_name':     keyname, 
+                        'det_value':    record[4][0:129],
+                        'det_npage':    record[5]
+                        })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to read data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        return pdf_details

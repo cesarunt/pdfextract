@@ -151,7 +151,6 @@ def readTextSchemesMT(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
         if (str(pdfs['título'])!='' and title_band==False):
-            # document.add_heading(str(int(i+1)) + '. ' + str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
             title = " ".join(title_text)
             title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")

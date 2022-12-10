@@ -201,6 +201,7 @@ def save_upload():
             user_id = current_user.id
         project = {
             'title' :       request.form['title'],
+            'title_search' :unidecode.unidecode(request.form['title']),
             'university' :  request.form['university'],
             'department' :  request.form['department'],
             'province' :    request.form['province'],
@@ -262,6 +263,12 @@ def add_variable():
         finally:
             return jsonify({'key_id': key_id})
 
+# //////////////////////////////////////////////////////////////////////////////////////////////////
+@main.route('/get_attributes/<pro_id>/<pdf_id>')
+def get_attributes(pro_id, pdf_id):
+    list_attributes = get_attributesDetails(pro_id, pdf_id)
+    return jsonify({'attributes': list_attributes})
+
 """
     FORM SEARCH DATABASES
     =====================
@@ -269,7 +276,7 @@ def add_variable():
 @main.route('/search_db')
 def search_db():
     if current_user.is_authenticated:
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "", typedoc = "A")
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "", typedoc = "A", bydoc = '1')
     else:
         return render_template('db_form.html')
 
@@ -281,7 +288,7 @@ def search_db_post():
     if current_user.is_authenticated:
         if request.method == "POST":
             bydoc = request.values.get("bydoc")
-            keyword = request.values.get("keyword")
+            keyword = request.values.get("keyword_search")
             typedoc = request.values.get("typedoc")
             bydate = request.values.get("bydate")
             startDate = request.values.get("startDate")
@@ -290,7 +297,7 @@ def search_db_post():
                 keyword_list = pdf_search(str(keyword))
                 list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, endDate)
                 num_projects = len(list_projects)
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword = keyword, typedoc = typedoc)
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, typedoc = typedoc, bydoc = bydoc)
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -309,7 +316,8 @@ def create_db_post():
                     complete_date = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
                     current_date = date.today().strftime("%d-%m-%Y")
                     project = {
-                            'title' :       "Nuevo proyecto, generado el " + complete_date,
+                            'title' :      "Nuevo proyecto, creado el " + complete_date,
+                            'title_search': unidecode.unidecode(request.form['title']),
                             'university' :  1,
                             'department' :  10,
                             'province' :    1001,

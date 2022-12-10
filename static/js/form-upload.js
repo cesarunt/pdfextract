@@ -4,6 +4,7 @@ var variables_label = document.getElementById("keywords_label");
 var keywords_out = document.getElementById("keywords_out");
 var keywords_in = document.getElementById("keywords_in");
 var keywords = document.getElementById("keywords");
+// var attributes = document.getElementById("attributes");
 var departments = document.getElementById("department");
 var provinces = document.getElementById("province");
 var districts = document.getElementById("district");
@@ -137,12 +138,32 @@ function activeGuardar() {
 }
 
 // SHOW ATTRIBUTES
-function showAttributes(pro_id, pdf_i) {
-  document.getElementById("att_"+pro_id+"_"+pdf_i).classList.remove("d-none");
+function showAttributes(pro_id, pdf_id) {
+  fetch('/get_attributes/' + pro_id + '/' + pdf_id).then(function(response){
+    response.json().then(function(data){
+      let optionHTML_Att = "";
+      console.log(data.attributes)
+      if (data.attributes.length > 0){
+        document.getElementById("att_"+pro_id+"_"+pdf_id).classList.remove("d-none");
+        var attributes = document.getElementById("attributes_"+pro_id+"_"+ pdf_id);
+        for (let attribute of data.attributes){
+          console.log(attribute.det_value)
+          if (attribute.det_value){
+            optionHTML_Att += '<option value="'+ attribute.det_attribute +'">' + attribute.det_name + ': "' +  attribute.det_value + '"</option>';
+          }
+        }
+        attributes.innerHTML = optionHTML_Att;
+      }
+      else{
+        console.log("NO")
+        alert("No tienen atributos o se encuentran vacios");
+      }
+    });
+  });
 }
 
-function closeAttribute(pro_id, pdf_i) {
-  document.getElementById("att_"+pro_id+"_"+pdf_i).classList.add("d-none");
+function closeAttributes(pro_id, pdf_id) {
+  document.getElementById("att_"+pro_id+"_"+pdf_id).classList.add("d-none");
 }
 
 // ADD VARIABLE FUNCTION
@@ -154,10 +175,10 @@ function clearVariables() {
   document.getElementById("keyword").focus();
 }
 
-function addVariable_click() {
-  var value = document.getElementById("keyword").value;
-  addVariable(value, "click");
-}
+// function addVariable_click() {
+//   var value = document.getElementById("keyword").value;
+//   addVariable(value, "click");
+// }
 
 function addVariable(value, type){
   // Reject if the file input is empty & throw alert

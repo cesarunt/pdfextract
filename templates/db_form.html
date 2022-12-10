@@ -20,14 +20,19 @@
                                     <div class="col-md-3 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table; width: 100%;">
                                         <label style="margin: 0;">Tipo doc</label>
                                         <select name="bydoc" class="form-select" required>
+                                            {% if bydoc == "1" %}
                                             <option value="1" selected>PDFs</option>
-                                            <option value="2" disabled>Proyectos</option>
+                                            <option value="2" >Proyectos</option>
+                                            {% else %}
+                                            <option value="1" >PDFs</option>
+                                            <option value="2" selected>Proyectos</option>
+                                            {% endif %}
                                         </select>
                                         <div class="valid-feedback">OK!</div>
                                     </div>
                                     <div class="col-md-8 mb-3" style="margin-bottom: 0.5rem !important; display: inline-table;">
                                         <label style="margin: 0 0 0 0.25rem;">Palabra clave</label>
-                                        <input type="text" id="keyword" name="keyword" class="form-control" value="{{ keyword }}" required>
+                                        <input type="text" id="keyword_search" name="keyword_search" class="form-control" value="{{ keyword_search }}" required>
                                         <input id="keywords" name="keywords" type="hidden" value="">
                                         <div class="valid-feedback">OK!</div>
                                         <div class="invalid-feedback">Ingrese el texto</div>
@@ -78,7 +83,6 @@
                                         {% else %}
                                         <input class="form-check-input" type="radio" name="typedoc" value="A" id="tab_back" onclick="activeBack(this)">
                                         {% endif %}
-
                                         <label class="form-check-label" for="radio1">Antecedentes</label>
                                     </div>
                                     <div class="form-check form-check-inline" style="width: auto; text-align: left;">
@@ -94,13 +98,13 @@
                                 <div class="col-md-12" id="filter_back" style="font-size:small; text-align: center; width: 100%;">
                                     <div class="form-check form-check-inline" style="margin: 0;">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Nacional</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0;">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Internacional</label>
                                         </div>
                                     </div>
@@ -109,13 +113,13 @@
                                 <div class="col-md-12 d-none" id="filter_back" style="font-size:small; text-align: center; width: 100%;">
                                     <div class="form-check form-check-inline" style="margin: 0;">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Nacional</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0;">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Internacional</label>
                                         </div>
                                     </div>
@@ -125,25 +129,25 @@
                                 <div class="col-md-12" id="filter_frame" style="font-size:11px; text-align: center; width: 100%; padding: 0;">
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Definición</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Importancia</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Modelos</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Conceptos</label>
                                         </div>
                                     </div>
@@ -152,25 +156,25 @@
                                 <div class="col-md-12 d-none" id="filter_frame" style="font-size:11px; text-align: center; width: 100%; padding: 0;">
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Definición</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Importancia</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0.25rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_a" value="A" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox1">Modelos</label>
                                         </div>
                                     </div>
                                     <div class="form-check form-check-inline" style="margin: 0; padding-left: 0rem;">
                                         <div class="form-check" style="padding-left: 0.5rem;">
-                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked>
+                                            <input class="form-check-input" type="checkbox" name="type_m" value="M" checked disabled>
                                             <label class="form-check-label" for="inlineCheckbox2">Conceptos</label>
                                         </div>
                                     </div>
@@ -184,7 +188,7 @@
                             </div>
                             <div class="line" style="margin: 0.5rem 0;"></div>
                         </form>
-                        {% if keyword %}
+                        {% if keyword_search %}
                             {% if n_projects > 0 %}
                             <form class="needs-validation" action="{{ url_for('main.create_db_post') }}" method="POST" accept-charset="utf-8">
                                 <div class="card-body" style="text-align: left; padding: 0.5rem;">
@@ -205,19 +209,16 @@
                                                             <b style="font-size: 0.8rem; font-family:'Lato';">{{ mypdf.pdf_i }}.</b>
                                                             {{ mypdf.pdf_name }}<br>
                                                             {% if mypdf.pdf_type == "M" %}
-                                                            ({{ mypdf.pdf_year }}, <button type="button" class="mb-2" style="background: none; border: none; color: steelblue; margin: 0;" onclick="showAttributes('{{project.pro_id}}', '{{mypdf.pdf_i}}')"> <b>Ver Atributos</b> </button> )
+                                                            ({{ mypdf.pdf_year }}, <button type="button" class="mb-2" style="background: none; border: none; color: steelblue; margin: 0;" onclick="showAttributes('{{project.pro_id}}', '{{mypdf.pdf_id}}')"> <b>Ver Atributos</b> </button> )
                                                             {% else %}
                                                             ({{ mypdf.pdf_year }}, {{ mypdf.pdf_nationtext }})
                                                             {% endif %}
                                                         </label>
-                                                        <div class="d-none" id="att_{{project.pro_id}}_{{mypdf.pdf_i}}" style="font-family: Arial; text-align: center; width: auto; display: flex;">
-                                                            <select name="" multiple="" class="form-select" style="font-size: small; width: 96%;">
-                                                                <option value="">Definición</option>
-                                                                <option value="">Importancia</option>
-                                                                <option value="">Modelos</option>
-                                                                <option value="">Concept Dimen</option>
+                                                        <div class="d-none" id="att_{{project.pro_id}}_{{mypdf.pdf_id}}" style="font-family: Arial; text-align: center; width: auto; display: flex;">
+                                                            <select id="attributes_{{project.pro_id}}_{{mypdf.pdf_id}}" multiple="multiple" class="form-select" style="font-size: small; width: auto; height: 100%;">
+                                                                
                                                             </select>
-                                                            <button style="width: 20px; height: 20px; padding: 0;" type="button" name="close" id="close_{{project.pro_id}}_{{mypdf.pdf_i}}" class="btn btn-sm btn-secondary" onclick="closeAttribute('{{project.pro_id}}', '{{mypdf.pdf_i}}')">
+                                                            <button style="width: 20px; height: 20px; padding: 0;" type="button" name="close" id="close_{{project.pro_id}}_{{mypdf.pdf_id}}" class="btn btn-sm btn-secondary" onclick="closeAttributes('{{project.pro_id}}', '{{mypdf.pdf_id}}')">
                                                             x
                                                             </button>
                                                         </div>
