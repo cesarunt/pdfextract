@@ -1177,7 +1177,7 @@ def get_pdfDetailByProId(pro_id):
                         SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
                         FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
                         WHERE  b.det_info = {id} and b.det_visible = 1
-                        ORDER BY b.det_id ASC
+                        ORDER BY b.det_id ASC, b.det_attribute
                     """
             sqlite_select_query = query
             cursor.execute(sqlite_select_query)
