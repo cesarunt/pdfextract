@@ -2,7 +2,6 @@ from curses.ascii import isdigit
 import os, re
 import datetime
 import spacy
-# from scipy import stats as s
 from bs4 import BeautifulSoup as soup
 from sqlalchemy import true
 from utils.process_pdf import *
@@ -65,7 +64,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
     # Methodology
     methodology_text = ""
     methodology_title = ""
-    methodology_band = False
     
     # Article
     article_band = False
@@ -101,9 +99,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
     # VOLUMEN PATTERN
     volume = ""
     volume_band = False
-    # PAGE PATTERN
-    pagem = ""
-    pagem_band = False
 
     if len(pdfs)>0:
         list_pages = pdfs[str(pdf_id)]
@@ -113,6 +108,7 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
     
     np = 0
     key_att_ids = []
+
     for page in list_pages: #Repeat each operation for each document.
         # 1. EXTRACT ALL TEXT PAGE
         # ============================================================================================
@@ -121,7 +117,8 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
         text_page = convert_pdf_to_text(file_page) #Extract text with PDF_to_text Function call
         text_html = convert_pdf_to_html(file_page) #Extract text with PDF_to_html Function call
         # text_html_out = text_html.decode("utf-8")     #Decode result from bytes to text
-
+        # print("\n" + str(page))
+        # print("text_html", text_html)
         # 2. GET THE LANGUAGE
         # ============================================================================================
         if language_band == False:
@@ -130,21 +127,20 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                 # print("Language ...", language)
                 # language = "es"
                 language_band = True
-            lib_spacy, patterns, patterns_level, patterns_approach = lang_loadPatterns(language)
+            lib_spacy, patterns, _, _ = lang_loadPatterns(language)
             BLOCK_WORDS, BLOCK_AUTHOR, PATTERN_RESUM, PATTERN_INTRO, PATTERN_ABST, PATTERN_METHOD, PATTERN_ARTI, PATTERN_OBJE, PATTERN_METH, PATTERN_TYPE, PATTERN_DESI, PATTERN_APPR, PATTERN_LEVE, PATTERN_SAMP, PATTERN_TOOL, PATTERN_RESU, PATTERN_CONC = patterns
-            PATTERN_LEVE_APPL, PATTERN_LEVE_PRED, PATTERN_LEVE_EXPI, PATTERN_LEVE_RELA, PATTERN_LEVE_DESC, PATTERN_LEVE_EXPO = patterns_level
-            PATTERN_APPR_QUAN, PATTERN_APPR_QUAL = patterns_approach      
+            # PATTERN_LEVE_APPL, PATTERN_LEVE_PRED, PATTERN_LEVE_EXPI, PATTERN_LEVE_RELA, PATTERN_LEVE_DESC, PATTERN_LEVE_EXPO = patterns_level
+            # PATTERN_APPR_QUAN, PATTERN_APPR_QUAL = patterns_approach      
             NLP = spacy.load(lib_spacy)
 
         # 3. FIND THE TITLE TEXT
         # ============================================================================================
-        if text_page != ""  and page == 0:
+        if text_page != ""  and page in (0, 1):
             # - Using BeautifulSoup to parse the text
             page_soup = soup(text_html, 'html.parser')
             patt = re.compile("font-size:(\d+)")
             text_parser = [(tag.text.strip(), int(patt.search(tag["style"]).group(1))) for tag in page_soup.select("[style*=font-size]")]
-
-            title_font_max  = max(text_parser, key=lambda x:x[1] )[1] 
+            title_font_max  = max(text_parser, key=lambda x:x[1])[1] 
             # title_font_max = title_font
             # print("FONT_MAX", title_font_max)
             patt_band = False
@@ -201,14 +197,17 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                 line += 1
                 pagefonts_list.append(last_value)
 
-            if title_font_max > title_font and title_font_max <= 125:
+            if (title_font_max > title_font or title_text == '') and title_font_max <= 125:
                 title_font = title_font_max
                 title_text_list = []
-                title_text_list = [key for key, value in text_parser if value == title_font]
+                title_text_list = [key for key, value in text_parser if value == title_font and key!='']
                 title_text_line = [line for key, value, line in pagelines_list if value == title_font]
                 title_text = (' '.join(title_text_list))
                 title_ctrl = True
             if len(title_text_line)==0: title_text_line=[1]
+
+            if page == 1 and title_text == '':
+                title_text = "..."
 
             if (authors_text == "" and language != "" and title_ctrl == True) or (authors_text!="" and title_font>title_font_last) :
                 title_font_last = title_font
@@ -299,7 +298,7 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
                     if year>year_max and year<=date.year :
                         year_max = year
                 year = year_max
-        
+        # input("...")
         # 4. GET THE RESUME TEXT
         # ============================================================================================
         if resumen_title=="" and len(pagelines_list)>0:
@@ -324,7 +323,6 @@ def pdf_process(files_split, pdf_attributes, pdf_info_id, pdfs, pdf_npages, type
             # 5. GET THE METHODOLOGY TEXT
             # ============================================================================================
             # finding the title of methodology using PATTERN_METHOD
-            # print("\nMetodo Title : " + methodology_title)
             if methodology_title=="":
                 methodology_title, methodology_pos = getData_TitleResumen_(pagelines_list, PATTERN_METHOD, 10, 10, intro_font)
                 # print("\nMethodology Title: " + methodology_title + "  _ Mode: " + str(pagefonts_mode))

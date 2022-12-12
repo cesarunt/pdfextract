@@ -1,7 +1,7 @@
 # -*- coding: utf_8 -*-
 from utils.config import cfg
 import unidecode
-# import datetime
+import datetime
 import sqlite3
 
 global data_base
@@ -236,7 +236,7 @@ def put_newProject(project=dict()):
         id = cursor.lastrowid
         sqliteConnection.commit()
         result = True
-        print("SAVE put_newProject")
+        # print("SAVE put_newProject")
     except sqlite3.Error as error:
         print("Failed to insert data from sqlite table", error)
     finally:
@@ -451,7 +451,6 @@ def get_listKeywords():
 
         for record in records:
             keywords.append(str(record[0])+"-"+record[1])
-        # print("keywords", keywords)
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
