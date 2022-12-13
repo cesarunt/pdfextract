@@ -82,15 +82,15 @@ def readTextSchemesA(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
     
-    if (pdfs['título']!='' and title_band==False):
-        # document.add_heading(str(int(i+1)) + '. ' + str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
-        title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
-        title = " ".join(title_text)
-        title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
-        title = castLetter(title)
-        title = ILLEGAL_XML_CHARS_RE.sub("", title)
-        document.add_heading(title)
-        title_band = True
+        if (pdfs['título']!='' and title_band==False):
+            # document.add_heading(str(int(i+1)) + '. ' + str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
+            title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize() + '\n')
+            title = " ".join(title_text)
+            title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
+            title = castLetter(title)
+            title = ILLEGAL_XML_CHARS_RE.sub("", title)
+            document.add_heading(title)
+            title_band = True
         
     # FOR SCHEME
     if (pdfs['autor'] and pdfs['año']):
@@ -152,19 +152,19 @@ def readTextSchemesMT(text_schemes, document, i):
     for detail in text_schemes :
         pdfs[detail['det_name']] = detail['det_value']
     
-    if (str(pdfs['título'])!='' and title_band==False):
-        title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize())
-        title = " ".join(title_text)
-        title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
-        title = castLetter(title)
-        title = ILLEGAL_XML_CHARS_RE.sub("", title)
-        document.add_heading(title)
-        title_band = True
-    if len(str(detail['det_name']).split()) > 1 and detail['det_value']!='':
-        # Subtitle for Atrrtibute -> AA
-        text_scheme.append(tuple(["AS", '' + str(detail['det_name']).title() + '\n']))
-        # Text for Atrrtibute -> AT
-        text_scheme.append(tuple(["AT", '' + str(detail['det_value']) + '\n']))
+        if (str(pdfs['título'])!='' and title_band==False):
+            title_text = (str(int(i+1)), '. ', str(pdfs['título']).replace('\n', ' ').replace('\r', '').capitalize() + '\n')
+            title = " ".join(title_text)
+            title = unicodedata.normalize('NFD', title).encode('ascii', 'xmlcharrefreplace').decode("utf-8")
+            title = castLetter(title)
+            title = ILLEGAL_XML_CHARS_RE.sub("", title)
+            document.add_heading(title)
+            title_band = True
+        if len(str(detail['det_name']).split()) > 1 and detail['det_value']!='':
+            # Subtitle for Atrrtibute -> AA
+            text_scheme.append(tuple(["AS", '' + str(detail['det_name']).title() + '\n']))
+            # Text for Atrrtibute -> AT
+            text_scheme.append(tuple(["AT", '' + str(detail['det_value']) + '\n']))
 
     return text_scheme, document
 
@@ -237,7 +237,7 @@ def build_pdfMT(text_schemes, document = None, i = 1):
         elif key == "AT": line.bold = False; p.add_run("\n"); p.add_run("\n")
         elif key == "K": line.italic = True; p.add_run("\n")
     
-    p.add_run("\n")
+    # p.add_run("\n")
     line = p.add_run("Referencias")
     line.bold = True
 
@@ -287,7 +287,6 @@ def build_project(text_schemes, pro_type):
                 if key == "K": line.italic = True; p.add_run("\n")
 
             p.add_run("\n")
-            p.add_run("\n")
             line = p.add_run("Referencias")
             line.bold = True
 
@@ -327,7 +326,6 @@ def build_project(text_schemes, pro_type):
                 elif key == "AT": line.bold = False; p.add_run("\n"); p.add_run("\n")
                 elif key == "K": line.italic = True; p.add_run("\n")
             
-            p.add_run("\n")
             line = p.add_run("Referencias")
             line.bold = True
 

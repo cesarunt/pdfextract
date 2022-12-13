@@ -215,8 +215,7 @@
                                                             {% endif %}
                                                         </label>
                                                         <div class="d-none" id="att_{{project.pro_id}}_{{mypdf.pdf_id}}" style="font-family: Arial; text-align: center; width: auto; display: flex;">
-                                                            <select id="attributes_{{project.pro_id}}_{{mypdf.pdf_id}}" multiple="multiple" class="form-select" style="font-size: small; width: auto; height: 100%;">
-                                                                
+                                                            <select name="attributes_{{project.pro_id}}_{{mypdf.pdf_id}}" id="attributes_{{project.pro_id}}_{{mypdf.pdf_id}}" multiple="multiple" class="form-select" style="font-size: small; width: auto; height: 100%;">
                                                             </select>
                                                             <button style="width: 20px; height: 20px; padding: 0;" type="button" name="close" id="close_{{project.pro_id}}_{{mypdf.pdf_id}}" class="btn btn-sm btn-secondary" onclick="closeAttributes('{{project.pro_id}}', '{{mypdf.pdf_id}}')">
                                                             x

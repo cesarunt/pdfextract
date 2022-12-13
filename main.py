@@ -308,6 +308,7 @@ def create_db_post():
     if current_user.is_authenticated:
         if request.method == "POST":
             action = request.form.get('btn_action')
+            
             if action == 'C':
                 process = request.form.get('process')
                 _pdfs = request.form.getlist('pdfs')
@@ -401,7 +402,8 @@ def create_db_post():
                         pdf_type  = item[2]
                         pdf_year = item[3]
 
-                        text_schemes = get_pdfDetailByIds(pro_pdf_id, pdf_id)
+                        _atts = request.form.getlist('attributes_'+pro_pdf_id+'_'+pdf_id)
+                        text_schemes = get_pdfDetailByIds(pro_pdf_id, pdf_id, tuple(_atts))
                         for detail in text_schemes['foundlist']:
                             pdfs[detail['det_name']] = detail['det_value']
                         

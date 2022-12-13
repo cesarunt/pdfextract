@@ -125,12 +125,12 @@ function activeGuardar() {
       check_val = true
     }
   }
-  if (check_val==false){ // Disactivate button and msg
+  if (check_val==false){ // Disactivate button and show msg
     document.getElementById("btn_down_canvas").disabled = true
     document.getElementById("btn_save_canvas").disabled = true
     document.getElementById("text_save").classList.remove("d-none");
   }
-  else{
+  else{                  // Activate buttons and hide msg
     document.getElementById("btn_down_canvas").disabled = false
     document.getElementById("btn_save_canvas").disabled = false
     document.getElementById("text_save").classList.add("d-none");

@@ -1099,7 +1099,7 @@ def get_projectsById(id, type_doc):
         return pp_details
 
 # Download PDF -> get data by PdfID
-def get_pdfDetailByIds(pro_id, pdf_id):
+def get_pdfDetailByIds(pro_id, pdf_id, atts = []):
     table_name = 'pdf_details'
     pdf = dict()
     pdf_foundlist = []
@@ -1114,8 +1114,14 @@ def get_pdfDetailByIds(pro_id, pdf_id):
                     SELECT b.det_id, b.det_attribute, c.att_name, c.att_type, b.det_value, b.det_npage, b.det_visible, b.det_x, b.det_y, b.det_width, b.det_height
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) LEFT JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
-                    ORDER BY b.det_id ASC
                 """
+        if len(atts) > 1:
+            query += f""" AND (b.det_attribute < 23 OR b.det_attribute IN {atts}) """
+
+        query += f"""
+                    ORDER BY b.det_attribute ASC
+                """
+
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -1177,7 +1183,7 @@ def get_pdfDetailByProId(pro_id):
                         SELECT b.det_id, b.det_info, b.det_attribute, c.att_name, b.det_value, b.det_npage
                         FROM   "{table_name}" b INNER JOIN pdf_attributes c ON b.det_attribute = c.att_id
                         WHERE  b.det_info = {id} and b.det_visible = 1
-                        ORDER BY b.det_id ASC, b.det_attribute
+                        ORDER BY b.det_attribute ASC
                     """
             sqlite_select_query = query
             cursor.execute(sqlite_select_query)
