@@ -1115,13 +1115,17 @@ def get_pdfDetailByIds(pro_id, pdf_id, atts = []):
                     FROM   (pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.det_info) LEFT JOIN pdf_attributes c ON b.det_attribute = c.att_id
                     WHERE  a.pdf_id = "{pdf_id}"
                 """
-        if len(atts) > 1:
-            query += f""" AND (b.det_attribute < 23 OR b.det_attribute IN {atts}) """
+        if len(atts) > 0:
+            if len(atts) == 1:
+                result = str(tuple(atts)).replace(',', '')
+            else:
+                result = tuple(atts)
+            query += f""" AND ( b.det_attribute < 23 OR b.det_attribute IN {result} ) """
 
         query += f"""
                     ORDER BY b.det_attribute ASC
                 """
-
+        
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()

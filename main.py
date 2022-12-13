@@ -395,15 +395,16 @@ def create_db_post():
                 if len(_pdfs) > 0:
                     now = datetime.datetime.now()
                     i = 0
+                    _atts = []
                     for _pdf in _pdfs:
                         item = _pdf.split("_")
                         pro_pdf_id  = item[0]
                         pdf_id     = item[1]
                         pdf_type  = item[2]
                         pdf_year = item[3]
-
                         _atts = request.form.getlist('attributes_'+pro_pdf_id+'_'+pdf_id)
                         text_schemes = get_pdfDetailByIds(pro_pdf_id, pdf_id, tuple(_atts))
+
                         for detail in text_schemes['foundlist']:
                             pdfs[detail['det_name']] = detail['det_value']
                         
@@ -556,12 +557,10 @@ def action_thesis_mul():
             i = 0
             for filename in file_pdfs :
                 filename = fold(filename)
-                # fname = os.listdir(app.config['SPLIT_PDF'])
                 path = os.path.join(app.config['UPLOAD'],filename)
                 path = validate_path(path)
                 path = path.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
                 action = request.values.get("action")
-                # print("ACTION", action)
 
                 if action == "save_canvas":
                     det_id =        int(request.values.get("det_id"))
@@ -712,7 +711,7 @@ def project_pdfs(id):
     global pro_id
     pro_id = id
     global type_doc
-    type_doc = "T"                      # DOC type on Project
+    type_doc = "T"  # DOC type on Project
     if current_user.is_authenticated:
         project = get_projectById(id)
         pdfs = get_projectsById(id, type_doc)
