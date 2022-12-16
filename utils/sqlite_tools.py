@@ -1008,6 +1008,30 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         
         return result
 
+def upd_nationPDF(pro_id, pdf_id, pdf_nation, current_date):
+    table_name = 'pro_pdf_details'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        # print("Connected to SQLite")
+        query = f"""
+                    UPDATE "{table_name}" SET pdf_nation="{pdf_nation}", pro_pdf_created="{current_date}"
+                    WHERE pro_id = {pro_id} AND pdf_id = {pdf_id} and pdf_visible = 1
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to insert data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("The SQLite connection is closed")
+        
+        return result
+
 def get_projectPDFById(pro_id):
     # List of TOP 10
     table_name = 'project_info'

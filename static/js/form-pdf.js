@@ -639,6 +639,7 @@ function editPDFAll(url, pro_id, pdf_type, pdf_nation, pdf_detid) {
   }
 }
 
+// DOUBLE PDF
 function doublePDFAll(url, pro_id, pdf_name, pdf_type, pdf_detid) {
 
   if (confirm('Desea duplicar el PDF? \n' + pdf_name)) {
@@ -678,6 +679,52 @@ function doublePDFAll(url, pro_id, pdf_name, pdf_type, pdf_detid) {
     // Open and send the request
     request.open("POST", url);
     request.send(data);
+  }
+}
+
+// SAVE NATION
+function saveNation(url, pro_id, pdf_name, pdf_nation,  pdf_detid) {
+
+  if (confirm('Desea cambiar la nacionalidad del PDF? \n' + pdf_name)) {
+    // Save it!
+    // Create a new FormData instance
+    var data = new FormData();
+    // Create a XMLHTTPRequest instance
+    var request = new XMLHttpRequest();
+    // Set the response type
+    request.responseType = "json";
+
+    var action = "nation_pdf";
+    data.append("action", action);
+    data.append("pro_id", pro_id);
+    data.append("pdf_detid", pdf_detid);
+    data.append("pdf_nation", pdf_nation.value);
+
+    // request load handler (transfer complete)
+    request.addEventListener("load", function (e) {
+      if (request.status == 200) {
+        location.reload();
+        showAlertPage('PDF actualizado correctamente', 'success')
+      }
+      else {
+        showAlertPage('PDF no fue actualizado', 'warning')
+      }
+      if (request.status == 300) {
+        showAlertPage(`${request.response.message}`, 'warning')
+      }
+    });
+
+    // request error handler
+    request.addEventListener("error", function (e) {
+      showAlertPage('Error actualizando PDF', 'danger')
+    });
+
+    // Open and send the request
+    request.open("POST", url);
+    request.send(data);
+  }
+  else {
+    location.reload();
   }
 }
 

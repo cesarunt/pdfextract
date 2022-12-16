@@ -1,6 +1,6 @@
 # -*- coding: utf_8 -*-
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, jsonify, send_file, send_from_directory, redirect
+from flask import Blueprint, render_template, request, redirect, jsonify, send_file, send_from_directory
 from requests import post
 from sqlalchemy import true
 from utils.config import cfg
@@ -970,6 +970,16 @@ def pdf_post(pdf_id):
                     put_newPDFdetail(pdf_info_id, 18, "", 1, 1)
                     put_newPDFdetail(pdf_info_id, 19, "", 1, 1)
             result_split = 1
+        
+        if action == "nation_pdf":
+            current_date = date.today().strftime("%d-%m-%Y")
+            pdf_id = request.values.get("pdf_detid")
+            pdf_nation = request.values.get("pdf_nation")
+
+            response_nat = upd_nationPDF(pro_id, pdf_id, pdf_nation, current_date)
+            if response_nat is True:
+                # msg_att = "PDF actualizado con éxito"
+                result_split = 1
 
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)

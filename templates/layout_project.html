@@ -114,17 +114,17 @@
                             <div class="col-md-3 text-center" style="height: auto; margin: 0 0 0 15px; font-size: x-small; display: flex;">
                                 <div class="form-check form-check-inline" style="margin: 0 10px; width: 110px;">
                                     {% if mypdf.pdf_nation == 'N' %}
-                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="A" id="radio1" checked disabled>
+                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="N" id="radio1" checked>
                                     {% else %}
-                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="A" id="radio1" disabled>
+                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="N" id="radio1" onclick="saveNation('{{ request.url }}', '{{ project.pro_id }}', '{{mypdf.pdf_name}}', this, '{{mypdf.pdf_id}}')">
                                     {% endif %}
                                     <label class="form-check-label" for="radio1" style="width: 70px;"><b>Nacional</b></label>
                                 </div>
                                 <div class="form-check form-check-inline" style="margin: 0 10px; width: 110px;">
                                     {% if mypdf.pdf_nation == 'I' %}
-                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="M" id="radio2" checked disabled>
+                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="I" id="radio2" checked>
                                     {% else %}
-                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="M" id="radio2" disabled>
+                                    <input class="form-check-input" type="radio" name="type-{{mypdf.pdf_i}}" value="I" id="radio2" onclick="saveNation('{{ request.url }}', '{{ project.pro_id }}', '{{mypdf.pdf_name}}', this, '{{mypdf.pdf_id}}')">
                                     {% endif %}
                                     <label class="form-check-label" for="radio2" style="width: 80px;"><b>Internacional</b></label>
                                 </div>

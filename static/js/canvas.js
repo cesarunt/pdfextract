@@ -294,7 +294,7 @@ function closeAttribute(edit_id) {
 }
 
 // ADD ATTRIBUTE
-function addAttribute(edit_id) {
+function addAttribute() {
   // Disabled add attribute
   document.getElementById('add_attribute').classList.add("d-none")
   // Abled div attribute
@@ -546,6 +546,11 @@ function saveAttribute(url, pro_id) {
   // Open and send the request
   request.open("POST", url);
   request.send(data);
+}
+
+// Reload Page
+function loadPage() {
+  location.reload();
 }
 
 var text_title = document.getElementById("text_título");
