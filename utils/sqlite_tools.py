@@ -613,7 +613,7 @@ def upd_projectProcess(id, n_articles, n_process):
             print("The SQLite connection is closed")
         return result
 
-def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, endDate):
+def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, bydate, startDate, endDate):
     table_name = 'project_info'
     projects = []
     try:
@@ -629,7 +629,7 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
 						LEFT JOIN user u ON a.pro_user = u.id) 
 						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
 						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
-						WHERE b.pdf_type = "{typedoc}" AND b.pdf_visible = 1 AND b.pdf_name_search LIKE "%{keyword_search}%"
+						WHERE b.pdf_visible = 1 AND b.pdf_name_search LIKE "%{keyword_search}%"
                     """
             if len(keyword_list) > 1:
                 for i in range(1, len(keyword_list)): 
@@ -644,7 +644,7 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
 						LEFT JOIN user u ON a.pro_user = u.id) 
 						LEFT JOIN uni_info s ON a.pro_uni = s.uni_id) 
 						LEFT JOIN ubigeo_departments p ON a.pro_department = p.id
-						WHERE b.pdf_type = "{typedoc}" AND a.pro_title_search LIKE "%{keyword_search}%"
+						WHERE b.pdf_visible = 1 AND a.pro_title_search LIKE "%{keyword_search}%"
                     """
             if len(keyword_list) > 1:
                 for i in range(1, len(keyword_list)): 
@@ -675,6 +675,22 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, e
                 query += f""" 
                     AND b.pro_pdf_created BETWEEN "{date_init}" AND "{date_end}"
                     """
+        
+        if typedoc == 'A':
+            query += f""" AND b.pdf_type = 'A' """
+            if typeAnac == None and typeAint == None:
+                query += f""" AND (b.pdf_nation = '' OR b.pdf_nation = '') """
+            elif typeAnac == '1' and typeAint == '1':
+                query += f""" AND (b.pdf_nation = 'N' OR b.pdf_nation = 'I') """
+            else:
+                if typeAnac == '1':
+                    query += f""" AND b.pdf_nation = 'N' """
+                if typeAint == '1':
+                    query += f""" AND b.pdf_nation = 'I' """
+        
+        if typedoc == 'M':
+            query += f""" AND b.pdf_type = 'M' """
+        
         query += f"""
                     ORDER BY a.pro_id DESC
                 """
@@ -984,7 +1000,7 @@ def put_newPPdetail(id, pdf, name, name_search, type_doc, nation_doc, double, pa
             print("The SQLite connection is WRONG")
         return result
 
-def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
+def upd_PPdetail(pro_id, pdf_id, text, text_search, current_date):
     table_name = 'pro_pdf_details'
     result = False
     try:
@@ -992,7 +1008,7 @@ def upd_PPdetail(id, pro_id, pdf_id, name, current_date):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pdf_name='{name}', pro_pdf_created="{current_date}"
+                    UPDATE "{table_name}" SET pdf_name='{text}', pdf_name_search='{text_search}', pro_pdf_created="{current_date}"
                     WHERE pro_id = {pro_id} AND pdf_id = {pdf_id} and pdf_visible = 1
                 """
         sqlite_select_query = query

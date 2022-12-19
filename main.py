@@ -276,7 +276,7 @@ def get_attributes(pro_id, pdf_id):
 @main.route('/search_db')
 def search_db():
     if current_user.is_authenticated:
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "", typedoc = "A", bydoc = '1')
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "", typedoc = "A", typeAnac = '1', typeAint = '1', bydoc = '1')
     else:
         return render_template('db_form.html')
 
@@ -293,11 +293,15 @@ def search_db_post():
             bydate = request.values.get("bydate")
             startDate = request.values.get("startDate")
             endDate = request.values.get("endDate")
+            if (typedoc=='A' or typedoc=='M'):
+                typeAnac = request.values.get("type_a_nac")
+                typeAint = request.values.get("type_a_int")
+
             if len(keyword) > 1:
                 keyword_list = pdf_search(str(keyword))
-                list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, bydate, startDate, endDate)
+                list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, bydate, startDate, endDate)
                 num_projects = len(list_projects)
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, typedoc = typedoc, bydoc = bydoc)
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, typedoc = typedoc, typeAnac = typeAnac, typeAint = typeAint, bydoc = bydoc)
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -419,10 +423,8 @@ def create_db_post():
                     file_save = app.config['OUTPUT']+'/exportPDFs_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
                     document.save(file_save)
                     result_pdf = app.config['FORWEB']+'/exportPDFs_'+now.strftime("%d%m%Y_%H%M%S")+'.docx'
-
                     if result_pdf:
                         return send_file(result_pdf, as_attachment=True)  
-
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -600,12 +602,12 @@ def action_thesis_mul():
                     det_value =     request.values.get("det_value")
                     page =          int(request.values.get("page"))
                     
-                    if text is None or text == "":
-                        text = "..."
+                    # if text is None or text == "":
+                    #     text = "..."
                     result_detail = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
-                    if result_detail is True:
-                        pdf_name = unidecode.unidecode(det_value)
-                        _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name)
+                    if result_detail is True and (det_attribute==1 or det_attribute==16):
+                        pdf_name_search = unidecode.unidecode(det_value)
+                        _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name_search)
                     result_split = 1
                 
                 # if action == "save_attribute":
@@ -801,11 +803,10 @@ def pdf_post(pdf_id):
             
             if text is None or text == "":
                 text = ".."
-            result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, dictPage)
-
-            if det_attribute == 1 and result1:
-                _ = upd_PPdetail(det_id, pro_id, pdf_id, text, current_date)
-            
+            result_detail = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, dictPage)
+            if result_detail is True and (det_attribute==1 or det_attribute==16):
+                pdf_name_search = unidecode.unidecode(text)
+                _ = upd_PPdetail(pro_id, pdf_id, text, pdf_name_search, current_date)
             result_split = 1
         
         if action == "save_text":
@@ -816,8 +817,8 @@ def pdf_post(pdf_id):
             
             result_detail = upd_detailTextByIds(det_id, pdf_id, det_attribute, det_value, page)
             if result_detail is True and (det_attribute==1 or det_attribute==16):
-                pdf_name = unidecode.unidecode(det_value)
-                _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name)
+                pdf_name_search = unidecode.unidecode(det_value)
+                _ = upd_detailPDFnameByIds(pro_id, pdf_id, det_value, pdf_name_search)
             result_split = 1
         
         if action == "save_attribute":
@@ -862,10 +863,10 @@ def pdf_post(pdf_id):
             pdf_detnation = request.values.get("pdf_detnation")
             if pdf_dettype == 'M':
                 pdf_nation = 'O' + pdf_detnation[-1]
-                list_attributes_del = [*range(1, 14)]
+                list_attributes_del = [*range(1, 16)]
             if pdf_dettype == 'A':
                 pdf_nation = pdf_detnation[-1]
-                list_attributes_del = [*range(14,20)]
+                list_attributes_del = [*range(16,23)]
             list_attributes_del = ','.join(str(item) for item in list_attributes_del)
             list_attributes_get = None
 
@@ -983,18 +984,14 @@ def pdf_post(pdf_id):
 
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)
-            # try:
             pdf = get_pdfDetailByIds(pro_id, pdf_id)
             pdfs = get_projectsById(pro_id, type_doc)
-            # except:
-            #     print("No se puede obtener los PDFs")
             """Verificar pdf_details, encontrados y no encontrados"""
             list_npages = list(range(1, int(pdf['npages']+1)))
             list_npages = [str(int) for int in list_npages]
             pdf['listnpages'] = list_npages
 
-            # AQUI, agregar un campo en una tabla para distinguir si fue duplicado ...
-            # get data for pdf_file
+            # AQUI, agregar un campo en una tabla para distinguir si fue duplicado, get data for pdf_file
             if pdf['double']>0:
                 view_id = pdf['double']
             else:
@@ -1027,7 +1024,6 @@ def thesis_upload_img(filename):
 @main.route("/action_thesis_search", methods=["POST"])
 def action_thesis_search():
     pdfs = None
-
     if request.method == "POST":
         keyword = request.values.get("keyword") 
         if len(keyword) > 1:
@@ -1035,10 +1031,12 @@ def action_thesis_search():
         
     return render_template('thesis_search.html', _pdfs = pdfs)
 
+
 @main.route("/close_thesis_one/<source>")
 def close_thesis_one(source):
     url = "/" + source
     return redirect(url)
+
 
 @main.route("/save_thesis_one", methods=["POST"])
 def save_thesis_one():
@@ -1059,7 +1057,6 @@ def paper_mul_load():
         # Code for multiple pdfs
         if 'files[]' not in request.files:
             return redirect(request.url)
-
         files = request.files.getlist('files[]')
 
         for file in files:
@@ -1072,6 +1069,7 @@ def paper_mul_load():
         if (upload == True):
             print('File(s) successfully uploaded')
             return render_template('paper_mul.html', resultLoad=upload, pro_id=pro_id)
+
 
 # CLOSE AND SAVE PAPER
 @main.route("/<source>")
