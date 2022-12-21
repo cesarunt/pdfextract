@@ -1,6 +1,10 @@
 import re
 import unidecode
 from itertools import groupby
+from textblob import Word
+import textblob.exceptions
+from textblob.translate import Translator
+from lingua import Language, LanguageDetectorBuilder
 
 SEARCH_WORDS_ES = ['innovacion', 'INNOVACION']
 
@@ -8,9 +12,37 @@ SEARCH_WORDS_ES = ['innovacion', 'INNOVACION']
 word_list_init = []
 
 def pdf_search(keyword = ""):
+    keyword_trans = ""
+    word_list_final = []
+    
+    # detect language
+    try:
+        languages = [Language.ENGLISH, Language.SPANISH]
+        detector = LanguageDetectorBuilder.from_languages(*languages).build()
+        language = str(detector.detect_language_of(keyword)).split('.')
+        lang = language[-1]
+
+        trans = Translator()
+        if lang == 'ENGLISH':
+            word = Word(keyword)
+            keyword_list = word.spellcheck()
+            keyword_result = keyword_list[0][0]
+            keyword_trans = trans.translate(keyword_result, from_lang='en', to_lang='es')
+            # print("text_trans", keyword_trans)
+            word_list_final.append(keyword_result)
+        else:
+            lang = 'SPANISH'
+            keyword_result = keyword
+            word_list_final = pdf_search_ES(keyword_result)
+    except textblob.exceptions.NotTranslated:
+        lang = 'SPANISH'
+    # print("languaje", lang)
+    # print("keyword_result", keyword_result)
+
+    return word_list_final, keyword_trans
+
+def pdf_search_ES(keyword = ""):
     word_list_init = keyword.split()
-    # print("Texto Inicial")
-    # print(word_list_init)
     word_list_last = []
     # Verify if exists consonants 'rr', 'll', 'cc', 'nn', 'dd', 'pp', 'tt'
     for word in word_list_init:
@@ -61,6 +93,5 @@ def pdf_search(keyword = ""):
                 value = str(letter+""+letter)
             word_es_final += ''.join(value)
         word_list_final.append(word_es_final)
-    # print("Texto Final")
-    # print(word_list_final)
+
     return word_list_final

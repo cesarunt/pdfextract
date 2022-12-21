@@ -298,10 +298,10 @@ def search_db_post():
                 typeAint = request.values.get("type_a_int")
 
             if len(keyword) > 1:
-                keyword_list = pdf_search(str(keyword))
+                keyword_list, keyword_trans = pdf_search(str(keyword))
                 list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, bydate, startDate, endDate)
                 num_projects = len(list_projects)
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, typedoc = typedoc, typeAnac = typeAnac, typeAint = typeAint, bydoc = bydoc)
+        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, keyword_trans = keyword_trans, typedoc = typedoc, typeAnac = typeAnac, typeAint = typeAint, bydoc = bydoc)
     else:
         return render_template('db_form.html', keyword = "")
 
