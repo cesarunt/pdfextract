@@ -11,7 +11,7 @@ SEARCH_WORDS_ES = ['innovacion', 'INNOVACION']
 # Split the string
 word_list_init = []
 
-def pdf_search(keyword = ""):
+def pdf_search(keyword = "", global_path = ""):
     keyword_trans = ""
     word_list_final = []
     
@@ -21,7 +21,7 @@ def pdf_search(keyword = ""):
         # detector = LanguageDetectorBuilder.from_languages(*languages).build()
         # language = str(detector.detect_language_of(keyword)).split('.')
         # lang = language[-1]
-        model = fasttext.load_model(os.path.abspath(os.getcwd()) + '/lid.176.ftz')
+        model = fasttext.load_model(global_path + '/lid.176.ftz')
         language = model.predict(keyword, k=1)
         lang = str(language[0][0]).split('__')[-1]
 
