@@ -1,4 +1,4 @@
-import re
+import re, os
 import unidecode
 from itertools import groupby
 from textblob import Word
@@ -20,8 +20,8 @@ def pdf_search(keyword = ""):
         # languages = [Language.ENGLISH, Language.SPANISH]
         # detector = LanguageDetectorBuilder.from_languages(*languages).build()
         # language = str(detector.detect_language_of(keyword)).split('.')
-        # lang = language[-1]        
-        model = fasttext.load_model('lid.176.ftz')
+        # lang = language[-1]
+        model = fasttext.load_model(os.path.abspath(os.getcwd()) + '/lid.176.ftz')
         language = model.predict(keyword, k=1)
         lang = str(language[0][0]).split('__')[-1]
 
