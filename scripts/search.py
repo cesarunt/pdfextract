@@ -2,9 +2,9 @@ import re
 import unidecode
 from itertools import groupby
 from textblob import Word
+import fasttext
 import textblob.exceptions
 from textblob.translate import Translator
-from lingua import Language, LanguageDetectorBuilder
 
 SEARCH_WORDS_ES = ['innovacion', 'INNOVACION']
 
@@ -17,13 +17,16 @@ def pdf_search(keyword = ""):
     
     # detect language
     try:
-        languages = [Language.ENGLISH, Language.SPANISH]
-        detector = LanguageDetectorBuilder.from_languages(*languages).build()
-        language = str(detector.detect_language_of(keyword)).split('.')
-        lang = language[-1]
+        # languages = [Language.ENGLISH, Language.SPANISH]
+        # detector = LanguageDetectorBuilder.from_languages(*languages).build()
+        # language = str(detector.detect_language_of(keyword)).split('.')
+        # lang = language[-1]        
+        model = fasttext.load_model('lid.176.ftz')
+        language = model.predict(keyword, k=1)
+        lang = str(language[0][0]).split('__')[-1]
 
         trans = Translator()
-        if lang == 'ENGLISH':
+        if lang == 'en':
             word = Word(keyword)
             keyword_list = word.spellcheck()
             keyword_result = keyword_list[0][0]
@@ -31,11 +34,11 @@ def pdf_search(keyword = ""):
             # print("text_trans", keyword_trans)
             word_list_final.append(keyword_result)
         else:
-            lang = 'SPANISH'
+            lang = 'es'
             keyword_result = keyword
             word_list_final = pdf_search_ES(keyword_result)
     except textblob.exceptions.NotTranslated:
-        lang = 'SPANISH'
+        lang = 'es'
     # print("languaje", lang)
     # print("keyword_result", keyword_result)
 
