@@ -12,7 +12,7 @@
                         {% if pdf %}
                         <div id="alert_wrapper"></div>
                         <div class="row" style="padding: 0 1rem 0; margin-top: -15px;">
-                            <div class="col-sm-3" style="padding: 0; height: auto; width: 250px;">
+                            <div class="col-sm-3" style="padding: 0; height: auto; width: 240px;">
                                 <div class="pagination" style="text-align: left; height: auto; display: grid !important;">
                                     <div id="add_attribute" style="width: 100%;">
                                         <a href="#" onClick="addAttribute()" style="width: 162px; padding: 8px 5px; margin: 5px 0; text-align: center;">Agregar Atributo</a>
@@ -140,10 +140,10 @@
                                     
                                 </div>  
                             </div>
-                            <div class="col-sm-9" style="width: 680px;">
+                            <div class="col-sm-9" style="width: 720px;">
                                 <div id="canvasContainer" style="width: 100%; height: auto;">
-                                    <div id="buttons-header" style="width: 675px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
-                                        <div id="buttons-close" style="width: 40%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
+                                    <div id="buttons-header" style="width: 720px; height: 45px; position: fixed; margin-top: -11px; display: inline-block; z-index: 1; background-color: white; border: 1px solid #666; border-radius: 0.15rem; ">
+                                        <div id="buttons-close" style="width: 41%; display: inline-block; text-align: left; margin: 5px 2px 0 5px;">
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}', '{{ project.pro_id }}')" disabled>
                                                 <i class="fas fa-save"> &nbsp;Imagen</i>
                                             </button>
@@ -153,14 +153,14 @@
                                         <input type="hidden" id="select_page" value="" />
                                         <input type="hidden" id="pages_text" value="" />
                                         <input type="hidden" id="pages_pos" value="" />
-                                        <div id="buttons-actions" style="width: 40%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
+                                        <div id="buttons-actions" style="width: 41%; display: inline-block; text-align: right; margin: 5px 5px 0 2px;">
                                             <input type="hidden" id="num_pages" value="{{ pdf.pdf_path.num_pages }}" />
                                             <button id="btn_arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'down')" disabled><i class="fas fa-arrow-alt-circle-left"></i></button>
                                             <button id="btn_arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="movePage(this, '{{pdf.pages_one_text}}', '{{ pdf.id }}', 'up')" disabled><i class="fas fa-arrow-alt-circle-right"></i></button>
                                         </div>
                                     </div>
-                                    <div id="canvasContainer" class="text-center" style="width: 100%; padding: 30px 5px 0 30px;">
-                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; left: 100px; opacity: 0.75; margin: 0 auto;" width="620px" height="860px"></canvas>
+                                    <div id="canvasContainer" class="text-center" style="width: 100%;">
+                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; left: 100px; opacity: 0.75; margin: 0 auto;" width="720px" height="1020px"></canvas>
                                     </div>
                                 </div>
                                 <div class="mb-3" style="margin-bottom: 0 !important; margin-left: 25px;">
