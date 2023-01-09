@@ -59,6 +59,13 @@ def split_thumb(path, files_split, pdf_info_id):
 
 def split_img(path, files_split, pdf_info_id):
     result = 0
+    # print("\nGET INFO PDF")
+    # print(str(path))
+    # pdf = PdfFileReader(path)
+    # first_page = pdf.getPage(0)
+    # width  = round(first_page.mediaBox.upperRight[0])
+    # height = round(first_page.mediaBox.upperRight[1])
+    # print("W:" + str(width) + " , H:" + str(height))
     images = convert_from_path(path, dpi=300, size=(720,1020))
     img_npages = len(images)
     # Save pages as thumbnail

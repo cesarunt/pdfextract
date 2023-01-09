@@ -147,6 +147,9 @@
                                             <button type="submit" id="btn_save_canvas" class="btn btn-success mb-2" onclick="saveCanvas('{{ request.url }}', '{{ project.pro_id }}')" disabled>
                                                 <i class="fas fa-save"> &nbsp;Imagen</i>
                                             </button>
+                                            <button type="submit" id="btn_make_zoom" class="btn btn-dark mb-2" style="opacity: 0.25;" onclick="makeZoom('{{ request.url }}', '{{ project.pro_id }}')" disabled>
+                                                <i class="fas fa-search-plus"> &nbsp;Zoom</i>
+                                            </button>
                                         </div>
                                         &nbsp;&nbsp;<span>Página</span>&nbsp;&nbsp;
                                         <input type="text" class="" name="{{ pdf.id }}" value="1" id="current_page" style="border: 1px solid #ced4da; border-radius: 0.15rem; width: 40px; padding: 0.1rem 0.35rem;" disabled>
@@ -160,7 +163,7 @@
                                         </div>
                                     </div>
                                     <div id="canvasContainer" class="text-center" style="width: 100%;">
-                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; left: 100px; opacity: 0.75; margin: 0 auto;" width="720px" height="1020px"></canvas>
+                                        <canvas id="canvas" style="background-image: url('{{ pdf.pdf_path.path_page }}'); position: relative; left: 100px; opacity: 0.85; margin: 0 auto;" width="720px" height="1020px"></canvas>
                                     </div>
                                 </div>
                                 <div class="mb-3" style="margin-bottom: 0 !important; margin-left: 25px;">

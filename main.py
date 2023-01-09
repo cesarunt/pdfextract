@@ -21,6 +21,8 @@ from docx import Document
 from fold_to_ascii import fold
 from flask_login import current_user
 from wtforms import TextField, Form
+from pdf2image import convert_from_path
+from PyPDF2 import PdfFileReader
 
 main = Blueprint('main', __name__)
 
@@ -596,6 +598,10 @@ def action_thesis_mul():
                     result1 = upd_detailCanvasByIds(det_id, pdf_id, det_attribute, text, page, rect)
                     result_split = 1
                 
+                if action == "make_zoom":
+                    print("ZOOM")
+                    input("action thesis POST")
+                
                 if action == "save_text":
                     det_id =        int(request.values.get("det_id"))
                     det_attribute = int(request.values.get("det_attribute"))
@@ -766,6 +772,8 @@ def pdf_post(pdf_id):
     global file_pdfs
     global type_doc
     text_page = ""
+    band_zoom = False
+    dict_page = 0
     pro_id = request.values.get("pro_id")
 
     if request.method == "POST":
@@ -784,10 +792,21 @@ def pdf_post(pdf_id):
                     dictPage = dictVal
                     page = int(dictVal['page'])
                 i += 1
-                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_IMG_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + ".jpg"
+                images = []
+                dict_page = int(dictVal['page'])
+                path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
+                images = convert_from_path(path_pdf, dpi=300, size=(720*2, 1020*2))
+                images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
+                
+                image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_IMG_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + "zoom.jpg"
                 image = cv2.imread(image, 0)
                 thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-                ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
+                _y = dictVal['y'] * 2
+                _h = dictVal['h'] * 2
+                _x = dictVal['x'] * 2
+                _w = dictVal['w'] * 2
+                # ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
+                ROI = thresh[_y: _y + _h, _x: _x + _w]
                 
                 # print("ROI_language", LANGUAGE_PAGE)
                 if LANGUAGE_PAGE=="es":
@@ -808,6 +827,22 @@ def pdf_post(pdf_id):
                 pdf_name_search = unidecode.unidecode(text)
                 _ = upd_PPdetail(pro_id, pdf_id, text, pdf_name_search, current_date)
             result_split = 1
+        
+        # if action == "make_zoom":
+        #     print("ZOOM")
+        #     det_id = int(request.values.get("det_id"))
+        #     det_attribute = int(request.values.get("det_attribute"))
+        #     current_date = date.today().strftime("%d-%m-%Y")
+        #     dictCanvas = json.loads(request.values.get("dictCanvas"))
+
+        #     images = []
+        #     dict_page = int(dictCanvas[0]['page'])
+        #     path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
+        #     images = convert_from_path(path_pdf, dpi=300, size=(720*2, 1020*2))
+        #     images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
+            
+        #     if len(images) > 0:
+        #         band_zoom = true
         
         if action == "save_text":
             det_id =        int(request.values.get("det_id"))
@@ -981,6 +1016,10 @@ def pdf_post(pdf_id):
             if response_nat is True:
                 # msg_att = "PDF actualizado con éxito"
                 result_split = 1
+
+        # if band_zoom == true:
+        #     path_page = app.config['SPLIT_IMG_WEB'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg', # dict_page
+        #     return jsonify({'path_page': path_page})
 
         if current_user.is_authenticated and result_split == 1:
             project = get_projectById(pro_id)

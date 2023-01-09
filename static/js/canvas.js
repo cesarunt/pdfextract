@@ -162,7 +162,7 @@ function showAlertPage(message, alert) {
 
 // ACTIVATE ATTRIBUTE FUNCTION
 function activeAttribute(edit_id, pages_text, pdf_id) {
-  // Abled select option
+  // Enabled select option
   let detail_id = edit_id.split("_")
   let detail_edit = detail_id[1].split("-")
   let pages_list = pages_text.split(",")
@@ -183,19 +183,20 @@ function activeAttribute(edit_id, pages_text, pdf_id) {
     document.getElementById("remove_"+get_id[1]).style.opacity = 0.5
   }
 
-  // Abled vector button
+  // Enabled vector button
   document.getElementById('vector_'+_det_id+'-'+_det_attribute+'-'+_det_name).style.opacity = 1
-  // Abled close button
+  // Enabled close button
   document.getElementById('close_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.remove("d-none")
   document.getElementById('remove_'+_det_id+'-'+_det_attribute+'-'+_det_name).classList.add("d-none")
-  // Abled edit button, opacity 1
+  // Enabled edit button, opacity 1
   var divtext_area = document.getElementById("divtext_"+_det_name)
   if (divtext_area) {
     divtext_area.classList.remove("d-none");
   }
 
-  // Abled updated button (blue color), and opacity 1
+  // Enabled updated button (blue color), and opacity 1
   document.getElementById("btn_save_canvas").disabled = false
+  // document.getElementById("btn_make_zoom").disabled = false
   document.getElementById('current_page').disabled = false
   document.getElementById('current_page').value = (select_att.value).toString()
   document.getElementById('btn_arrow_left').disabled = false
@@ -231,7 +232,6 @@ function activeAttribute(edit_id, pages_text, pdf_id) {
   var det_width = document.getElementById('det_width-'+_det_name).value
   var det_height = document.getElementById('det_height-'+_det_name).value
   
-  // console.log(det_x)
   if (det_x != null && det_y != null) {
     ctx.strokeStyle = "red";
     ctx.lineWidth = 4;
@@ -253,7 +253,7 @@ function closeAttribute(edit_id) {
   select_att.disabled = true
   select_att.style.border = '1px solid #ced4da'
 
-  // Abled all controls by name
+  // Enabled all controls by name
   var vectors = document.getElementsByName('vectors');
   for (var vector of vectors){
     let vector_id = vector.id
@@ -276,6 +276,7 @@ function closeAttribute(edit_id) {
 
   // Disabled updated button (blue color), and opacity 1
   document.getElementById("btn_save_canvas").disabled = true
+  // document.getElementById("btn_make_zoom").disabled = true
   document.getElementById('current_page').disabled = true
   document.getElementById('btn_arrow_left').disabled = true
   document.getElementById('btn_arrow_right').disabled = true
@@ -286,7 +287,6 @@ function closeAttribute(edit_id) {
   if (val >= pages.value){
     document.getElementById('btn_arrow_right').disabled = true
   }
-  // document.getElementById('current_page').value = (select_att.value).toString()
 
   // clear the canvas
   //   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -297,7 +297,7 @@ function closeAttribute(edit_id) {
 function addAttribute() {
   // Disabled add attribute
   document.getElementById('add_attribute').classList.add("d-none")
-  // Abled div attribute
+  // Enabled div attribute
   document.getElementById('div_attribute').classList.remove("d-none")
 }
 
@@ -306,7 +306,7 @@ function cancelAttribute(edit_id) {
   // Disbled div attribute
   document.getElementById('div_attribute').classList.add("d-none")
   document.getElementById('new_attribute').value = ""
-  // Abled add attribute
+  // Enabled add attribute
   document.getElementById('add_attribute').classList.remove("d-none")
 }
 
@@ -370,10 +370,9 @@ function delAttribute(url, pro_id, att_name, edit_id) {
   }
 }
 
+// SAVE CANVAS
 // --------------------------------------------------------------------------------------------------------
 function saveCanvas(url, pro_id) {
-  console.log("saveCanvas")
-
   // Reject if the file input is empty & throw alert
   if (!_x && !_y) {
     alert("Debe seleccionar texto de la imagen", "warning")
@@ -393,19 +392,14 @@ function saveCanvas(url, pro_id) {
   data.append("pro_id", pro_id);
   data.append("det_id", _det_id);
   data.append("det_attribute", _det_attribute);
-  // data.append("x", _x);
-  // data.append("y", _y);
-  // data.append("w", _w);
-  // data.append("h", _h);
   data.append("page", _page);
   data.append("dictCanvas", JSON.stringify(dictCanvas));
 
   // request load handler (transfer complete)
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      /// Disabled updated button (blue color), and opacity 1
+      // Disabled updated button (blue color), and opacity 1
       update_att.disabled = true
-      
       // alert(`Registro Exitoso`, "success");
       showAlertPage('Canvas actualizado con éxito', 'success')
       location.reload();
@@ -423,6 +417,65 @@ function saveCanvas(url, pro_id) {
   request.addEventListener("error", function (e) {
     // alert(`Error procesando la imagen`, "danger");
     showAlertPage('Error actualizando canvas', 'danger')
+  });
+
+  // Open and send the request
+  request.open("POST", url);
+  request.send(data);
+}
+
+// MAKE ZOOM
+// --------------------------------------------------------------------------------------------------------
+function makeZoom(url, pro_id) {
+  // Reject if the file input is empty & throw alert
+  if (!_x && !_y) {
+    alert("Debe seleccionar texto de la imagen", "warning")
+    return;
+  }
+
+  // Create a new FormData instance
+  var data = new FormData();
+  // Create a XMLHTTPRequest instance
+  var request = new XMLHttpRequest();
+
+  // Set the response type
+  request.responseType = "json";
+
+  var action = "make_zoom";
+  data.append("action", action);
+  data.append("pro_id", pro_id);
+  data.append("det_id", _det_id);
+  data.append("det_attribute", _det_attribute);
+  data.append("page", _page);
+  data.append("dictCanvas", JSON.stringify(dictCanvas));
+
+  // request load handler (transfer complete)
+  request.addEventListener("load", function (e) {
+    if (request.status == 200) {
+      // Disabled updated button (blue color), and opacity 1
+      update_att.disabled = true
+      console.log("path_page")
+      console.log(request.response.path_page)
+
+      canvas_pdf = document.getElementById("canvasContainer")
+      canvas_pdf.innerHTML = `
+      <canvas id="canvas" style="background-image: url('${request.response.path_page}'); position: relative; left: 100px; opacity: 0.85; margin: 0 auto;" width="720px" height="1020px"></canvas>
+      `
+      showAlertPage('Zoom actualizado con éxito', 'success')
+    }
+    else {
+      showAlertPage('Zoom no fue actualizado', 'warning')
+    }
+    if (request.status == 300) {
+      showAlertPage(`${request.response.message}`, 'warning')
+    }
+    
+  });
+
+  // request error handler
+  request.addEventListener("error", function (e) {
+    // alert(`Error procesando la imagen`, "danger");
+    showAlertPage('Error generando zoom', 'danger')
   });
 
   // Open and send the request

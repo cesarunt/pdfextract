@@ -157,11 +157,13 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
+        text = text.replace("'","").replace("\n"," ").replace("-","")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
                     WHERE det_id = {det_id} AND det_info = {det_info} AND det_attribute = {det_attribute}
                 """
+        print("QQQ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         sqliteConnection.commit()
@@ -180,6 +182,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
+        text = text.replace("'","").replace("\n"," ").replace("-","")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}
@@ -202,6 +205,7 @@ def upd_detailPDFnameByIds(pro_id, pdf_id, text='', text_search=""):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
+        text = text.replace("'","").replace("\n"," ").replace("-","")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pro_pdf_details SET pdf_name='{text}', pdf_name_search='{text_search}'
