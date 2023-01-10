@@ -21,17 +21,16 @@ def pdf_search(keyword = "", global_path = ""):
         # detector = LanguageDetectorBuilder.from_languages(*languages).build()
         # language = str(detector.detect_language_of(keyword)).split('.')
         # lang = language[-1]
+        fasttext.FastText.eprint = lambda x: None
         model = fasttext.load_model(global_path + '/lid.176.ftz')
         language = model.predict(keyword, k=1)
         lang = str(language[0][0]).split('__')[-1]
-
         trans = Translator()
         if lang == 'en':
             word = Word(keyword)
             keyword_list = word.spellcheck()
             keyword_result = keyword_list[0][0]
             keyword_trans = trans.translate(keyword_result, from_lang='en', to_lang='es')
-            # print("text_trans", keyword_trans)
             word_list_final.append(keyword_result)
         else:
             lang = 'es'
@@ -39,8 +38,7 @@ def pdf_search(keyword = "", global_path = ""):
             word_list_final = pdf_search_ES(keyword_result)
     except textblob.exceptions.NotTranslated:
         lang = 'es'
-    # print("languaje", lang)
-    # print("keyword_result", keyword_result)
+        word_list_final.append(keyword)
 
     return word_list_final, keyword_trans
 
