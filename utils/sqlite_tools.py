@@ -232,8 +232,8 @@ def put_newProject(project=dict()):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    INSERT INTO "{table_name}" (pro_title, pro_title_search, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created) 
-                    VALUES ("{project['title']} ", "{project['title_search']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['district']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}")
+                    INSERT INTO "{table_name}" (pro_title, pro_title_search, pro_uni, pro_department, pro_province, pro_district, pro_career, pro_comment, pro_type_a, pro_type_m, pro_n_articles, pro_n_process, pro_user, pro_created, pro_updated) 
+                    VALUES ("{project['title']} ", "{project['title_search']} ", "{project['university']}", "{project['department']}", "{project['province']}", "{project['district']}", "{project['career']}", "{project['comment']}", "{project['type_a']}", "{project['type_m']}", "{project['n_articles']}", "{project['n_process']}", "{project['user']}", "{project['created']}", "{project['updated']}")
                 """
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -473,7 +473,7 @@ def get_listProjects(limit=-1):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user
+                    SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user, a.pro_updated
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     ORDER BY a.pro_id DESC
                     LIMIT "{limit}"
@@ -507,7 +507,7 @@ def get_projectById(id):
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         query = f"""
-                    SELECT a.pro_id, a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created
+                    SELECT a.pro_id, a.pro_title, a.pro_uni, b.uni_name, a.pro_department, a.pro_province, a.pro_district, a.pro_career, a.pro_comment, a.pro_type_a, a.pro_type_m, a.pro_n_articles, a.pro_n_process, a.pro_user, a.pro_created, a.pro_updated
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
                     WHERE  a.pro_id = "{id}"
                 """
@@ -579,7 +579,7 @@ def upd_projectById(id, project):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    UPDATE "{table_name}" SET pro_title='{project['title']}', pro_title_search='{project['title_search']}', pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}
+                    UPDATE "{table_name}" SET pro_title='{project['title']}', pro_title_search='{project['title_search']}', pro_uni={project['university']}, pro_department={project['department']}, pro_province={project['province']}, pro_district={project['district']}, pro_career="{project['career']}", pro_comment="{project['comment']}", pro_type_a={project['type_a']}, pro_type_m={project['type_m']}, pro_updated='{project['updated']}'
                     WHERE pro_id = {id}
                 """
         sqlite_select_query = query

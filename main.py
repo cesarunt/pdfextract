@@ -225,6 +225,7 @@ def save_upload():
             keywords = request.form['keywords_out'].split(',')
         save_type = request.form['save_type']
         if save_type == "new" :
+            project['updated'] = current_date
             response_project, id = put_newProject(project)
             if response_project is True:
                 if keywords != None:
@@ -232,6 +233,7 @@ def save_upload():
                         response_pkdetail = put_newPKdetail(id, key, current_date)
         else:
             id = request.form['save_id']
+            project['updated'] = current_date
             response_project = upd_projectById(id, project)
             if response_project is True:
                 if keywords != None:
@@ -336,7 +338,8 @@ def create_db_post():
                             'n_articles':   0,
                             'n_process':    1,
                             'user' :        user_id,
-                            'created' :     current_date
+                            'created' :     current_date,
+                            'updated' :     current_date
                         }
                     pro_result, pro_id = put_newProject(project)
                     
