@@ -1,21 +1,24 @@
 # -*- coding: utf_8 -*-
 import os, re, json
-from flask import Blueprint, render_template, request, redirect, jsonify, send_file, send_from_directory
+from flask import Blueprint, render_template, request, redirect, jsonify, send_file, send_from_directory, Response
 from requests import post
 from sqlalchemy import true
 from utils.config import cfg
 from utils.handle_files import allowed_file, get_viewProcess_CPU
 from werkzeug.utils import secure_filename
-from scripts.split import pdf_splitter, split_thumb, split_img, pdf_getNpages
+from scripts.split import pdf_splitter, split_thumb, split_img, split_img_qr, pdf_getNpages
 from scripts.process import pdf_process
 from scripts.search import pdf_search
+from scripts.qrcode import qr_read
+# from scripts.camera import VideoCamera
 from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
 from utils.process_doc import *
 from __init__ import create_app, db
 
-import cv2
+import cv2, imagesize
+from PIL import Image
 import pytesseract, unidecode
 from docx import Document
 from fold_to_ascii import fold
@@ -31,7 +34,9 @@ app = create_app() # we initialize our flask app using the __init__.py function
 app.jinja_env.auto_reload = True
 app.config['MAX_CONTENT_LENGTH'] = cfg.FILES.MAX_CONTENT_LENGTH
 app.config['UPLOAD_EXTENSIONS']  = cfg.FILES.UPLOAD_EXTENSIONS
+app.config['QR_EXTENSIONS']     = cfg.FILES.QR_EXTENSIONS
 app.config['UPLOAD']            = cfg.FILES.UPLOAD
+app.config['QR_UPLOAD']         = cfg.FILES.QR_UPLOAD
 app.config['SPLIT_PDF']         = cfg.FILES.SPLIT_PDF
 app.config['SPLIT_IMG']         = cfg.FILES.SPLIT_IMG
 app.config['SPLIT_IMG_WEB']     = cfg.FILES.SPLIT_IMG_WEB
@@ -40,6 +45,10 @@ app.config['SPLIT_THUMB_WEB']   = cfg.FILES.SPLIT_THUMB_WEB
 app.config['OUTPUT']            = cfg.FILES.OUTPUT
 app.config['FORWEB']            = cfg.FILES.FORWEB
 app.config['UPLOAD_WEB']        = cfg.FILES.UPLOAD_WEB
+app.config['QR_VOUCHER']        = cfg.FILES.QR_VOUCHER
+app.config['QR_VOUCHER_WEB']    = cfg.FILES.QR_VOUCHER_WEB
+app.config['QR_IMG']            = cfg.FILES.QR_IMG
+app.config['QR_IMG_WEB']        = cfg.FILES.QR_IMG_WEB
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Allowed extension you can set your own
@@ -85,11 +94,127 @@ class SearchForm(Form):
 
 # ------------------------------------ ROUTING ------------------------------------
 # Home
+# ====
 @main.route('/home')
 def home():
     if current_user.is_authenticated:
-        list_projects = get_listProjects(5)
-        return render_template('home.html', name=current_user.name.split()[0], projects=list_projects)
+        list_projects = get_listProjects(5, current_user.id)
+        print("current_user", current_user.id)
+        crumb = { 'band':0, 'pre': '', 'post': "Portada" }
+        return render_template('home.html', name=current_user.name.split()[0], projects=list_projects, crumb=crumb)
+    else:
+        return render_template('login.html')
+
+"""
+    USERS LOGIN 
+    =====================
+"""
+@main.route('/user/create/<id>')
+def user_create(id):
+    if current_user.is_authenticated:
+        list_userOne = get_userById(id)
+        result = {
+                'view': "d-none",
+                'alert': "",
+                'message': ""
+            }
+        crumb = { 'band':1, 'pre': 'Usuarios', 'post': "Registro" }
+        return render_template('user_form.html', name=current_user.name.split()[0], crumb=crumb, user=list_userOne[0], result=result, admin=current_user.id)
+    else:
+        return render_template('login.html')
+
+@main.route("/user/active/<int:val>/<int:id>")
+def user_active(val, id):
+    if current_user.is_authenticated:
+        # Enable active from user
+        response_user = upd_statusUserById(id, int(val))
+        if response_user is True and val == 1:
+            result = {
+                'view': "", 'alert': "alert-success",
+                'message': "Usuario Habilitado con éxito"
+            }
+        if response_user is True and val == 0:
+            result = {
+                'view': "", 'alert': "alert-danger",
+                'message': "Usuario Inhabilitado con éxito"
+            }
+        # print("Usuario Actualizado con éxito")
+        list_users = get_listUsers(10)
+        crumb = { 'band':1, 'pre': 'Usuarios', 'post': "Listado" }
+        return render_template('user_list.html', name=current_user.name.split()[0], users=list_users, crumb=crumb, result=result, admin=current_user.id)
+
+
+@main.route("/user/update/", methods=["POST"])
+def user_update():
+    # id = 0
+    user = None
+    response_user = False
+    # print(request)
+    if request.method == 'POST':
+        current_date = date.today().strftime("%d-%m-%Y")
+        action = request.form['action']
+        val = request.form['val']
+
+        user = {
+                'usr_id':       int(request.form['id']),
+                'usr_name':     request.form['name'],
+                'usr_gender':   request.form['gender'],
+                'usr_email':    request.form['email'],
+                'usr_birthday': request.form['birthday'],
+                'usr_address':  request.form['address'],
+                'usr_phone':    request.form['phone'],
+                'usr_active':   request.form['active'],
+                'usr_updated':  current_date,
+            }
+
+        if action == 'H' or action == 'I':
+            # Enable active from user
+            response_user = upd_statusUserById(user['usr_id'], int(val))
+ 
+            if response_user is True and action == 'H':
+                result = {
+                    'view': "", 'alert': "alert-success",
+                    'message': "Usuario Habilitado con éxito"
+                }
+            if response_user is True and action == 'I':
+                result = {
+                    'view': "", 'alert': "alert-danger",
+                    'message': "Usuario Inhabilitado con éxito"
+                }
+            print("Usuario Actualizado con éxito")
+
+        if action == 'G':
+            # Update the current user
+            response_user = upd_userById(user)
+            if response_user is True:
+                result = {
+                    'view': "", 'alert': "alert-success",
+                    'message': "Usuario actualizado con éxito"
+                }
+                print("Usuario Actualizado con éxito")
+            else:
+                result = {
+                    'view': "", 'alert': "alert-warning",
+                    'message': "Usuario NO fue actualizado"
+                }
+                print("ERROR Actualizando Usuario")
+        
+        # return redirect(request.url)
+        crumb = { 'band':1, 'pre': 'Usuarios', 'post': "Registro" }
+        return render_template('user_form.html', name=current_user.name.split()[0], user=user, crumb=crumb, result=result, admin=current_user.id)
+
+
+@main.route('/user/list')
+def user_list():
+    if current_user.is_authenticated:
+        list_users = get_listUsers(10)
+        result = {
+                'view': "d-none",
+                'alert': "",
+                'message': ""
+            }
+        crumb = { 'band':1, 'pre': 'Usuarios', 'post': "Listado" }
+        return render_template('user_list.html', name=current_user.name.split()[0], users=list_users, crumb=crumb, result=result, admin=current_user.id)
     else:
         return render_template('login.html')
 
@@ -111,7 +236,8 @@ def upload_form():
         list_keywords = get_listKeywords()
         one_project = []
         key_id = ""
-        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project, key_id=key_id, universities=list_universities, departments=list_departments, keywords=list_keywords)
+        crumb = { 'band':1, 'pre': 'Proyectos', 'post': "Registro" }
+        return render_template('upload_form.html', name=current_user.name.split()[0], project=one_project, key_id=key_id, universities=list_universities, departments=list_departments, keywords=list_keywords, crumb=crumb)
     else:
         return render_template('upload_form.html')
 
@@ -142,7 +268,7 @@ def upload_home(id):
     global pro_id
     pro_id = id
     global type_doc
-    type_doc = "T"                      # DOC type on Project
+    type_doc = "T"  # DOC type on Project
     
     if current_user.is_authenticated:
         one_project = get_projectById(id)
@@ -152,6 +278,7 @@ def upload_home(id):
         return render_template('upload_home.html')
 
 # Thesis
+# ======
 @main.route('/thesis_one')
 def thesis_one():
     if current_user.is_authenticated:
@@ -267,7 +394,6 @@ def add_variable():
         finally:
             return jsonify({'key_id': key_id})
 
-# //////////////////////////////////////////////////////////////////////////////////////////////////
 @main.route('/get_attributes/<pro_id>/<pdf_id>')
 def get_attributes(pro_id, pdf_id):
     list_attributes = get_attributesDetails(pro_id, pdf_id)
@@ -280,7 +406,8 @@ def get_attributes(pro_id, pdf_id):
 @main.route('/search_db')
 def search_db():
     if current_user.is_authenticated:
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = 0, keyword = "", typedoc = "A", typeAnac = '1', typeAint = '1', bydoc = '1')
+        crumb = { 'band':1, 'pre': 'Proyectos', 'post': "Búsqueda" }
+        return render_template('db_form.html', name=current_user.name.split()[0], crumb=crumb, n_projects = 0, keyword = "", typedoc = "A", typeAnac = '1', typeAint = '1', bydoc = '1')
     else:
         return render_template('db_form.html')
 
@@ -305,7 +432,8 @@ def search_db_post():
                 keyword_list, keyword_trans = pdf_search(str(keyword), cfg.FILES.GLOBAL_PATH)
                 list_projects = get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, bydate, startDate, endDate)
                 num_projects = len(list_projects)
-        return render_template('db_form.html', name=current_user.name.split()[0], n_projects = num_projects, projects = list_projects, keyword_search = keyword, keyword_trans = keyword_trans, typedoc = typedoc, typeAnac = typeAnac, typeAint = typeAint, bydoc = bydoc)
+        crumb = { 'band':1, 'pre': 'Proyectos', 'post': "Búsqueda" }
+        return render_template('db_form.html', name=current_user.name.split()[0], crumb=crumb, n_projects = num_projects, projects = list_projects, keyword_search = keyword, keyword_trans = keyword_trans, typedoc = typedoc, typeAnac = typeAnac, typeAint = typeAint, bydoc = bydoc)
     else:
         return render_template('db_form.html', keyword = "")
 
@@ -441,9 +569,9 @@ def thesis_split_thumb(filename):
 def thesis_split_img(filename):
     return send_from_directory(app.config['SPLIT_IMG'], filename)
 
-# 
+
 # FUNCTION TO UPLOAD PDF 
-# 
+# ======================
 @main.route('/thesis_mul', methods=['POST'])
 def thesis_mul_load():
     global file_pdfs
@@ -465,7 +593,6 @@ def thesis_mul_load():
         files = request.files.getlist('files[]')
         
         # 1. Remove and split IMG
-        # img_remove(fname, app.config['SPLIT_IMG'])
         for file in files:
             if file and allowed_file(file.filename, app.config["UPLOAD_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
@@ -512,7 +639,208 @@ def thesis_mul_load():
             print('File(s) successfully uploaded')
             return render_template('thesis_mul.html', resultLoad=upload, pdfs = pdfs, project=one_project[0], pro_id=pro_id)
 
-# 
+
+# READ QR
+# =======
+@app.route('/files/qr_upload/<filename>')
+def qr_upload(filename):
+    return send_from_directory(app.config['QR_UPLOAD'], filename)
+
+@app.route('/files/qr_img/<filename>')
+def qr_img(filename):
+    return send_from_directory(app.config['QR_IMG'], filename)
+
+@app.route('/files/qr_voucher/<filename>')
+def qr_voucher(filename):
+    return send_from_directory(app.config['QR_VOUCHER_WEB'], filename)
+
+@main.route('/qr')
+def qr():
+    global data_code
+    data_code = []
+    if current_user.is_authenticated:
+        return render_template('qr.html', result_upload = True, result_process = False, name=current_user.name.split()[0])
+    else:
+        return render_template('qr.html', result_upload = True, result_process = False)
+
+@main.route('/qr', methods=['POST'])
+def qr_post():
+    global files_img
+
+    if request.method == "POST":
+        files_img = []
+        result_img = False
+        result_pdf = False
+        # pro_id = request.form.get('pro_id')
+        # Code for multiple pdfs
+        if 'files[]' not in request.files:
+            return redirect(request.url)
+
+        current_date = date.today().strftime("%d-%m-%Y")
+        pdfs = []
+        files = request.files.getlist('files[]')
+        
+        # 1. Remove and split IMG
+        for file in files:
+            if file and allowed_file(file.filename, app.config["QR_EXTENSIONS"]):
+                filename = secure_filename(file.filename)
+                filename = filename.replace('(','').replace(')','').replace(',','').replace('<','').replace('>','').replace('?','').replace('!','').replace('@','').replace('%','').replace('$','').replace('#','').replace('*','').replace('&','').replace(';','').replace('{','').replace('}','').replace('[','').replace(']','').replace('|','').replace('=','').replace('+','').replace(' ','_')
+                path = os.path.join(app.config['QR_UPLOAD'], filename)
+                path = validate_path(path)
+                file.save(path)
+                # Verify Image Name and Extension
+                filename = path.split("/")[-1]
+                file_ext = path.split(".")[-1]
+
+                if (file_ext.upper()=='JPG' or  file_ext.upper()=='JPEG'):
+                    file_image = cv2.imread(path)
+                    # print(file_image)
+                    image_width  = 0
+                    image_height = 0
+
+                    if int(file_image.shape[1])>int(file_image.shape[0]):
+                        image_height = 500
+                        image_width = 740
+                    else:
+                        file_width  = file_image.shape[1]
+                        file_height = file_image.shape[0]
+                        fw = float(int(file_height) / int(file_width))
+                        print(filename)
+                        print(fw)
+                        if fw > 2.0:
+                            image_width = 420
+                            image_height = 900
+                        elif fw > 1.75:
+                            image_width = 480
+                            image_height = 900
+                        else:
+                            image_width = 640
+                            image_height = 900
+                    # SAVE and ready to read by QR
+                    path = os.path.join(app.config['QR_IMG'], filename)
+                    file_resize = cv2.resize(file_image, (image_width, image_height), interpolation = cv2.INTER_AREA)
+                    cv2.imwrite(path, file_resize, [cv2.IMWRITE_JPEG_QUALITY, 90])
+                    result_img = True
+                elif (file_ext.upper()=='PDF'):
+                    # Extract IMG, SAVE IMG and ready to read by QR
+                    result_pdf, filename = split_img_qr(path, app.config['QR_IMG'])
+                                        
+                if result_img or result_pdf:
+                    my_image = {
+                        'name' :     filename,
+                        'created' :  current_date
+                    }
+                    files_img.append(my_image)
+
+        # if len(data_code) :
+        len_data = len(files_img)
+        if len_data > 0 :
+            # result = True
+            print("RENDER TEMPLATE")
+            return render_template('qr.html', result_upload = False, result_process = True, data_code = data_code, data_len = len_data)
+        else:
+            print("REDIRECT")
+            return redirect(request.url)
+
+
+@main.route('/qr_action', methods=['POST'])
+def qr_action():
+    result = False
+    text_canvas = ""
+    result_canvas = False
+    # data_code = []
+    if request.method == "POST":
+        # ---------------------------------------
+        # Read Action
+        action = request.values.get("action")
+
+        if action == "save_voucher":
+            index = int(request.values.get("index"))-1
+            data_code[index]['cli_dat']  = request.values.get("data_dat")
+            data_code[index]['currency'] = request.values.get("data_cur")
+            data_code[index]['type']     = request.values.get("data_type")
+            data_code[index]['cli_fac']  = request.values.get("data_bill")
+            data_code[index]['cia_ruc']  = request.values.get("data_ciaruc")
+            data_code[index]['cli_ruc']  = request.values.get("data_cliruc")
+            data_code[index]['cli_tot']  = request.values.get("data_tot")
+            data_code[index]['cli_igv']  = request.values.get("data_igv")
+            data_code[index]['is_full']  = 1
+            result = True
+        elif len(data_code)==0:
+            # if 'files[]' not in request.files:
+            #     return redirect(request.url)
+            
+            # files = request.files.getlist('files[]')
+            files = files_img
+            
+            i = 0
+            for file in files:
+                filename = app.config['QR_IMG'] + "/" + file["name"]
+                result_qr, data_qr = qr_read(filename)
+            
+                if result_qr == "OK":
+                    i = i + 1
+                    data_qr["index"] = i
+                    data_qr["currency"] = "S"
+                    data_qr["type_doc"] = "F"
+                    if data_qr["path"] == "":
+                        data_qr["path"] = app.config['QR_IMG_WEB'] + "/" + file["name"]
+                    data_code.append(data_qr)
+                    result = True
+                    print('...File(s) IMG generated successfully.....................................\n')
+        
+        if action == "get_canvas":
+            index = int(request.values.get("index"))
+            path = request.values.get("path")
+            # det_attribute = int(request.values.get("det_attribute"))
+            current_date = date.today().strftime("%d-%m-%Y")
+            dictCanvas = json.loads(request.values.get("dictCanvas"))
+            i = 0
+            text = ""
+            image = None
+            # dictPage = None
+            for dictVal in dictCanvas:
+                # if i == 0:
+                #     dictPage = dictVal
+                #     page = int(dictVal['page'])
+                i += 1
+                # images = []
+                # dict_page = int(dictVal['page'])
+                # path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
+                # images = convert_from_path(path_pdf, dpi=300, size=(640*2, 820*2))
+                # images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
+                
+                image = app.config['QR_IMG'] + '/' + str(path).split("/")[-1]
+                print("image path", image)
+                image = cv2.imread(image, 0)
+                # thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+                _y = dictVal['y']
+                _h = dictVal['h']
+                _x = dictVal['x']
+                _w = dictVal['w']
+                # print("X Y W H", str(_x) + " " + str(_y) + " " + str(_w) + " " + str(_h))
+                # ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
+                ROI = image[_y: _y + _h, _x: _x + _w]
+                # print("ROI", ROI)
+                language = "spa"
+                try:
+                    text_canvas = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
+                    result_canvas = True
+                    print("TEXT FINAL,", text_canvas)
+                except Exception as e:
+                        print(e)
+                        print("Error generate text...")
+        
+        if result_canvas:
+            return jsonify({'text_canvas': text_canvas})
+        else:
+            len_data = len(data_code)
+            if len_data > 0 :
+                # result = True
+                return render_template('qr.html', result_upload = False, result_process = False, data_code = data_code, data_len = len_data)
+            else:
+                return redirect(request.url)
+
 # FUNCTION TO PROCESS PDF 
 # 
 @main.route("/action_thesis_mul", methods=["POST"])
@@ -602,8 +930,7 @@ def action_thesis_mul():
                     result_split = 1
                 
                 if action == "make_zoom":
-                    print("ZOOM")
-                    input("action thesis POST")
+                    print("ZOOM for thesis POST")
                 
                 if action == "save_text":
                     det_id =        int(request.values.get("det_id"))
@@ -712,8 +1039,9 @@ def action_thesis_mul():
 @main.route('/project/list')
 def project_list():
     if current_user.is_authenticated:
-        list_projects = get_listProjects()
-        return render_template('project_list.html', name=current_user.name.split()[0], projects=list_projects)
+        list_projects = get_listProjects(-1, current_user.id)
+        crumb = { 'band':1, 'pre': 'Proyectos', 'post': "Listado" }
+        return render_template('project_list.html', name=current_user.name.split()[0], projects=list_projects, crumb=crumb)
     else:
         return render_template('login.html')
 
@@ -798,7 +1126,7 @@ def pdf_post(pdf_id):
                 images = []
                 dict_page = int(dictVal['page'])
                 path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
-                images = convert_from_path(path_pdf, dpi=300, size=(720*2, 1020*2))
+                images = convert_from_path(path_pdf, dpi=300, size=(640*2, 820*2))
                 images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
                 
                 image = cfg.FILES.GLOBAL_PATH + '/' + app.config['SPLIT_IMG_WEB'] + '/' + str(pdf_id) + "page_" + str(int(dictVal['page'])-1) + "zoom.jpg"
@@ -837,15 +1165,6 @@ def pdf_post(pdf_id):
         #     det_attribute = int(request.values.get("det_attribute"))
         #     current_date = date.today().strftime("%d-%m-%Y")
         #     dictCanvas = json.loads(request.values.get("dictCanvas"))
-
-        #     images = []
-        #     dict_page = int(dictCanvas[0]['page'])
-        #     path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
-        #     images = convert_from_path(path_pdf, dpi=300, size=(720*2, 1020*2))
-        #     images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
-            
-        #     if len(images) > 0:
-        #         band_zoom = true
         
         if action == "save_text":
             det_id =        int(request.values.get("det_id"))

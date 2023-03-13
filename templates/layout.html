@@ -26,25 +26,16 @@
                 </a>
             </div>
             <ul class="list-unstyled components text-secondary">
-                
                 <!-- <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li> -->
-                
                 {% if current_user.is_authenticated %}
-                <!-- <li>
-                    <a href="#"><i class="fas fa-cog"></i> ARTÍCULOS</a>
-                </li> -->
                 <li>
                     <a href="#"><i class="fas fa-cog"></i> TESIS / ARTÍCULOS</a>
                 </li>
-                <!-- <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_one') }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-file-pdf"></i>Único PDF</a>
-                </li> -->
-                <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_mul', id=pro_id) }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> Múltiples PDFs</a>
-                </li>
-                <!-- <li style="padding:5px 0 0 10px;">
-                    <a href="{{ url_for('main.thesis_search', id=pro_id) }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-search-plus"></i> Búsqueda PDFs</a>
-                </li> -->
+                    {% if project.pro_n_process == 0 %}
+                    <li style="padding:5px 0 0 10px;">
+                        <a href="{{ url_for('main.thesis_mul', id=pro_id) }}">&nbsp;&nbsp;&nbsp;<i class="fas fa-copy"></i> Múltiples PDFs</a>
+                    </li>
+                    {% endif %}
                 {% endif %}
 
                 {% if not current_user.is_authenticated %}
@@ -53,12 +44,6 @@
                 </li>
                 <p style="color: #1c80c2; text-align: center; font-size: medium; padding: 5px 10px;">
                     <a href="{{ url_for('auth.login') }}" style="font-weight: 600; padding: 5px 0;">Iniciar Sesión</a>
-                </p>
-                {% endif %}
-                {% if current_user.is_authenticated %}
-                <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li>
-                <p style="color: #6d1e1c; text-align: center; font-size: medium; padding: 5px 10px;">
-                    <a href="{{ url_for('auth.logout') }}" style="font-weight: 600; padding: 5px 0;">Cerrar Sesión</a>
                 </p>
                 {% endif %}
             </ul>
@@ -84,8 +69,6 @@
                                 <div class="dropdown-menu dropdown-menu-end nav-link-menu">
                                     <ul class="nav-list">
                                         <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Perfil</a></li>
-                                        <!-- <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
-                                        <li><a href="" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a></li> -->
                                         <div class="dropdown-divider"></div>
                                         <li><a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Salir</a></li>
                                     </ul>
@@ -96,8 +79,7 @@
                     </ul>
                 </div>
             </nav>
-            <!-- end of navbar navigation -->
-            
+            <!-- end of navbar navigation -->            
             {% block content %}
 
             {% endblock %}
@@ -108,7 +90,7 @@
     <footer class="default_theme">
         <div class="container-fluid">
         <div class="row">
-            <div class="card" style="margin-top: 2rem; padding-top:15px; font-size: 0.9em; text-align: center; width: 100%; color:gray;">
+            <div class="card" style="margin-top: 4rem; padding-top:15px; font-size: 0.9em; text-align: center; width: 100%; color:gray;">
             <p>Grupo ES consultores © Derechos Reservados 2022. Desarrollado por Cesar Peña</p>
             </div>
         </div>

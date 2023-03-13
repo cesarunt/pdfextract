@@ -23,16 +23,23 @@ __C.FILES.GLOBAL_PATH = GLOBAL_PATH
 # HANDLE IMAGES / VIDEOS
 __C.FILES.MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 __C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
+__C.FILES.QR_EXTENSIONS     = ["PDF", "pdf", "JPG", "JPEG"]
 __C.FILES.UPLOAD            = GLOBAL_PATH + '/files/upload'
+__C.FILES.QR_UPLOAD         = GLOBAL_PATH + '/files/qr_upload'
 __C.FILES.SPLIT_PDF         = GLOBAL_PATH + '/files/split_pdf'
 __C.FILES.SPLIT_IMG         = GLOBAL_PATH + '/files/split_img'
 __C.FILES.SPLIT_IMG_WEB     = 'files/split_img'
 __C.FILES.SPLIT_THUMB       = GLOBAL_PATH + '/files/split_thumb'
 __C.FILES.SPLIT_THUMB_WEB   = 'files/split_thumb'
 
-__C.FILES.OUTPUT    = GLOBAL_PATH + '/files/output'
-__C.FILES.FORWEB    = 'files/output'
-__C.FILES.UPLOAD_WEB = 'files/upload'
+__C.FILES.QR_VOUCHER        = GLOBAL_PATH + '/files/qr_voucher'
+__C.FILES.QR_VOUCHER_WEB    = 'files/qr_voucher'
+__C.FILES.QR_IMG            = GLOBAL_PATH + '/files/qr_img'
+__C.FILES.QR_IMG_WEB        = 'files/qr_img'
+
+__C.FILES.OUTPUT        = GLOBAL_PATH + '/files/output'
+__C.FILES.FORWEB        = 'files/output'
+__C.FILES.UPLOAD_WEB    = 'files/upload'
 
 # BLOCK AND ALLOW WORDS
 BLOCK_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']

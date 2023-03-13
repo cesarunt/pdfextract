@@ -105,8 +105,8 @@ body {
 [2. Header / #header]
 */
 #body>.navbar {
-    padding: 0 1.5rem;
-    min-height: 74px;
+    padding: 0 1.25rem 0 0.75rem;
+    min-height: 60px;
     box-shadow: none;
     border-bottom: 1px solid rgba(101, 109, 119, .16);
 }
@@ -131,6 +131,7 @@ body {
 #body>.content {
     position: relative;
     padding: .5rem;
+    padding-top: 0.25rem;
 }
 
 #body .content .page-title h3 {
@@ -245,7 +246,7 @@ body {
 
 .card-title-form {
     margin: 0;
-    font-weight: bold;
+    /* font-weight: bold; */
     text-align: center;
 }
 

@@ -59,19 +59,27 @@ def split_thumb(path, files_split, pdf_info_id):
 
 def split_img(path, files_split, pdf_info_id):
     result = 0
-    # print("\nGET INFO PDF")
-    # print(str(path))
-    # pdf = PdfFileReader(path)
-    # first_page = pdf.getPage(0)
-    # width  = round(first_page.mediaBox.upperRight[0])
-    # height = round(first_page.mediaBox.upperRight[1])
-    # print("W:" + str(width) + " , H:" + str(height))
-    images = convert_from_path(path, dpi=300, size=(720,1020))
+    images = convert_from_path(path, dpi=300, size=(640,820))
     img_npages = len(images)
     # Save pages as thumbnail
     for i in range(img_npages):
-        # images[i].save(files_split + '/' + str(pdf_info_id) + 'page_'+ str(i) +'.jpg', 'JPEG')
         images[i].save(files_split + '/' + str(pdf_info_id) + 'page_'+ str(i) +'.jpg',  format='JPEG', subsampling=0, quality=100)
         result = 1
 
     return result
+
+def split_img_qr(path, files_split):
+    result = False
+    pdf_reader = PdfFileReader(path)
+    box = pdf_reader.pages[0].mediaBox
+    pdf_width = box.getWidth()
+    pdf_height = box.getHeight()
+    image = convert_from_path(path, dpi=300, size=(pdf_width, pdf_height))
+    filename = files_split + '/' + str(path.split("/")[-1]).split(".")[0] + '.jpg'
+    # for i in range(img_npages):
+    if image:
+        image[0].save(filename,  format='JPEG', subsampling=0, quality=100)
+        filename = str(filename).split("/")[-1]
+        result = True
+
+    return result, filename

@@ -1,0 +1,158 @@
+{% extends "layout_home.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container" style="max-width: 1000px;">
+        <div class="row">
+            <div id="alert_wrapper">
+                <div id="alertPDF" class="{{ result.view }} alert {{ result.alert }} alert-dismissible fade show" role="alert" style="line-height:0.75rem; margin: 0 0 0.5rem; text-align: left;">
+                    <small><b>{{ result.message }}</b></small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="max-height: 0.05rem;"></button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title-form" style="margin:0.5rem 0 1rem 0">Datos del Usuario</h5>
+                        <form class="needs-validation" action="{{ url_for('main.user_update') }}" method="POST" accept-charset="utf-8">
+                            <div class="row g-2">
+                                <input id="id" name="id" type="hidden" value="{{ user.usr_id }}">
+                                <div class="mb-3 col-md-8">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">Nombre y Apellido</p>
+                                    {% if user.usr_name %}
+                                    <input type="text" class="form-control" id="name" name="name" value="{{ user.usr_name }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Ingrese el nombre" value="" required>
+                                    {% endif %}
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese el nombre</div>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">Género</p>
+                                    <select name="gender" class="form-select" required>
+                                        <option value="" selected>Seleccione Género</option>
+                                        {% if user.usr_gender %}
+                                            {% if user.usr_gender=="F" %}
+                                            <option value="F" selected>Femenino</option>
+                                            <option value="M">Masculino</option>
+                                            {% else %}
+                                            <option value="F" >Femenino</option>
+                                            <option value="M" selected>Masculino</option>
+                                            {% endif %}
+                                        {% else %}
+                                            <option value="F" >Femenino</option>
+                                            <option value="M" >Masculino</option>
+                                        {% endif %}
+                                    </select>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Seleccione el género</div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-8">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">E-mail</p>
+                                    {% if user.usr_email %}
+                                    <input type="text" class="form-control" id="email" name="email" value="{{ user.usr_email }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="email" name="email" placeholder="Ingrese el e-mail" value="" required>
+                                    {% endif %}
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese el e-mail</div>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">Cumpleaños</p>
+                                    {% if user.usr_birthday %}
+                                    <input type="text" class="form-control" id="birthday" name="birthday" value="{{ user.usr_birthday }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="birthday" name="birthday" placeholder="Fecha de nacimiento" value="" required>
+                                    {% endif %}
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese su fecha de nacimiento</div>
+                                </div>
+                            </div>
+                            <div class="row g-2">
+                                <div class="mb-3 col-md-8">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">Dirección</p>
+                                    {% if user.usr_address %}
+                                    <input type="text" class="form-control" id="address" name="address" value="{{ user.usr_address }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="address" name="address" placeholder="Ingrese dirección" value="" required>
+                                    {% endif %}
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese la dirección</div>
+                                </div>
+                                <div class="mb-3 col-md-4">
+                                    <p style="margin: 0 5px 0; color: darkgrey;">Nro Celular</p>
+                                    {% if user.usr_phone %}
+                                    <input type="text" class="form-control" id="phone" name="phone" value="{{ user.usr_phone }}" required>
+                                    {% else %}
+                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingrese # teléfono" value="" required>
+                                    {% endif %}
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese su número de contacto</div>
+                                </div>
+                            </div>
+                            <div class="line" style="margin: 10px auto;"></div>
+                            <div class="row g-2">
+                                <p style="margin: 10px 15px 0;">Actualizar Clave</p>
+                                <div class="mb-3 col-md-6">
+                                    <input type="text" class="form-control" id="pass01" name="pass01" placeholder="Nueva clave" value="" disabled>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese clave</div>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <input type="text" class="form-control" id="pass02" name="pass02" placeholder="Confirmar clave" value="" disabled>
+                                    <div class="valid-feedback">OK!</div>
+                                    <div class="invalid-feedback">Ingrese clave</div>
+                                </div>
+                            </div>
+                            <div class="line" style="margin: 10px auto;"></div>
+                            
+                            <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 1rem;">
+                                <input id="num_pro" name="num_pro" type="hidden" value="{{ user.usr_num_pro }}">
+                                <input id="active" name="active" type="hidden" value="{{ user.usr_active }}">
+                                {% if admin == 1 %}
+                                    {% if user.usr_id == 1 %}
+                                    <input id="action" name="action" type="hidden" value="G">
+                                    <input id="val" name="val" type="hidden" value="">
+                                    <button type="submit" class="btn btn-primary" style="font-size: medium;" > &nbsp; Guardar &nbsp; </button>
+                                    <a href="{{ url_for('main.user_list') }}">
+                                        <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp;&nbsp; Cerrar &nbsp;&nbsp;</button>
+                                    </a>
+                                    {% else %}
+                                        {% if user.usr_active == 1 %}
+                                        <input id="action" name="action" type="hidden" value="I">
+                                        <input id="val" name="val" type="hidden" value="0">
+                                        <button type="submit" id="save_enabled" class="btn btn-danger" style="font-size: medium;" > &nbsp; Inhabilitar &nbsp; </button>
+                                        <a href="{{ url_for('main.user_list') }}">
+                                            <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp;&nbsp; Cerrar &nbsp;&nbsp;</button>
+                                        </a>
+                                        {% else %}
+                                        <input id="action" name="action" type="hidden" value="H">
+                                        <input id="val" name="val" type="hidden" value="1">
+                                        <button type="submit" id="save_upload" class="btn btn-success" style="font-size: medium;" > &nbsp; Habilitar &nbsp; </button>
+                                        <a href="{{ url_for('main.user_list') }}">
+                                            <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp;&nbsp; Cerrar &nbsp;&nbsp;</button>
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% else %}
+                                <input id="action" name="action" type="hidden" value="G">
+                                <input id="val" name="val" type="hidden" value="">
+                                <button type="submit" class="btn btn-primary" style="font-size: medium;" > &nbsp; Guardar &nbsp; </button>&nbsp;
+                                <a href="{{ url_for('main.home', id=pro_id) }}">
+                                    <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp;&nbsp; Cerrar &nbsp;&nbsp;</button>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

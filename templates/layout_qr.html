@@ -27,20 +27,29 @@
 <body>
     <!-- SECTION BODY, START -->
     <div class="wrapper">
-        <div id="body" class="active">
+        <nav id="sidebar" class="active">
+            <div class="sidebar-header">
+                <a href="{{ url_for('main.home') }}">
+                    <img src="../../static/img/esca-logo.png" alt="bootraper logo" class="app-logo">
+                </a>
+            </div>
+            <ul class="list-unstyled components text-secondary">
+                <!-- <li style="margin:10px 0 0; padding-top: 10px; border-top: 1px solid #e6ecf5;"></li> -->
+                {% if current_user.is_authenticated %}
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i> VOUCHERS</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div id="body" class="">
             <!-- navbar navigation component -->
             <nav class="navbar navbar-expand-lg navbar-white bg-white">
-                <button type="button" id="sidebarCollapse" class="btn btn-light" style="border-color: gray; background-color: white;">
-                    <a href="{{ url_for('main.home') }}">
-                        <img class="card-icon_home" style="width: 30px;" src="../../static/img/home-icon.png">
-                    </a>
+                <button type="button" id="sidebarCollapse" class="btn btn-light" style="border-color: gray;">
+                    <i class="fas fa-bars"></i><span></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    {% if project %}
-                    <span style="margin: 0 auto;"><h5 style="margin-bottom: 0;"> {{ project.pro_title }} </h5></span>
-                    {% else %}
-                    <span style="margin: 0 auto;"><h3 style="margin-bottom: 0;">&nbsp;<b>LYAN</b></h3></span>
-                    {% endif %}
+                    <span style="margin: 0 auto;"><h5 style="margin-bottom: 0;"> Lector QR en Vouchers</h5></span>
                     <ul class="nav navbar-nav">
                         <li class="nav-item dropdown">
                             <div class="nav-dropdown">
@@ -51,10 +60,7 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end nav-link-menu">
                                     <ul class="nav-list">
-                                        <li><a href="{{ url_for('main.user_create', id=current_user.id) }}" class="dropdown-item"><i class="fas fa-address-card"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Perfil</a></li>
-                                        {% if current_user.id == 1 %}
-                                        <li><a href="{{ url_for('main.user_list') }}" class="dropdown-item"><i class="fas fa-users"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Usuarios</a></li>
-                                        {% endif %}
+                                        <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Perfil</a></li>
                                         <div class="dropdown-divider"></div>
                                         <li><a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Salir</a></li>
                                     </ul>
@@ -65,43 +71,10 @@
                     </ul>
                 </div>
             </nav>
-            <!-- breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb" itemscope style="margin-bottom: 0; padding: 0.25rem 1.25rem; background-color: ghostwhite;">
-                    <li class="breadcrumb-item" itemscope itemprop="itemListElement">
-                        <a href="{{ url_for('main.home') }}" itemprop="item">
-                            <span itemprop="name">Inicio</span>
-                        </a>
-                        <meta itemprop="position" content="1">
-                    </li>
-                    {% if crumb.band == 1 %}
-                        {% if crumb.pre == 'Usuarios' and admin == 1 %}
-                        <li class="breadcrumb-item" itemscope itemprop="itemListElement">
-                            <a href="{{ url_for('main.user_list') }}" itemprop="item">
-                                <span itemprop="name">{{ crumb.pre }}</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if crumb.pre == 'Proyectos' %}
-                        <li class="breadcrumb-item" itemscope itemprop="itemListElement">
-                            <a href="{{ url_for('main.project_list') }}" itemprop="item">
-                                <span itemprop="name">{{ crumb.pre }}</span>
-                            </a>
-                            <meta itemprop="position" content="2">
-                        </li>
-                        {% endif %}
-                    {% endif %}
-                    <li class="breadcrumb-item active" itemscope itemprop="itemListElement">
-                        <span itemprop="name">{{ crumb.post }}</span>
-                        <meta itemprop="position" content="3">
-                    </li>
-                </ol>
-            </nav>
-            <!-- end of navbar navigation -->
+            <!-- end of navbar navigation -->            
             {% block content %}
 
             {% endblock %}
-
         </div>
     </div>
 
@@ -109,28 +82,44 @@
     <footer class="default_theme">
         <div class="container-fluid">
         <div class="row">
-            <div class="card" style="margin-top: 4rem; padding-top:15px; font-size: 0.9em; text-align: center; width: 100%; color:grey;">
-            <p>Grupo ES consultores © Derechos Reservados 2022. Desarrollado por Cesar Peña</p>
+            <div class="card" style="margin-top: 4rem; padding-top:15px; font-size: 0.9em; text-align: center; width: 100%; color:gray;">
+            <p>Grupo ES consultores © Derechos Reservados 2023. Desarrollado por Cesar Peña</p>
             </div>
         </div>
         </div>
     </footer>
     <!-- end footer -->
-    
+
     <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/fabric.min.js') }}"></script>
 
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-    <!-- Canvas draw -->
-    <!-- <script src="{{ url_for('static', filename='js/canvas-pdf.js') }}"></script> -->
-    <!-- Uploads files -->
-    <script src="{{ url_for('static', filename='js/form-upload.js') }}"></script>
     
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity=
+    "sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous">
+    </script>
+    <script src=
+    "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity=
+    "sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous">
+    </script>
+    <script src=
+    "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity=
+    "sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous">
+    </script>
+    <script src="{{ url_for('static', filename='js/fabric.min.js') }}"></script>
+    {% if data_code %}
+    <script src="{{ url_for('static', filename='js/canvas-qr.js') }}"></script>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/form-qr.js') }}"></script>
 </body>
 
 </html>

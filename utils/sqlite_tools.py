@@ -157,7 +157,7 @@ def upd_detailCanvasByIds(det_id, det_info, det_attribute, text='', npage=1, rec
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        text = text.replace("'","").replace("\n"," ").replace("-","")
+        text = text.replace("'","").replace("\n"," ").replace(" -","-")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}, det_x={rect['x']}, det_y={rect['y']}, det_width={rect['w']}, det_height={rect['h']}
@@ -182,7 +182,7 @@ def upd_detailTextByIds(det_id, det_info, det_attribute, text='', npage=1):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        text = text.replace("'","").replace("\n"," ").replace("-","")
+        text = text.replace("'","").replace("\n"," ").replace(" -","-")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pdf_details SET det_value='{text}', det_npage={npage}
@@ -205,7 +205,7 @@ def upd_detailPDFnameByIds(pro_id, pdf_id, text='', text_search=""):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        text = text.replace("'","").replace("\n"," ").replace("-","")
+        text = text.replace("'","").replace("\n"," ").replace(" -","-")
         # print("Connected to SQLite")
         query = f"""
                     UPDATE pro_pdf_details SET pdf_name='{text}', pdf_name_search='{text_search}'
@@ -437,7 +437,6 @@ def get_listDistricts(province, department):
         return districts
 
 def get_listKeywords():
-    # List of TOP 10
     table_name = 'key_info'
     keywords = []
     try:
@@ -464,7 +463,7 @@ def get_listKeywords():
             # print("The SQLite connection is closed")
         return keywords
 
-def get_listProjects(limit=-1):
+def get_listProjects(limit=-1, user_id=1):
     # List of TOP 10
     table_name = 'project_info'
     projects = []
@@ -475,7 +474,8 @@ def get_listProjects(limit=-1):
         query = f"""
                     SELECT a.pro_id, a.pro_title, b.uni_nickname, a.pro_career, a.pro_user, a.pro_updated
                     FROM "{table_name}" a INNER JOIN uni_info b ON a.pro_uni = b.uni_id
-                    ORDER BY a.pro_id DESC
+                    WHERE a.pro_user = "{user_id}"
+                    ORDER BY a.pro_updated DESC
                     LIMIT "{limit}"
                 """
         sqlite_select_query = query
@@ -500,7 +500,6 @@ def get_listProjects(limit=-1):
         return projects
 
 def get_projectById(id):
-    # List of TOP 10
     table_name = 'project_info'
     project = []
     try:
@@ -541,7 +540,6 @@ def get_projectById(id):
         return project
 
 def get_listKeywordsById(id):
-    # List of TOP 10
     table_name = 'pro_key_details'
     pk_details = []
     try:
@@ -698,7 +696,6 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, 
         query += f"""
                     ORDER BY a.pro_id DESC
                 """
-        
         # print("QQQ", query)
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
@@ -764,7 +761,6 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, 
                         'pro_year':     record[9],
                         'pdfs':         pdfs
                     })
-
         cursor.close()
     except sqlite3.Error as error:
         print("Failed to list data from sqlite table", error)
@@ -775,7 +771,6 @@ def get_squareProjects_ByWord(bydoc, keyword_list, typedoc, typeAnac, typeAint, 
         return projects
 
 def get_userById(id):
-    # List of TOP 10
     table_name = 'user'
     user = []
     try:
@@ -783,7 +778,7 @@ def get_userById(id):
         cursor = sqliteConnection.cursor()
         # print("Connected to SQLite")
         query = f"""
-                    SELECT email, name
+                    SELECT id, name, gender, birthday, email, password, phone, address, photo, active, created, updated
                     FROM "{table_name}"
                     WHERE  id = "{id}"
                 """
@@ -791,8 +786,18 @@ def get_userById(id):
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
         user.append({
-                'user_email':  record[0],
-                'user_name':   record[1],
+                'usr_id':       record[0],
+                'usr_name':     record[1],
+                'usr_gender':   record[2],
+                'usr_birthday': record[3],
+                'usr_email':    record[4],
+                'usr_password': record[5],
+                'usr_phone':    record[6],
+                'usr_address':  record[7],
+                'usr_photo':    record[8],
+                'usr_active':   record[9],
+                'usr_created':  record[10],
+                'usr_updated':  record[11],
             })
         cursor.close()
     except sqlite3.Error as error:
@@ -800,8 +805,8 @@ def get_userById(id):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            # print("The SQLite connection is closed")
-        return user
+    
+    return user
 
 def put_newPDFattribute(name, type, current_date):
     table_name = 'pdf_attributes'
@@ -979,7 +984,6 @@ def put_newPDF(pdf=dict()):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-            # print("The SQLite connection is closed")
         return id
 
 def put_newPPdetail(id, pdf, name, name_search, type_doc, nation_doc, double, pages, attributes, visible, current_date):
@@ -1010,7 +1014,6 @@ def upd_PPdetail(pro_id, pdf_id, text, text_search, current_date):
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
-        # print("Connected to SQLite")
         query = f"""
                     UPDATE "{table_name}" SET pdf_name='{text}', pdf_name_search='{text_search}', pro_pdf_created="{current_date}"
                     WHERE pro_id = {pro_id} AND pdf_id = {pdf_id} and pdf_visible = 1
@@ -1053,7 +1056,6 @@ def upd_nationPDF(pro_id, pdf_id, pdf_nation, current_date):
         return result
 
 def get_projectPDFById(pro_id):
-    # List of TOP 10
     table_name = 'project_info'
     pp_details = []
     try:
@@ -1067,7 +1069,6 @@ def get_projectPDFById(pro_id):
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         record = cursor.fetchone()
-
         # for record in records:
         pp_details.append({
             'pro_id':      record[0],
@@ -1088,14 +1089,12 @@ def get_projectPDFById(pro_id):
         return pp_details
 
 def get_projectsById(id, type_doc):
-    # List of TOP 10
     table_name = 'pro_pdf_details'
     pp_details = []
     try:
         sqliteConnection = sqlite3.connect(data_base)
         cursor = sqliteConnection.cursor()
         if type_doc == "T":
-            # print("Connected to SQLite")
             query = f"""
                         SELECT b.pro_id, b.pdf_id, b.pdf_name, b.pdf_type, b.pdf_nation, a.pdf_name, a.pdf_npages, a.pdf_size
                         FROM   pdf_info a INNER JOIN "{table_name}" b ON a.pdf_id = b.pdf_id
@@ -1169,7 +1168,6 @@ def get_pdfDetailByIds(pro_id, pdf_id, atts = []):
         query += f"""
                     ORDER BY b.det_attribute ASC
                 """
-        
         sqlite_select_query = query
         cursor.execute(sqlite_select_query)
         records = cursor.fetchall()
@@ -1308,3 +1306,87 @@ def get_attributesDetails(pro_id, pdf_id):
             sqliteConnection.close()
             print("The SQLite connection is closed")
         return pdf_details
+
+
+# Users
+def get_listUsers(limit=-1):
+    # List of TOP 10
+    table_name = 'user'
+    users = []
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    SELECT  id, name, gender, email, active, updated, COUNT(b.pro_id) as num_pro
+                    FROM "{table_name}" a LEFT JOIN "project_info" b ON a.id = b.pro_user
+                    GROUP BY a.id
+                    ORDER BY a.id DESC
+                    LIMIT "{limit}"
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        records = cursor.fetchall()
+
+        for record in records:
+            users.append({
+                    'usr_id':       record[0],
+                    'usr_name':     record[1],
+                    'usr_gender':   record[2],
+                    'usr_email':    record[3],
+                    'usr_active':   record[4],
+                    'usr_updated':  record[5],
+                    'usr_num_pro':  record[6],
+                    })
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to connect... ", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+        return users
+
+
+def upd_userById(user):
+    table_name = 'user'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        query = f"""
+                    UPDATE {table_name} SET name="{user['usr_name']}", gender="{user['usr_gender']}", birthday="{user['usr_birthday']}",  email="{user['usr_email']}", phone="{user['usr_phone']}", address="{user['usr_address']}", active={user['usr_active']}, updated="{user['usr_updated']}"
+                    WHERE id = {user['usr_id']}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to update data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+        return result
+
+
+def upd_statusUserById(user_id, val):
+    table_name = 'user'
+    result = False
+    try:
+        sqliteConnection = sqlite3.connect(data_base)
+        cursor = sqliteConnection.cursor()
+        # print("Connected to SQLite")
+        query = f"""
+                    UPDATE {table_name} SET active={val}
+                    WHERE id = {user_id}
+                """
+        sqlite_select_query = query
+        cursor.execute(sqlite_select_query)
+        sqliteConnection.commit()
+        result = True
+    except sqlite3.Error as error:
+        print("Failed to update data from sqlite table", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            # print("The SQLite connection is closed")
+        return result

@@ -1,0 +1,75 @@
+{% extends "layout_home.html" %}
+
+{% block content %}
+<!-- BLOCK CONTENT -->
+<div class="content">
+    <div class="container" style="max-width: 1000px;">
+        <div class="row">
+            <div id="alert_wrapper">
+                <div id="alertPDF" class="{{ result.view }} alert {{ result.alert }} alert-dismissible fade show" role="alert" style="line-height:0.75rem; margin: 0 0 0.5rem; text-align: left;">
+                    <small><b>{{ result.message }}</b></small>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="max-height: 0.05rem;"></button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header"><b>Lista de Usuarios</b></div>
+                    <div class="card-body">
+                        <p class="card-title"></p>
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="dataTables-example" style="font-size:smaller;" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th style="text-align: center;">Proyectos</th>
+                                        <th>Fech. Act.</th>
+                                        <th>Estado</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{user.usr_id}}</td>
+                                        <td>{{user.usr_name}}</td>
+                                        <td>{{user.usr_email}}</td>
+                                        <td style="text-align: center;">{{user.usr_num_pro}}</td>
+                                        <td>{{user.usr_updated}}</td>
+                                        <td>
+                                            {% if user.usr_active == 1 %}
+                                                <span class="badge text-dark" style="background-color:rgb(0, 205, 0) !important;">[ACTIVO]</span>
+                                            {% else %}
+                                                <span class="badge text-dark" style="background-color:rgb(245, 1, 1) !important;">[INACTIVO]</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="action" style="text-align: center;">
+                                            <a href="{{ url_for('main.user_create', id=user.usr_id) }}">
+                                                <span class="view" title="Ver Usuario"></span>
+                                            </a>
+                                            &nbsp;&nbsp;
+                                            {% if user.usr_active == 1 %}
+                                            <a href="{{ url_for('main.user_active', val=0, id=user.usr_id) }}">
+                                                <span class="disapproved" title="Desactivar Usuario"></span>
+                                            </a>
+                                            {% else %}
+                                            <a href="{{ url_for('main.user_active', val=1, id=user.usr_id) }}">
+                                                <span class="approved" title="Activar Usuario"></span>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}                                
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

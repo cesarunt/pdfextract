@@ -5,14 +5,12 @@
 <div class="content">
     <div class="container" style="max-width: 1000px;">
         <div class="page-title"></div>
-        <div class="row">
-            <div class="col-md-12 page-header" style="text-align: right; font-size: smaller; margin: 5px auto;"></div>
-        </div>
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title-form" style="margin:0.5rem 0 1rem 0">Formulario de Registro</h5>
+                        <h5 class="card-title-form" style="margin:0.5rem 0 1rem 0">Registro de Proyecto</h5>
                         <form class="needs-validation" action="{{ url_for('main.save_upload') }}" method="POST" accept-charset="utf-8">
                             <div class="row g-2">
                                 <input id="keywords_out" name="keywords_out" type="hidden" value="{{ keywordsOneId }}">

@@ -1,0 +1,88 @@
+
+/*------------------------------------------------------------------
+[home Userss / .table] 
+*/
+.table .action {
+    margin: 0 1px;
+    font-size:smaller;
+    text-align: center;
+}
+
+.action .view {
+    background-image: url("../img/view.png");
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    display:inline-block;
+    width: 16px;
+    height: 16px;
+    opacity:0.5;
+    filter:alpha(opacity=100); 
+}
+.action .view:hover {
+    opacity:1.0;
+    scale: 1.2;
+    filter:alpha(opacity=100); 
+}
+
+.action .approved {
+    background-image: url("../img/check_green.png");
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    display:inline-block;
+    width: 16px;
+    height: 16px;
+    opacity:0.4;
+    filter:alpha(opacity=100); 
+}
+
+.action .approved:hover {
+    opacity:1.0;
+    scale: 1.2;
+    filter:alpha(opacity=100); 
+}
+
+.action .disapproved {
+    background-image: url("../img/check_red.png");
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    display:inline-block;
+    width: 16px;
+    height: 16px;
+    opacity:0.25;
+    filter:alpha(opacity=100); 
+}
+
+.action .disapproved:hover {
+    opacity: 1.0;
+    scale:  1.25;
+    filter: alpha(opacity=100); 
+}
+
+/* QR css */
+.measure_h {
+    /* height: 920px !important; */
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.measure_h canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+.measure_h:hover canvas{
+    transform: scale(1.75) translate(0px, -10px);
+}
+
+.measure_w {
+    width: 720px !important;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.measure_w canvas {
+    width: 100%;
+    transition: 0.5s all ease-in-out;
+}
+/* .measure_w:hover canvas{
+    transform: scale(1.5) translate(-20px, -20px);
+} */

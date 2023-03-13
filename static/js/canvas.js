@@ -459,7 +459,7 @@ function makeZoom(url, pro_id) {
 
       canvas_pdf = document.getElementById("canvasContainer")
       canvas_pdf.innerHTML = `
-      <canvas id="canvas" style="background-image: url('${request.response.path_page}'); position: relative; left: 100px; opacity: 0.85; margin: 0 auto;" width="720px" height="1020px"></canvas>
+      <canvas id="canvas" style="background-image: url('${request.response.path_page}'); position: relative; opacity: 0.85; margin: 0 auto;" width="640px" height="820px"></canvas>
       `
       showAlertPage('Zoom actualizado con éxito', 'success')
     }
