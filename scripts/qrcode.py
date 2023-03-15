@@ -4,11 +4,10 @@ import pytesseract
 from datetime import datetime
 from cv2 import *
 from pyzbar import pyzbar
-# from PIL import Image
-# from dateutil import parser
-# from dateparser.search import search_dates
+from utils.config import cfg
 
-pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
+# pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = cfg.FILES.GLOBAL_TESSERACT
 
 def qr_read(filename):
     result = None
@@ -154,14 +153,8 @@ def qr_read(filename):
         
         if result == "TESS" :
             print("...GET DATA WITH TESSERACT")
-            # rect = { 'x': 0, 'y': 0, 'w': img_w, 'h': img_h }
-            # image = cv2.imread(filename, 0)
-            # thresh = 255 - cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-            # ROI = thresh[rect['y']:rect['y']+rect['h'],rect['x']:rect['x']+rect['w']]
-            # ROI = thresh[rect['x']:rect['x']+rect['w'], rect['y']:rect['y']+rect['h']]
             text = pytesseract.image_to_string(img, lang='spa', config='--psm 6')
             # print(text)
-
             res_rucs = None
             res_bill = None
             patterns_cli_igv = ["GV: ", "6V :", "IGV:", "18%", "18.00%"]

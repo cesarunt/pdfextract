@@ -10,7 +10,6 @@ from scripts.split import pdf_splitter, split_thumb, split_img, split_img_qr, pd
 from scripts.process import pdf_process
 from scripts.search import pdf_search
 from scripts.qrcode import qr_read
-# from scripts.camera import VideoCamera
 from datetime import datetime
 from datetime import date
 from utils.sqlite_tools import *
@@ -56,7 +55,7 @@ LANGUAGE_PAGE = "es"
 ALLOWED_EXTENSIONS = set(['PDF', 'pdf'])
 ILLEGAL_XML_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1F\uD800-\uDFFF\uFFFE\uFFFF]")
 # pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
-pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = cfg.FILES.GLOBAL_TESSERACT
 
 
 def strip_illegal_xml_characters(s, default, base=10):

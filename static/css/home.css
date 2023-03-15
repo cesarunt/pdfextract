@@ -83,6 +83,6 @@
     width: 100%;
     transition: 0.5s all ease-in-out;
 }
-/* .measure_w:hover canvas{
-    transform: scale(1.5) translate(-20px, -20px);
-} */
+.measure_w:hover canvas{
+    transform: scale(1.75) translate(0px, -10px);
+}

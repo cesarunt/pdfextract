@@ -3,8 +3,10 @@ import os
 
 # PATH LOCAL
 GLOBAL_PATH = os.path.abspath(os.getcwd())
+GLOBAL_TESSERACT = r'/usr/local/bin/tesseract'
 # PATH SERVER
 # GLOBAL_PATH = '/var/www/webApp/webApp'
+# GLOBAL_TESSERACT = r'/usr/bin/tesseract'
 
 __C = edict()
 cfg = __C
@@ -20,6 +22,7 @@ __C.PROCESS.LIFE_TIME = 60 * 8
 # FILES
 __C.FILES = edict()
 __C.FILES.GLOBAL_PATH = GLOBAL_PATH
+__C.FILES.GLOBAL_TESSERACT = GLOBAL_TESSERACT
 # HANDLE IMAGES / VIDEOS
 __C.FILES.MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 __C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
