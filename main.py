@@ -16,7 +16,7 @@ from utils.sqlite_tools import *
 from utils.process_doc import *
 from __init__ import create_app, db
 
-import cv2, imagesize
+import cv2
 from PIL import Image
 import pytesseract, unidecode
 from docx import Document
@@ -799,9 +799,6 @@ def qr_action():
             image = None
             # dictPage = None
             for dictVal in dictCanvas:
-                # if i == 0:
-                #     dictPage = dictVal
-                #     page = int(dictVal['page'])
                 i += 1
                 # images = []
                 # dict_page = int(dictVal['page'])
