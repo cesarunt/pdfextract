@@ -211,11 +211,6 @@ def qr_read(filename):
                         data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("S",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("I","").replace("DELVALORVENTA","").replace("DELPRODUCTOPORALMACENAMENTO.","").replace("PAGADO.3'J","").replace("DELPRODUCTOPORALM;","").replace("FACTURA","").replace("APAGAR187.00","").replace("Y","")
                         break
             data_cli_tot = str(data_cli_tot).replace('—','')
-            # if data_cli_tot == " ": data_cli_tot = ""
-            # if data_cli_igv == "" and data_cli_tot!= "":
-                # res_igv = (float(data_cli_tot)/1.18)
-                # data_cli_igv = round((float(data_cli_tot) - res_igv), 2)
-                # data_cli_igv = round((float(data_cli_tot) - res_igv), 2)
             # FIND DATE
             patterns_cli_fec.append(re.search(r'\d{2}/\d{2}/\d{4}', text))
             patterns_cli_fec.append(re.search(r'\d{2}-\d{2}-\d{4}', text))
@@ -255,17 +250,4 @@ def qr_read(filename):
         print(e)
         return
     
-    return result, data, 
-
-
-# Image with line graph
-# n = len(box_coordinates[0])
-# for i in range(n):
-#     print(box_coordinates[0][i][0])
-#     print(box_coordinates[0][i][1])
-#     cv2.line(img, tuple(box_coordinates[0][i]), tuple(box_coordinates[0][(i+1) % n]), (0,255,0), 2)
-# cv2.circle(img, (box_coordinates[0][0][0], box_coordinates[0][0][1]), 10, (0, 0, 255), 2)
-# cv2.circle(img, (box_coordinates[0][2][0], box_coordinates[0][2][1]), 10, (0, 0, 255), 2)
-# file_line = file_out + '_line.jpg'
-# cv2.imwrite(file_line, img)
-# Image cropping
+    return result, data

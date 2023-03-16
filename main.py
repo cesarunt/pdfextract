@@ -765,10 +765,7 @@ def qr_action():
             data_code[index]['cli_igv']  = request.values.get("data_igv")
             data_code[index]['is_full']  = 1
             result = True
-        elif len(data_code)==0:
-            # if 'files[]' not in request.files:
-            #     return redirect(request.url)
-            
+        elif len(data_code)==0:            
             # files = request.files.getlist('files[]')
             files = files_img
             
