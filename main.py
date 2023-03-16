@@ -744,7 +744,7 @@ def qr_post():
 
 @main.route('/qr_action', methods=['POST'])
 def qr_action():
-    result = False
+    global files_img
     text_canvas = ""
     result_canvas = False
     # data_code = []
