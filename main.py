@@ -704,8 +704,8 @@ def qr_post():
                         file_width  = file_image.shape[1]
                         file_height = file_image.shape[0]
                         fw = float(int(file_height) / int(file_width))
-                        print(filename)
-                        print(fw)
+                        # print(filename)
+                        # print(fw)
                         if fw > 2.0:
                             image_width = 420
                             image_height = 900
@@ -765,12 +765,12 @@ def qr_action():
             data_code[index]['cli_igv']  = request.values.get("data_igv")
             data_code[index]['is_full']  = 1
             result = True
-        elif len(data_code)==0:            
+        elif len(data_code)==0 and files_img is not None:            
             # files = request.files.getlist('files[]')
             files = files_img
             
             i = 0
-            for file in files:
+            for file in files or []:
                 filename = app.config['QR_IMG'] + "/" + file["name"]
                 result_qr, data_qr = qr_read(filename)
             

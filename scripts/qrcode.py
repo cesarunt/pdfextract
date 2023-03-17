@@ -1,8 +1,6 @@
 import cv2
 import re
 import pytesseract
-from datetime import datetime
-from cv2 import *
 from pyzbar import pyzbar
 from utils.config import cfg
 
