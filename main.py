@@ -772,18 +772,19 @@ def qr_action():
             i = 0
             for file in files or []:
                 filename = app.config['QR_IMG'] + "/" + file["name"]
-                result_qr, data_qr = qr_read(filename)
-            
-                if result_qr == "OK":
-                    i = i + 1
-                    data_qr["index"] = i
-                    data_qr["currency"] = "S"
-                    data_qr["type_doc"] = "F"
-                    if data_qr["path"] == "":
-                        data_qr["path"] = app.config['QR_IMG_WEB'] + "/" + file["name"]
-                    data_code.append(data_qr)
-                    result = True
-                    print('...File(s) IMG generated successfully.....................................\n')
+
+                if filename:
+                    result_qr, data_qr = qr_read(filename)
+                    if result_qr == "OK":
+                        i = i + 1
+                        data_qr["index"] = i
+                        data_qr["currency"] = "S"
+                        data_qr["type_doc"] = "F"
+                        if data_qr["path"] == "":
+                            data_qr["path"] = app.config['QR_IMG_WEB'] + "/" + file["name"]
+                        data_code.append(data_qr)
+                        result = True
+                        print('...File(s) IMG generated successfully.....................................\n')
         
         if action == "get_canvas":
             index = int(request.values.get("index"))
