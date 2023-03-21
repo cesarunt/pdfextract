@@ -33,17 +33,17 @@
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="dataTables-example" style="font-size:smaller;" width="100%">
                                         <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>FECHA</th>
-                                                <th>Moneda</th>
-                                                <th>TIPO Doc</th>
-                                                <th>NUMERO Doc</th>
+                                            <tr style="line-height: normal;">
+                                                <th>No<br>#</th>
+                                                <th>FECHA<br>(dd/mm/yy)</th>
+                                                <th style="text-align: center;">MONEDA<br>(S/ $)</th>
+                                                <th>TIPO<br>Doc</th>
+                                                <th>NUMERO<br>Doc</th>
                                                 <th>RUC Empresa</th>
                                                 <th>RUC Cliente</th>
-                                                <th style="text-align: center;">TOTAL</th>
-                                                <th style="text-align: center;">IGV</th>
-                                                <th>Estado</th>
+                                                <th style="text-align: center;">TOTAL<br>(S/ $)</th>
+                                                <th style="text-align: center;">IGV<br>(18%)</th>
+                                                <th>Estado<br>&nbsp;&nbsp;(%)</th>
                                                 <th style="text-align: center;">Ver</th>
                                             </tr>
                                         </thead>
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                         {% else %}
-                        <div class="mb-3 text-center" style="margin: 2.5rem 0 !important;">
+                        <div id="msg_upload" class="mb-3 text-center" style="margin: 2.5rem 0 !important;">
                             <p>Los archivos fueron cargados correctamente</p>
                         </div>
                         <div class="mb-3 text-center" style="margin: 1rem 0;">

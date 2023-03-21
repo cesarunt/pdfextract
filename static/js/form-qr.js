@@ -118,8 +118,9 @@ function saveVoucher(_this, url, index) {
 
   request.addEventListener("load", function (e) {
     if (request.status == 200) {
-      showAlertPage('Voucher registrado con éxito', 'success')
-      location.reload();
+      // showAlertPage('Voucher registrado con éxito', 'success')
+      // location.reload();
+      alert("Voucher registrado con éxito")
     }
     else {
       showAlertPage('Voucher no fue registrado', 'warning')
@@ -172,16 +173,15 @@ function openVoucher(_this, index, data_len, center_w) {
 
 // ACTION in order to CLOSE voucher details
 function closeVoucher(index) {
-  // console.log("Close Voucher !!!")
   document.getElementById("exampleModal_"+index).classList.remove("show");
   document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
   const elements = document.getElementsByClassName("modal-backdrop");
   while (elements.length > 0) elements[0].remove();
+  location.reload();
 }
 
 // ACTION in order to MOVE voucher down & up
 function moveVoucher(_this, index, direct) {
-  // console.log("Move Voucher !!!")
   if (parseInt(index) >= 0 && parseInt(index) <= parseInt(_data_len)+1){
     if (direct == "up"){
       _index = (parseInt(index) + 1).toString()
@@ -190,14 +190,11 @@ function moveVoucher(_this, index, direct) {
       _index = (parseInt(index) - 1).toString()
     }
   }
-  // canvas = null
 
   if (parseInt(_index) > 0 && parseInt(_index) < parseInt(_data_len)+1){
     // console.log("I:"+index+" - _I:"+_index + " L:"+_data_len)
     document.getElementById("exampleModal_"+index).classList.remove("show");
     document.getElementById("exampleModal_"+index).setAttribute("style", `display: `);
-    // cleanCanvas(canvas);
-    // canvas = null
     div_canvasClass.remove()
 
     div_modal = document.getElementById("exampleModal_"+_index)
@@ -209,7 +206,6 @@ function moveVoucher(_this, index, direct) {
     arrow = new Rectangle(canvas);
     ctx = canvas.getContext("2d");
     div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").getElementsByClassName("upper-canvas")[0]
-    // 
     center_width = (740 - canvas_width) / 2
     console.log(center_width)
     div_canvasId.style.left = center_width + "px"
@@ -218,13 +214,6 @@ function moveVoucher(_this, index, direct) {
     div_canvasClass.style.left = center_width + "px"
     div_canvasClass.width = canvas_width
     div_canvasClass.height = canvas_height
-    
-    // div_canvasClass = div_modal.querySelector("#canvasContainer").querySelector("#canvasContainer").querySelector(".upper-canvas")
-    // console.log(div_canvasClass)
-
-    // var canvas = new fabric.Canvas(div_canvas);
-    // var arrow = new Rectangle(canvas);
-    // ctx = canvas.getContext("2d");
     div_modal.classList.add("show");
     div_modal.setAttribute("style", `display: block`);
   }

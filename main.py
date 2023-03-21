@@ -44,8 +44,8 @@ app.config['SPLIT_THUMB_WEB']   = cfg.FILES.SPLIT_THUMB_WEB
 app.config['OUTPUT']            = cfg.FILES.OUTPUT
 app.config['FORWEB']            = cfg.FILES.FORWEB
 app.config['UPLOAD_WEB']        = cfg.FILES.UPLOAD_WEB
-app.config['QR_VOUCHER']        = cfg.FILES.QR_VOUCHER
-app.config['QR_VOUCHER_WEB']    = cfg.FILES.QR_VOUCHER_WEB
+app.config['QR_UPLOAD']         = cfg.FILES.QR_UPLOAD
+# app.config['QR_VOUCHER_WEB']    = cfg.FILES.QR_VOUCHER_WEB
 app.config['QR_IMG']            = cfg.FILES.QR_IMG
 app.config['QR_IMG_WEB']        = cfg.FILES.QR_IMG_WEB
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -649,9 +649,6 @@ def qr_upload(filename):
 def qr_img(filename):
     return send_from_directory(app.config['QR_IMG'], filename)
 
-@app.route('/files/qr_voucher/<filename>')
-def qr_voucher(filename):
-    return send_from_directory(app.config['QR_VOUCHER_WEB'], filename)
 
 @main.route('/qr')
 def qr():
@@ -670,6 +667,7 @@ def qr_post():
         files_img = []
         result_img = False
         result_pdf = False
+        result_type = ""
         # pro_id = request.form.get('pro_id')
         # Code for multiple pdfs
         if 'files[]' not in request.files:
@@ -724,12 +722,17 @@ def qr_post():
                     # Extract IMG, SAVE IMG and ready to read by QR
                     result_pdf, filename = split_img_qr(path, app.config['QR_IMG'])
                                         
-                if result_img or result_pdf:
-                    my_image = {
-                        'name' :     filename,
-                        'created' :  current_date
-                    }
-                    files_img.append(my_image)
+                if result_img==True:
+                    result_type = "JPG"
+                else:
+                    result_type = "PDF"
+
+                my_image = {
+                    'name' :    filename,
+                    'type'  :   result_type,
+                    'created':  current_date
+                }
+                files_img.append(my_image)
 
         # if len(data_code) :
         len_data = len(files_img)
@@ -771,7 +774,10 @@ def qr_action():
             
             i = 0
             for file in files or []:
-                filename = app.config['QR_IMG'] + "/" + file["name"]
+                if file["type"]=="JPG":
+                    filename = app.config['QR_UPLOAD'] + "/" + file["name"]
+                else:
+                    filename = app.config['QR_IMG'] + "/" + file["name"]
 
                 if filename:
                     result_qr, data_qr = qr_read(filename)
@@ -798,11 +804,6 @@ def qr_action():
             # dictPage = None
             for dictVal in dictCanvas:
                 i += 1
-                # images = []
-                # dict_page = int(dictVal['page'])
-                # path_pdf = app.config['SPLIT_PDF'] + '/' + str(pdf_id) + "page_" + str(dict_page) + ".pdf"
-                # images = convert_from_path(path_pdf, dpi=300, size=(640*2, 820*2))
-                # images[0].save(app.config['SPLIT_IMG'] + '/' + str(pdf_id) + 'page_'+ str(int(dict_page-1)) +'zoom.jpg',  format='JPEG', subsampling=0, quality=100)
                 
                 image = app.config['QR_IMG'] + '/' + str(path).split("/")[-1]
                 print("image path", image)

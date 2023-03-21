@@ -4,7 +4,6 @@ import pytesseract
 from pyzbar import pyzbar
 from utils.config import cfg
 
-# pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
 pytesseract.pytesseract.tesseract_cmd = cfg.FILES.GLOBAL_TESSERACT
 
 def qr_read(filename):
@@ -67,7 +66,7 @@ def qr_read(filename):
                 barcode_fac = barcodeData[n]
             else:
                 barcode_fac = barcodeData[n]+'-'+barcodeData[n+1]
-                n = n + 1
+                # n = n + 1
 
             data = {
                 'is_full':  barcode_isok,
@@ -91,13 +90,13 @@ def qr_read(filename):
             img_crop = None
             box_coordinates = [box_coordinates[0].astype(int)]
             # print("box_coordinates len", len(box_coordinates))
-            file_out = 'files/qr_img/'+ str(filename).split('/')[-1].split('.j')[0]
+            file_out = 'files/qr_upload/'+ str(filename).split('/')[-1].split('.j')[0]
             img_crop = img[box_coordinates[0][0][1]-15:box_coordinates[0][2][1]+15, box_coordinates[0][0][0]-15:box_coordinates[0][2][0]+15]
             # Scale
             data = []
             barcodes2 = []
             if len(img_crop)>0 and (img_crop.shape[1]>0):
-                scale = 2
+                scale = 1
                 width = int(img_crop.shape[1] * scale)
                 height = int(img_crop.shape[0] * scale)
                 img_crop = cv2.resize(img_crop, (width, height))
@@ -122,7 +121,7 @@ def qr_read(filename):
                         barcode_fac = barcodeData2[n]
                     else:
                         barcode_fac = barcodeData2[n]+'-'+barcodeData2[n+1]
-                        n = n + 1
+                        # n = n + 1
 
                     data = {
                         'is_full':  barcode_isok,
@@ -194,8 +193,7 @@ def qr_read(filename):
             if patt != None :
                 obj = str(text[patt.start(0):]).split("\n")[0].upper()
                 if len(obj)>0:
-                    # print("tot", data_cli_tot)
-                    data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("I","").replace("DELVALORVENTA","").replace("DELPRODUCTOPORALMACENAMENTO.","").replace("PAGADO.3'J","").replace("DELPRODUCTOPORALM;","").replace("FACTURA","").replace("APAGAR187.00","").replace("Y","")
+                    data_cli_tot = str(obj.split(pattern)[-1]).replace(" ","").replace(":","").replace("S","").replace("$","").replace("/","").replace("%","").replace("-","").replace("I","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                     break
         # FIND IGV
         for pattern in patterns_cli_igv :
@@ -203,7 +201,7 @@ def qr_read(filename):
             if patt != None :
                 obj = str(text[patt.start(0):]).split("\n")[0].upper()
                 if len(obj)>0:
-                    data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("S",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("I","").replace("DELVALORVENTA","").replace("DELPRODUCTOPORALMACENAMENTO.","").replace("PAGADO.3'J","").replace("DELPRODUCTOPORALM;","").replace("FACTURA","").replace("APAGAR187.00","").replace("Y","")
+                    data_cli_igv = str(obj.split(pattern)[-1]).replace(" ",'').replace(":",'').replace("S",'').replace("$",'').replace("/",'').replace("%",'').replace("-",'').replace("I","").replace("PAGADO","").replace("FACTURA","").replace("PAGAR","").replace("Y","")
                     break
         data_cli_tot = str(data_cli_tot).replace('—','')
         # FIND DATE
@@ -222,8 +220,6 @@ def qr_read(filename):
         barcode_isok = 0
         if res_len>4:
             barcode_isok = 2
-        # else:
-            # print(text)
         
         data = {
                 'is_full':  barcode_isok,
