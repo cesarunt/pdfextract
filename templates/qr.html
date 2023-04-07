@@ -11,8 +11,8 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                {% if result_upload %}
-                <form method="post" action="/qr" enctype="multipart/form-data">
+                <form method="POST" action="qr" enctype="multipart/form-data">
+                    {% if result_upload %}
                     <div class="mb-3 text-center">
                         <!-- Seleccionar múltiples PDFs -->
                         <label id="files_label" style="margin: 0.5rem 0; width: 100%;">Seleccionar Vouchers</label><br>
@@ -23,10 +23,8 @@
                             <i class="fas fa-file-upload"></i> &nbsp;Cargar Vouchers
                         </button>
                     </div>
-                </form>
-                {% else %}
-                    <form method="POST" action="qr_action" enctype="multipart/form-data">
-                        {% if not result_process %}
+                    {% else %}
+                        {% if result_process %}
                         <div class="card">
                             <div class="card-header text-center"><b>Facturas con código QR</b></div>
                             <div class="card-body">
@@ -47,221 +45,43 @@
                                                 <th style="text-align: center;">Ver</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            {% for data in data_code %}
-                                            <tr style="border-bottom: 1px solid #CCC;">
-                                                <td style="text-align: center;">{{data.index}}</td>
-                                                <td>{{data.cli_dat}}</td>
-                                                <td style="text-align: center;">{{data.currency}}</td>
-                                                <td style="text-align: center;">{{data.type_doc}}</td>
-                                                <td>{{data.cli_fac}}</td>
-                                                <td>{{data.cia_ruc}}</td>
-                                                <td>{{data.cli_ruc}}</td>
-                                                <td style="text-align: center;">{{data.cli_tot}}</td>
-                                                <td style="text-align: center;">{{data.cli_igv}}</td>
-                                                <td>
-                                                    {% if data.is_full == 1 %}
-                                                    <span class="badge text-dark" style="background-color:rgb(0, 205, 0) !important; padding: 5px 2px;">[100%]</span>
-                                                    {% endif %}
-                                                    {% if data.is_full == 2 %}
-                                                    <span class="badge text-dark" style="background-color:rgb(255, 191, 0) !important; padding: 5px 2px;">[&nbsp;75%]</span>
-                                                    {% endif %}
-                                                    {% if data.is_full == 0 %}
-                                                    <span class="badge text-dark" style="background-color:rgb(150, 150, 150) !important; padding: 5px 2px;">[&nbsp;10%]</span>
-                                                    {% endif %}
-                                                </td>
-                                                <!-- Edit Icon -->
-                                                <td class="action" style="text-align: center; font-size: medium;">
-                                                    <button type="button" class="btn" style="padding: 0 2px;" data-toggle="modal" data-target="#exampleModal_{{data.index}}" onclick="openVoucher(this, '{{ data.index }}', '{{ data_len }}', '{{ data.center_w }}')">
-                                                        <span class="fa-fw select-all fas"></span>
-                                                    </button>
-                                                </td>
+                                        <tbody id="dataCode">
+                                            
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div id="list_vouchers" class="card d-none">
+                            <div class="card-header text-center"><b>Listado Vouchers Procesados</b></div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="dataTables-example" style="font-size:smaller;" width="100%">
+                                        <thead>
+                                            <tr style="line-height: normal;">
+                                                <th>No<br>#</th>
+                                                <th>FECHA<br>(dd/mm/yy)</th>
+                                                <th style="text-align: center;">MONEDA<br>(S/ $)</th>
+                                                <th>TIPO<br>Doc</th>
+                                                <th>NUMERO<br>Doc</th>
+                                                <th>RUC Empresa</th>
+                                                <th>RUC Cliente</th>
+                                                <th style="text-align: center;">TOTAL<br>(S/ $)</th>
+                                                <th style="text-align: center;">IGV<br>(18%)</th>
+                                                <th>Estado<br>&nbsp;&nbsp;(%)</th>
+                                                <th style="text-align: center;">Ver</th>
                                             </tr>
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="exampleModal_{{data.index}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document" style="max-width: 1100px;">
-                                                    <div class="modal-content" style="background-color: #EEE; width: 1100px;">
-                                                        <div class="modal-body" style="display: inline-flex; top: 5px;">                                                        
-                                                            {% if data.measure == 'H' %}
-                                                            <div class="mb-6 text-center" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
-                                                                <!-- <img class="card-img-land" id="current_image" GFG="250" alt="Measure" style="height: 920px; margin: 1rem 0;" src='{{ data.path }}'> -->
-                                                                <div id="canvasContainer" style="width: 100%; height: auto; margin: 0;">
-                                                                    <div id="canvasContainer" class="text-center" style="width: 100%;">
-                                                                        <canvas id="canvas" style="background-image: url('{{ data.path }}'); background-size: cover; position: relative; opacity: 0.95; margin: 0 auto; height: '{{ data.measure_h }}' !important; width: '{{ data.measure_w }}'; left: '{{ data.center_w }}';" width='{{ data.measure_w }}' height='{{ data.measure_h }}' left='{{ data.center_w }}'></canvas>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            {% else %}
-                                                            <div class="mb-6 text-center" id="div_image" style="margin: 0.5rem 0 0 0; width: 99% !important;">
-                                                                <!-- <img class="card-img-land" id="current_image" GFG="250" alt="Measure" style="width: 720px; margin: 1rem 0;" src='{{ data.path }}'> -->
-                                                                <div id="canvasContainer" style="width: 100%; height: auto; margin: 0;">
-                                                                    <div id="canvasContainer" class="text-center" style="width: 100%;">
-                                                                        <canvas id="canvas" style="background-image: url('{{ data.path }}'); background-size: cover; position: relative; opacity: 0.95; margin: 0 auto; width: '{{ data.measure_w }}' !important; height: '{{ data.measure_h }}'; left: '{{ data.center_w }}';" width='{{ data.measure_w }}' height='{{ data.measure_h }}' left='{{ data.center_w }}'></canvas>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            {% endif %}
-                                                            <div class="mb-4" id="div_items" style="margin: 1.5rem 0.5rem 0 1rem; width: 40%;">
-                                                                <!-- <form class="needs-validation" action="#" method="POST" accept-charset="utf-8"> -->
-                                                                    <div class="row g-2">
-                                                                        <div class="col-md-6 text-left" style="margin: 1rem 0 0">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;"><b>VOUCHER &nbsp;{{ data.index }}</b></p>
-                                                                        </div>
-                                                                        <div class="col-md-6" style="text-align: right;">
-                                                                            <button id="arrow_left" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="moveVoucher(this, '{{data.index}}', 'down')">
-                                                                                <i class="fas fa-arrow-alt-circle-left"></i>
-                                                                            </button>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                            <button id="arrow_right" type="button" class="btn btn-icon icon-left btn-secondary mb-2" onclick="moveVoucher(this, '{{data.index}}', 'up')">
-                                                                                <i class="fas fa-arrow-alt-circle-right"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="line" style="text-align: left; width: 99%; margin: 0.25rem 0 0.75rem; border-color: #999;"></div>
-                                                                    <div class="row g-2" style="margin: 0 0 0.75rem;">
-                                                                        <div class="col-md-6" style="text-align: left;">
-                                                                            <button id="btn_zoom" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="activeZoom(this, '{{data.measure}}', '{{data.index}}')">
-                                                                                <i class="fas fa-search-plus"><span> &nbsp;Zoom</span></i>
-                                                                            </button>
-                                                                            <button type="button" id="close_zoom" style="width: 25px; opacity: 0.25;" class="btn btn-icon icon-left btn-secondary mb-2" onclick="closeZoom(this, '{{data.measure}}')" disabled>
-                                                                                <span class="fa-fw select-all fas" style="margin: 0 -8px;"></span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="col-md-6" style="text-align: center;">
-                                                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                            <button id="btn_extract" type="button" class="btn btn-icon icon-left btn-info mb-2" onclick="getTextCanvas('{{ request.url }}', '{{data.index}}', '{{data.path}}')">
-                                                                                <i class="fas fa-sort-alpha-down"><span> &nbsp;Text&nbsp;</span></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row g-2">
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Fecha</p>
-                                                                            {% if data.cli_dat %}
-                                                                            <input type="text" class="form-control" id="data_dat" name="data_dat" value="{{ data.cli_dat }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_dat" name="data_dat" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese fecha</div>
-                                                                        </div>
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Moneda</p>
-                                                                            <select id="data_cur" name="data_cur" class="form-select" required>
-                                                                                <option value="" selected>Seleccione Moneda</option>
-                                                                                {% if data.currency %}
-                                                                                    {% if data.currency=="S" %}
-                                                                                    <option value="S" selected>Sol</option>
-                                                                                    <option value="$">Dolar</option>
-                                                                                    {% else %}
-                                                                                    <option value="S" >Sol</option>
-                                                                                    <option value="$" selected>Dolar</option>
-                                                                                    {% endif %}
-                                                                                {% else %}
-                                                                                    <option value="S" >Sol</option>
-                                                                                    <option value="$" >Dolar</option>
-                                                                                {% endif %}
-                                                                            </select>
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Seleccione moneda</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row g-2">
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Tipo DOC</p>
-                                                                            <input type="text" class="form-control" id="data_type" name="data_type" value="{{ data.type_doc }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese tipo</div>
-                                                                        </div>
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Nro Factura</p>
-                                                                            {% if data.cli_fac %}
-                                                                            <input type="text" class="form-control" id="data_bill" name="data_bill" value="{{ data.cli_fac }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_bill" name="data_bill" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese factura</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row g-2">
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">RUC Empresa</p>
-                                                                            {% if data.cia_ruc %}
-                                                                            <input type="text" class="form-control" id="data_ciaruc" name="data_ciaruc" value="{{ data.cia_ruc }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_ciaruc" name="data_ciaruc" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese ruc</div>
-                                                                        </div>
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">RUC Cliente</p>
-                                                                            {% if data.cia_ruc %}
-                                                                            <input type="text" class="form-control" id="data_cliruc" name="data_cliruc" value="{{ data.cli_ruc }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_cliruc" name="data_cliruc" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese ruc</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row g-2">
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Total</p>
-                                                                            {% if data.cli_tot %}
-                                                                            <input type="text" class="form-control" id="data_tot" name="data_tot" value="{{ data.cli_tot }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_tot" name="data_tot" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese total</div>
-                                                                        </div>
-                                                                        <div class="mb-3 col-md-6">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">IGV</p>
-                                                                            {% if data.cli_igv %}
-                                                                            <input type="text" class="form-control" id="data_igv" name="data_igv" value="{{ data.cli_igv }}" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% else %}
-                                                                            <input type="text" class="form-control" id="data_igv" name="data_igv" value="" onclick="setValueItem(this, '{{data.index}}')" required>
-                                                                            {% endif %}
-                                                                            <div class="valid-feedback">OK!</div>
-                                                                            <div class="invalid-feedback">Ingrese igv</div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row g-2">
-                                                                        <div class="mb-12 col-md-12">
-                                                                            <p style="margin: 0 5px 0; color: darkgrey;">Estado <br>
-                                                                                {% if data.is_full == 1 %}
-                                                                                <span class="badge text-dark" style="border: solid 0.35em #EEE; border-left-color: rgb(0, 205, 0); font-size: medium; font-weight: 300;">Completo 100%, por Código QR</span>
-                                                                                {% endif %}
-                                                                                {% if data.is_full == 2 %}
-                                                                                <span class="badge text-dark" style="border: solid 0.35em #EEE; border-left-color: rgb(255, 191, 0); font-size: medium; font-weight: 300;">Completo 75%, faltan pocos items</span>
-                                                                                {% endif %}
-                                                                                {% if data.is_full == 0 %}
-                                                                                <span class="badge text-dark" style="border: solid 0.35em #EEE; border-left-color: rgb(150, 150, 150); font-size: medium; font-weight: 300;">Completo 10%, faltan varios items</span>
-                                                                                {% endif %}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="line" style="text-align: left; width: 99%; margin: 0.5rem 0 1.75rem; border-color: #999;"></div>
-                                                                    <div class="col-md-12 col-lg-12 text-center" style="margin: 1rem 0 1rem;">
-                                                                        <button type="submit" class="btn btn-primary" onclick="saveVoucher(this, '{{ request.url }}', '{{ data.index }}')" style="font-size: medium;" > &nbsp; Guardar &nbsp; </button>
-                                                                        <a href="#" onclick="closeVoucher('{{data.index}}')">
-                                                                            <button type="button" class="btn btn-secondary" style="margin: 0rem; font-size: medium;">&nbsp; Cerrar &nbsp;</button>
-                                                                        </a>
-                                                                    </div>
-                                                                <!-- </form> -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {% endfor %}                                
+                                        </thead>
+                                        <tbody id="dataCode">
+                                                                    
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        {% else %}
+
                         <div id="msg_upload" class="mb-3 text-center" style="margin: 2.5rem 0 !important;">
                             <p>Los archivos fueron cargados correctamente</p>
                         </div>
@@ -269,8 +89,8 @@
                             <!-- <input type="hidden" name="pro_id" id="pro_id" value="{{ pro_id }}" /> -->
                             <input type="hidden" name="process" id="process" value="1" />
                             <!-- <button class="btn btn-secondary" type="button" id="cancelPDF_btn">Cancelar</button> -->
-                            <button class="btn btn-success" id="processPDF_btn" onclick="clicQRProgress(this)" type="submit" > 
-                                <!-- onclick="clicPDFProcessMul()" -->
+                            <button type="button" class="btn btn-success" id="processPDF_btn" onclick="processVouchers(this, '{{ request.url }}')"> 
+                                <!-- onclick="clicQRProgress()" -->
                                 <i class="fas fa-play"></i> &nbsp;Procesar
                             </button>
                             <div id="processPDF_wrapper" class="text-center d-none">
@@ -281,15 +101,15 @@
                             </div>
                         </div>
                         {% endif %}
-                    </form>
-                    <div class="line" style="text-align: left; width: 100%; margin: 1rem 0; border-color: #999;"></div>
-                    <div class="mb-3 text-center" style="margin: 2rem 0;">
-                        <input type="hidden" name="process" id="process" value="1" />
-                        <a href="{{ url_for('main.qr') }}">
-                            <button class="btn btn-secondary" type="button" id="cancelPDF_btn">&nbsp; Volver &nbsp;</button>
-                        </a>
-                    </div>
-                {% endif %}
+                        <div class="line" style="text-align: left; width: 100%; margin: 1rem 0; border-color: #999;"></div>
+                        <div class="mb-3 text-center" style="margin: 2rem 0;">
+                            <input type="hidden" name="process" id="process" value="1" />
+                            <a href="{{ url_for('main.qr') }}">
+                                <button class="btn btn-secondary" type="button" id="cancelPDF_btn">&nbsp; Volver &nbsp;</button>
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
             </div>
 
             <div class="col-sm-12 text-center">

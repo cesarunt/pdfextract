@@ -148,7 +148,6 @@ def user_update():
     # id = 0
     user = None
     response_user = False
-    # print(request)
     if request.method == 'POST':
         current_date = date.today().strftime("%d-%m-%Y")
         action = request.form['action']
@@ -198,7 +197,6 @@ def user_update():
                 }
                 print("ERROR Actualizando Usuario")
         
-        # return redirect(request.url)
         crumb = { 'band':1, 'pre': 'Usuarios', 'post': "Registro" }
         return render_template('user_form.html', name=current_user.name.split()[0], user=user, crumb=crumb, result=result, admin=current_user.id)
 
@@ -649,32 +647,37 @@ def qr_upload(filename):
 def qr_img(filename):
     return send_from_directory(app.config['QR_IMG'], filename)
 
-
+# ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @main.route('/qr')
 def qr():
     global data_code
+    global files_img
+    files_img = []
     data_code = []
+    print("HOME")
     if current_user.is_authenticated:
         return render_template('qr.html', result_upload = True, result_process = False, name=current_user.name.split()[0])
-    else:
+    if len(data_code)==0:
         return render_template('qr.html', result_upload = True, result_process = False)
 
 @main.route('/qr', methods=['POST'])
 def qr_post():
     global files_img
+    global data_code
+    global len_files
+    result_process = False
 
     if request.method == "POST":
-        files_img = []
         result_img = False
         result_pdf = False
         result_type = ""
-        # pro_id = request.form.get('pro_id')
-        # Code for multiple pdfs
+        len_data = 0
+        
         if 'files[]' not in request.files:
+            print("NOT FILES")
             return redirect(request.url)
 
         current_date = date.today().strftime("%d-%m-%Y")
-        pdfs = []
         files = request.files.getlist('files[]')
         
         # 1. Remove and split IMG
@@ -702,8 +705,6 @@ def qr_post():
                         file_width  = file_image.shape[1]
                         file_height = file_image.shape[0]
                         fw = float(int(file_height) / int(file_width))
-                        # print(filename)
-                        # print(fw)
                         if fw > 2.0:
                             image_width = 420
                             image_height = 900
@@ -733,22 +734,89 @@ def qr_post():
                     'created':  current_date
                 }
                 files_img.append(my_image)
+        len_files = len(files_img)
 
-        # if len(data_code) :
-        len_data = len(files_img)
-        if len_data > 0 :
+        if len_files > 0:
             # result = True
-            print("RENDER TEMPLATE")
-            return render_template('qr.html', result_upload = False, result_process = True, data_code = data_code, data_len = len_data)
+            len_files = len_files + 1
+            print("RENDER ...")
+            print(result_process)
+            return render_template('qr.html', result_upload = False, result_process = result_process, data_code = data_code, data_len = len_files)
         else:
-            print("REDIRECT")
             return redirect(request.url)
-
+        
 
 @main.route('/qr_action', methods=['POST'])
 def qr_action():
     global files_img
+    global data_code
+    global len_files
+    data_qr = None
+    # data_code = None
+    result_qr = ""
+    result_process = True
+
+    if request.method == "POST":
+        action = request.values.get("action")
+
+        if len(files_img) > 0 :
+            # index = int(request.values.get("index"))-1
+            print("len files Img: ", len(files_img))
+            
+            divisor = 10
+            if len(files_img)>divisor:
+                limit = divisor
+            else:
+                mod_file = len(files_img) % divisor
+                limit = mod_file
+
+            files = []
+            files = files_img[0:limit]
+            data_code = []
+
+            i = 0
+            for file in files:
+                if file["type"]=="JPG":
+                    filename = app.config['QR_UPLOAD'] + "/" + file["name"]
+                else:
+                    filename = app.config['QR_IMG'] + "/" + file["name"]
+
+                if filename:
+                    result_qr, data_qr = qr_read(filename)
+                    if result_qr == "OK":
+                        index = int(len_files - len(files_img))
+                        data_qr["index"] = index
+                        data_qr["currency"] = "S"
+                        data_qr["type_doc"] = "F"
+                        if data_qr["path"] == "":
+                            data_qr["path"] = app.config['QR_IMG_WEB'] + "/" + file["name"]
+                        data_code.append(data_qr)
+                        del files_img[0]
+                        i = i + 1
+                        print('...............File(s) IMG generated successfully............\n')
+            
+            return jsonify({'data_code': data_code})
+            
+        else:
+            data_code = []
+            return jsonify({'data_code': data_code })
+               
+            # len_data = len(data_code)
+            # if result_process:
+            #     result_process = False
+            #     return render_template('qr.html', result_upload = False, result_process = False, data_code = data_code, data_len = len_data)
+            # else:
+            #     print("len_data", len_data)
+            #     return jsonify({'data_code': data_code})
+            
+        # return render_template('qr.html', result_upload = False, result_process = False, data_code = data_code, data_len = len_data)
+
+
+@main.route('/qr_canvas', methods=['POST'])
+def qr_canvas():
+    global files_img
     text_canvas = ""
+    result_save = False
     result_canvas = False
     # data_code = []
     if request.method == "POST":
@@ -767,56 +835,26 @@ def qr_action():
             data_code[index]['cli_tot']  = request.values.get("data_tot")
             data_code[index]['cli_igv']  = request.values.get("data_igv")
             data_code[index]['is_full']  = 1
-            result = True
-        elif len(data_code)==0 and files_img is not None:            
-            # files = request.files.getlist('files[]')
-            files = files_img
-            
-            i = 0
-            for file in files or []:
-                if file["type"]=="JPG":
-                    filename = app.config['QR_UPLOAD'] + "/" + file["name"]
-                else:
-                    filename = app.config['QR_IMG'] + "/" + file["name"]
-
-                if filename:
-                    result_qr, data_qr = qr_read(filename)
-                    if result_qr == "OK":
-                        i = i + 1
-                        data_qr["index"] = i
-                        data_qr["currency"] = "S"
-                        data_qr["type_doc"] = "F"
-                        if data_qr["path"] == "":
-                            data_qr["path"] = app.config['QR_IMG_WEB'] + "/" + file["name"]
-                        data_code.append(data_qr)
-                        result = True
-                        print('...File(s) IMG generated successfully.....................................\n')
+            result_save = True
         
         if action == "get_canvas":
             index = int(request.values.get("index"))
             path = request.values.get("path")
-            # det_attribute = int(request.values.get("det_attribute"))
             current_date = date.today().strftime("%d-%m-%Y")
             dictCanvas = json.loads(request.values.get("dictCanvas"))
             i = 0
             text = ""
             image = None
-            # dictPage = None
             for dictVal in dictCanvas:
-                i += 1
-                
+                i += 1                
                 image = app.config['QR_IMG'] + '/' + str(path).split("/")[-1]
                 print("image path", image)
                 image = cv2.imread(image, 0)
-                # thresh = 255 - cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
                 _y = dictVal['y']
                 _h = dictVal['h']
                 _x = dictVal['x']
                 _w = dictVal['w']
-                # print("X Y W H", str(_x) + " " + str(_y) + " " + str(_w) + " " + str(_h))
-                # ROI = thresh[dictVal['y']:dictVal['y']+dictVal['h'], dictVal['x']:dictVal['x']+dictVal['w']]
                 ROI = image[_y: _y + _h, _x: _x + _w]
-                # print("ROI", ROI)
                 language = "spa"
                 try:
                     text_canvas = pytesseract.image_to_string(ROI, lang=language, config='--psm 6')
@@ -826,16 +864,20 @@ def qr_action():
                         print(e)
                         print("Error generate text...")
         
+        if result_save:
+            return jsonify({'data_code': data_code})
         if result_canvas:
-            return jsonify({'text_canvas': text_canvas})
-        else:
-            len_data = len(data_code)
-            if len_data > 0 :
-                # result = True
-                return render_template('qr.html', result_upload = False, result_process = False, data_code = data_code, data_len = len_data)
-            else:
-                return redirect(request.url)
+            return jsonify({'data_code': text_canvas})
 
+        # else:
+        #     len_data = len(data_code)
+        #     print("len_data", len_data)
+        #     if len_data > 0 :
+        #         return render_template('qr.html', result_upload = False, result_process = False, data_code = data_code, data_len = len_data)
+        #     else:
+        #         return redirect(request.url)
+
+# ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # FUNCTION TO PROCESS PDF 
 # 
 @main.route("/action_thesis_mul", methods=["POST"])

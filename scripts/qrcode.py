@@ -39,13 +39,14 @@ def qr_read(filename):
 
     detect = cv2.QRCodeDetector()
     _, box_coordinates, _ = detect.detectAndDecode(img)
+    # print("box_coordinates", box_coordinates)
 
     if box_coordinates is None:
-        print('NO CODE QR')
+        # print('NO CODE QR')
         result = "TESS"
     else:
         barcodes = None
-        print('ITS POSSIBLE CODE QR')
+        # print('ITS POSSIBLE CODE QR')
         # GET INFO FROM QR ICON
         barcodes = pyzbar.decode(img)
         
@@ -107,7 +108,7 @@ def qr_read(filename):
                 if len(barcodes2) > 0 :
                     file_qr = file_out + '_QR.png'
                     # print("FILE_QR", file_qr)
-                    print('YES POSSIBLE CODE QR 2')
+                    # print('YES POSSIBLE CODE QR 2')
                     for barcode in barcodes2:
                         barcodeText2 = str(barcode.data.decode("utf-8"))
                         barcodeData2 = barcodeText2.split('|')
@@ -147,7 +148,7 @@ def qr_read(filename):
                 result = "TESS"
     
     if result == "TESS" :
-        print("...GET DATA WITH TESSERACT")
+        # print("...GET DATA WITH TESSERACT")
         text = pytesseract.image_to_string(img, lang='spa', config='--psm 6')
         # print(text)
         res_rucs = None

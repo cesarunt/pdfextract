@@ -3,7 +3,7 @@ import os
 
 # PATH LOCAL
 GLOBAL_PATH = os.path.abspath(os.getcwd())
-GLOBAL_TESSERACT = r'/usr/local/bin/tesseract'
+GLOBAL_TESSERACT = '/usr/local/bin/tesseract'
 # PATH SERVER
 # GLOBAL_PATH = '/var/www/webApp/webApp'
 # GLOBAL_TESSERACT = r'/usr/bin/tesseract'
@@ -28,13 +28,11 @@ __C.FILES.MAX_CONTENT_LENGTH = 40 * 1024 * 1024
 __C.FILES.UPLOAD_EXTENSIONS  = ["PDF", "pdf"]
 __C.FILES.QR_EXTENSIONS     = ["PDF", "pdf", "JPG", "JPEG"]
 __C.FILES.UPLOAD            = GLOBAL_PATH + '/files/upload'
-# __C.FILES.QR_UPLOAD         = GLOBAL_PATH + '/files/qr_upload'
 __C.FILES.SPLIT_PDF         = GLOBAL_PATH + '/files/split_pdf'
 __C.FILES.SPLIT_IMG         = GLOBAL_PATH + '/files/split_img'
 __C.FILES.SPLIT_IMG_WEB     = 'files/split_img'
 __C.FILES.SPLIT_THUMB       = GLOBAL_PATH + '/files/split_thumb'
 __C.FILES.SPLIT_THUMB_WEB   = 'files/split_thumb'
-
 __C.FILES.QR_UPLOAD         = GLOBAL_PATH + '/files/qr_upload'
 __C.FILES.QR_IMG            = GLOBAL_PATH + '/files/qr_img'
 __C.FILES.QR_IMG_WEB        = 'files/qr_img'
